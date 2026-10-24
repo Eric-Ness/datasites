@@ -54,6 +54,8 @@ function svg<K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string,
 }
 
 function fmtTick(v: number, decimals: number): string {
+  // GDP-sized axes read better as "40T" than "40,000,000,000,000"; the tooltip and table keep exact values.
+  if (Math.abs(v) >= 1e6) return new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 2 }).format(v);
   return new Intl.NumberFormat("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(v);
 }
 

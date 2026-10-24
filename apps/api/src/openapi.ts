@@ -388,7 +388,7 @@ function commonSchemas(): Obj {
       required: ["id", "status"],
       properties: {
         id: { type: "string" },
-        status: { type: "string", enum: ["ok", "pending", "late", "stale-upstream", "failing", "blocked", "discontinued"] },
+        status: { type: "string", enum: ["ok", "pending", "unpublished", "late", "stale-upstream", "failing", "blocked", "discontinued"] },
         version: nullableString,
         checked_at: { type: ["string", "null"], format: "date-time" },
         source_updated_at: { type: ["string", "null"], format: "date-time" },

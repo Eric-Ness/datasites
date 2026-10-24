@@ -3,7 +3,7 @@
 
 import type { DatasetClientConfig } from "../lib/dataset-page";
 import type { Selection } from "../lib/datasets";
-import { formatBytes, formatCoverage, formatInt, formatPeriod, formatValue, relativeTime } from "../lib/format";
+import { displayUnit, formatBytes, formatCoverage, formatInt, formatPeriod, formatValue, relativeTime } from "../lib/format";
 import { datasetSnippets, SNIPPET_LANGUAGES } from "../lib/snippets";
 import { paths, resolveApiLink } from "../lib/urls";
 import { api, ApiError, describeFailure, getJson, hostOf, pageApiBase, pageSiteId } from "./api";
@@ -219,7 +219,7 @@ async function initSeries(c: DatasetClientConfig) {
     try {
       const body = await getJson<SeriesDoc>(jsonUrl);
       if (id !== request) return;
-      const unit = body.meta.units?.[measure] ?? c.measures.find((m) => m.name === measure)?.unit ?? null;
+      const unit = displayUnit(body.meta.units?.[measure] ?? c.measures.find((m) => m.name === measure)?.unit);
       const points = toPoints(body.data, c.timeColumn ?? "date", measure, c.timeType ?? "date");
       const label = measureSel ? measure : seriesName(series);
       tableConfig = { title: heading, unit, timeType: c.timeType ?? "date", lines: [{ label, points, color: LINE_COLORS[0]! }] };
@@ -314,7 +314,7 @@ async function initTable(c: DatasetClientConfig) {
     });
     const headRow = el("tr");
     for (const col of cols) {
-      const u = unit[col.name] ?? col.unit;
+      const u = displayUnit(unit[col.name] ?? col.unit);
       headRow.append(el("th", { scope: "col", class: numeric.has(col.name) ? "num" : undefined, text: u ? `${col.name} (${u})` : col.name }));
     }
     const body = el("tbody");

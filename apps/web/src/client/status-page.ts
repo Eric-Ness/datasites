@@ -34,10 +34,10 @@ function when(iso: string | null): Node {
 }
 
 function overallText(status: SiteStatus): string {
-  const published = status.datasets.length;
+  const published = status.datasets.filter((d) => d.status !== "unpublished").length;
   if (!published) return "No datasets have been published on this site yet.";
   if (status.overall === "ok") return published === 1 ? "The published dataset is current." : `All ${published} published datasets are current.`;
-  const attention = status.datasets.filter((d) => !["ok", "discontinued"].includes(d.status)).length;
+  const attention = status.datasets.filter((d) => !["ok", "discontinued", "unpublished"].includes(d.status)).length;
   return `${attention} of ${published} published datasets need attention.`;
 }
 

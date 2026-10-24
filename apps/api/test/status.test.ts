@@ -43,6 +43,9 @@ describe("datasetStatus", () => {
     ["late", entry, state({ checked_at: "2026-10-21T14:00:00Z" })],
     ["stale-upstream", entry, state({ source_updated_at: "2026-08-01T00:00:00Z" })],
     ["discontinued", { ...entry, discontinued: true }, state()],
+    ["unpublished", { ...entry, current: null }, null],
+    ["unpublished", { ...entry, current: null }, state({ checked_at: null, consecutive_failures: 2 })],
+    ["failing", { ...entry, current: null }, state({ checked_at: null, consecutive_failures: 3 })],
   ] as const)("classifies %s", (expected, e, s) => {
     expect(datasetStatus(e, s, now).status).toBe(expected);
   });

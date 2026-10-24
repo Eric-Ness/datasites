@@ -1,6 +1,7 @@
 // Draws each gallery chart from its own site's API when it scrolls into view. One API being down
 // only affects its own charts, each of which offers a retry.
 
+import { displayUnit } from "../lib/format";
 import type { GalleryLine } from "../lib/gallery";
 import { paths } from "../lib/urls";
 import { api, describeFailure, getJson, hostOf } from "./api";
@@ -63,7 +64,7 @@ async function draw(item: Item, card: HTMLElement) {
       if (item.transform === "yoy") points = yearOverYear(points);
       return { label: line.label, points, color: LINE_COLORS[i % LINE_COLORS.length]! };
     });
-    const config: ChartConfig = { title: item.title, unit, timeType: item.timeType, lines };
+    const config: ChartConfig = { title: item.title, unit: displayUnit(unit), timeType: item.timeType, lines };
     mountChart(box, config);
     if (lines.length > 1) {
       legend.replaceChildren(

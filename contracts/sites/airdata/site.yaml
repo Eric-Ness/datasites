@@ -1,10 +1,10 @@
 id: airdata
 domain: airdata.dev
 name: Air Data
-tagline: Air quality for every US county, from 1980 to the last hour.
+tagline: Air quality for every US county, from 1980 to yesterday.
 description: >-
-  Validated EPA air-quality history joined to preliminary hourly readings, by
-  monitor, county and metro area. Each row says whether it is validated or
-  preliminary.
+  The daily Air Quality Index for every US county with an EPA monitor, joining
+  EPA's validated history to the preliminary days since its last release, plus
+  yearly county summaries. Each row says whether it is validated or preliminary.
 status: coming-soon
 phase: 4

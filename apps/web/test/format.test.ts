@@ -3,6 +3,7 @@ import {
   cadenceLabel,
   columnTypeLabel,
   commercialLabel,
+  displayUnit,
   durationLabel,
   formatBytes,
   formatCoverage,
@@ -28,6 +29,20 @@ describe("formatBytes", () => {
     expect(formatBytes(null)).toBe("");
     expect(formatBytes(undefined)).toBe("");
     expect(formatBytes(-1)).toBe("");
+  });
+});
+
+describe("displayUnit", () => {
+  it("shows contract unit codes as symbols", () => {
+    expect(displayUnit("degC")).toBe("°C");
+    expect(displayUnit("ft^3/s")).toBe("ft³/s");
+    expect(displayUnit("percent")).toBe("%");
+  });
+
+  it("passes unknown units through and drops empty ones", () => {
+    expect(displayUnit("ppm")).toBe("ppm");
+    expect(displayUnit("")).toBeNull();
+    expect(displayUnit(null)).toBeNull();
   });
 });
 

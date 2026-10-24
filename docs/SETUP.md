@@ -162,6 +162,7 @@ Every dataset works without these except the ones named. Until a dataset's crede
 | BEA API key (free) | economicdata `bea-county-income` | Sign up at https://apps.bea.gov/api/signup/, then `gh secret set BEA_API_KEY --env production` |
 | Census API key (free) | economicdata `census-acs-income` | Sign up at https://api.census.gov/data/key_signup.html, then `gh secret set CENSUS_API_KEY --env production` |
 | Space-Track account (free; one per person, never shared) | satellitedata `gp-current` | Register at https://www.space-track.org, then `gh secret set SPACETRACK_USERNAME --env production` and `gh secret set SPACETRACK_PASSWORD --env production` |
+| USGS Water Data API key (free, optional) | waterdata `stream-gages`, `streamflow-daily` | Works without it, but the anonymous rate limit can stretch a daily run past half an hour. It is an api.data.gov key: sign up at https://api.data.gov/signup/, then `gh secret set USGS_WATERDATA_API_KEY --env production` |
 | MIT Election Lab files | electiondata county presidential and House history | Download them in your browser (Dataverse guestbook) into `data/sources/medsl/`; see the README there |
 
 **API keys and billing (Phases 3 and 6):**
@@ -199,6 +200,6 @@ Every dataset works without these except the ones named. Until a dataset's crede
 | Cloudflare deploy token | GitHub environment `production` | deploy workflow |
 | Turnstile secret key | `wrangler secret put` on `datasites-coming-soon` | signup form |
 | healthchecks ping URLs (`HC_INGEST_*`, `HEALTHCHECK_URL`) | GitHub environment `production`, `wrangler secret put` on `datasites-api` | ingest workflows, freshness cron |
-| `BEA_API_KEY`, `CENSUS_API_KEY`, `SPACETRACK_USERNAME`, `SPACETRACK_PASSWORD` | GitHub environment `production` | economicdata and satellitedata pipelines |
+| `BEA_API_KEY`, `CENSUS_API_KEY`, `SPACETRACK_USERNAME`, `SPACETRACK_PASSWORD`, `USGS_WATERDATA_API_KEY` | GitHub environment `production` | economicdata, satellitedata and waterdata pipelines |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | `wrangler secret put` on `datasites-api` | billing webhook and nightly meter report |
 | Local development | `apps/*/.dev.vars` (gitignored; copy from `.dev.vars.example`) | `wrangler dev` |

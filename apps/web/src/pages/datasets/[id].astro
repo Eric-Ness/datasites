@@ -7,7 +7,7 @@ import SourceBlock from "../../components/SourceBlock.astro";
 import { apiBase, site, siteDatasets } from "../../lib/site";
 import { levelCounts } from "../../lib/geo";
 import { clientConfigJson, datasetPageModel } from "../../lib/dataset-page";
-import { cadenceLabel, commercialLabel, durationLabel, kindLabel, licenseInfo } from "../../lib/format";
+import { cadenceLabel, commercialLabel, displayUnit, durationLabel, kindLabel, licenseInfo } from "../../lib/format";
 import { datasetJsonLd } from "../../lib/jsonld";
 import { TABLE_ALL_MAX_ROWS } from "../../lib/api-facts";
 
@@ -92,7 +92,7 @@ const measures = model.client.measures;
                 <select id="ex-measure" disabled>
                   {measures.map((m) => (
                     <option value={m.name} selected={m.name === model.client.defaultMeasure}>
-                      {m.unit ? `${m.name} (${m.unit})` : m.name}
+                      {m.unit ? `${m.name} (${displayUnit(m.unit)})` : m.name}
                     </option>
                   ))}
                 </select>

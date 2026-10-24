@@ -1,5 +1,461 @@
 [
   {
+    "site": "airdata",
+    "id": "county-aqi-annual",
+    "kind": "series",
+    "title": "Yearly air quality summary by county",
+    "description": "EPA's yearly Air Quality Index (AQI) summary for every US county with a monitor, from 1980: how many days fell in each AQI category, the maximum, 90th-percentile and median daily AQI, and how many days each pollutant set the AQI. Validated EPA AirData; the latest year is partial until EPA's next release completes it.",
+    "cadence": "P6M",
+    "check_every": "P1D",
+    "sla": "P8M",
+    "discontinued": false,
+    "source": {
+      "name": "EPA AirData annual AQI by county",
+      "publisher": "US EPA",
+      "url": "https://aqs.epa.gov/aqsweb/airdata/download_files.html",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "US Environmental Protection Agency. Air Quality System Data Mart [internet database] available via https://www.epa.gov/outdoor-air-quality-data. Accessed on this version's retrieval date."
+    },
+    "series": {
+      "summary": "Yearly AQI summary"
+    },
+    "locations": {
+      "explicit": {
+        "us-county-09001": "Fairfield County, CT (former county)",
+        "us-county-09003": "Hartford County, CT (former county)",
+        "us-county-09005": "Litchfield County, CT (former county)",
+        "us-county-09007": "Middlesex County, CT (former county)",
+        "us-county-09009": "New Haven County, CT (former county)",
+        "us-county-09011": "New London County, CT (former county)",
+        "us-county-09013": "Tolland County, CT (former county)",
+        "us-county-09015": "Windham County, CT (former county)",
+        "us-county-02232": "Skagway-Hoonah-Angoon Census Area, AK (until 2007)",
+        "us-county-02261": "Valdez-Cordova Census Area, AK (until 2019)",
+        "us-county-02280": "Wrangell-Petersburg Census Area, AK (until 2008)",
+        "us-county-66010": "Guam",
+        "us-county-78010": "St. Croix Island, VI",
+        "us-county-78020": "St. John Island, VI",
+        "us-county-78030": "St. Thomas Island, VI"
+      },
+      "registry": [
+        "us-county"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "year",
+        "unit": null,
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "days_with_aqi",
+        "type": "int",
+        "unit": "days",
+        "nullable": false,
+        "description": "Days with an AQI value"
+      },
+      {
+        "name": "good_days",
+        "type": "int",
+        "unit": "days",
+        "nullable": false,
+        "description": "Days rated Good (AQI 0-50)"
+      },
+      {
+        "name": "moderate_days",
+        "type": "int",
+        "unit": "days",
+        "nullable": false,
+        "description": "Days rated Moderate (51-100)"
+      },
+      {
+        "name": "unhealthy_sensitive_days",
+        "type": "int",
+        "unit": "days",
+        "nullable": false,
+        "description": "Days rated Unhealthy for Sensitive Groups (101-150)"
+      },
+      {
+        "name": "unhealthy_days",
+        "type": "int",
+        "unit": "days",
+        "nullable": false,
+        "description": "Days rated Unhealthy (151-200)"
+      },
+      {
+        "name": "very_unhealthy_days",
+        "type": "int",
+        "unit": "days",
+        "nullable": false,
+        "description": "Days rated Very Unhealthy (201-300)"
+      },
+      {
+        "name": "hazardous_days",
+        "type": "int",
+        "unit": "days",
+        "nullable": false,
+        "description": "Days rated Hazardous (301 and above)"
+      },
+      {
+        "name": "max_aqi",
+        "type": "int",
+        "unit": "AQI",
+        "nullable": false,
+        "description": "Highest daily AQI of the year"
+      },
+      {
+        "name": "aqi_90th_percentile",
+        "type": "int",
+        "unit": "AQI",
+        "nullable": false,
+        "description": "90th percentile of the daily AQI"
+      },
+      {
+        "name": "median_aqi",
+        "type": "int",
+        "unit": "AQI",
+        "nullable": false,
+        "description": "Median daily AQI"
+      },
+      {
+        "name": "days_co",
+        "type": "int",
+        "unit": "days",
+        "nullable": false,
+        "description": "Days carbon monoxide set the AQI"
+      },
+      {
+        "name": "days_no2",
+        "type": "int",
+        "unit": "days",
+        "nullable": false,
+        "description": "Days nitrogen dioxide set the AQI"
+      },
+      {
+        "name": "days_ozone",
+        "type": "int",
+        "unit": "days",
+        "nullable": false,
+        "description": "Days ozone set the AQI"
+      },
+      {
+        "name": "days_pm25",
+        "type": "int",
+        "unit": "days",
+        "nullable": false,
+        "description": "Days PM2.5 set the AQI"
+      },
+      {
+        "name": "days_pm10",
+        "type": "int",
+        "unit": "days",
+        "nullable": false,
+        "description": "Days PM10 set the AQI"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "airdata",
+    "id": "county-aqi-daily",
+    "kind": "series",
+    "title": "Daily air quality index by county",
+    "description": "The daily Air Quality Index (AQI) for every US county with an EPA monitor, from 1980 to yesterday. Rows up to EPA's latest AirData release are validated (validated: true). Later days are preliminary (validated: false): EPA AirNow data from federal, state, local and tribal agencies, not yet verified and subject to change. For those days the county AQI is a derived value calculated by airdata.dev as the highest site AQI reported to AirNow in the county that day, the way EPA summarizes a county; the site AQI values themselves are as received. Preliminary days cover ozone, PM2.5, PM10 and CO only. A preliminary row never replaces a validated one.",
+    "cadence": "P1D",
+    "check_every": "P1D",
+    "sla": "P4D",
+    "discontinued": false,
+    "source": {
+      "name": "EPA AirData daily AQI by county (validated) and EPA AirNow daily data files (preliminary)",
+      "publisher": "US EPA (AirData, AirNow) and the AirNow partner agencies",
+      "url": "https://aqs.epa.gov/aqsweb/airdata/download_files.html",
+      "license": "LicenseRef-US-Government-Work AND LicenseRef-AirNow-Data-Exchange-Guidelines",
+      "commercial_ok": true,
+      "attribution": "Validated data: US Environmental Protection Agency. Air Quality System Data Mart [internet database] available via https://www.epa.gov/outdoor-air-quality-data. Accessed on this version's retrieval date. Preliminary data (validated: false): courtesy of the federal, state, local and tribal air quality agencies that own the data (https://www.airnow.gov/partners/) and the EPA AirNow program. These data are preliminary: not fully verified or validated, and subject to change. Preliminary county AQI values are derived by airdata.dev as the highest site AQI in the county; site values are as received from AirNow."
+    },
+    "series": {
+      "aqi": "Daily AQI"
+    },
+    "locations": {
+      "explicit": {
+        "us-county-09001": "Fairfield County, CT (former county)",
+        "us-county-09003": "Hartford County, CT (former county)",
+        "us-county-09005": "Litchfield County, CT (former county)",
+        "us-county-09007": "Middlesex County, CT (former county)",
+        "us-county-09009": "New Haven County, CT (former county)",
+        "us-county-09011": "New London County, CT (former county)",
+        "us-county-09013": "Tolland County, CT (former county)",
+        "us-county-09015": "Windham County, CT (former county)",
+        "us-county-02232": "Skagway-Hoonah-Angoon Census Area, AK (until 2007)",
+        "us-county-02261": "Valdez-Cordova Census Area, AK (until 2019)",
+        "us-county-02280": "Wrangell-Petersburg Census Area, AK (until 2008)",
+        "us-county-66010": "Guam",
+        "us-county-78010": "St. Croix Island, VI",
+        "us-county-78020": "St. John Island, VI",
+        "us-county-78030": "St. Thomas Island, VI"
+      },
+      "registry": [
+        "us-county"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "date",
+        "unit": null,
+        "nullable": false,
+        "description": "Local calendar day (midnight to midnight local standard time)"
+      },
+      {
+        "name": "aqi",
+        "type": "int",
+        "unit": "AQI",
+        "nullable": false,
+        "description": "The county's AQI: the highest daily AQI among its monitors. AirData values above 500 (extreme dust events) are kept as published"
+      },
+      {
+        "name": "category",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "EPA AQI category: Good, Moderate, Unhealthy for Sensitive Groups, Unhealthy, Very Unhealthy or Hazardous"
+      },
+      {
+        "name": "defining_parameter",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Pollutant behind the county AQI: Ozone, PM2.5, PM10, CO, NO2 or SO2"
+      },
+      {
+        "name": "defining_site",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Monitoring site behind the county AQI, as an AQS id (SS-CCC-NNNN) or, for tribal AirNow sites, the AirNow id"
+      },
+      {
+        "name": "sites_reporting",
+        "type": "int",
+        "unit": null,
+        "nullable": false,
+        "description": "Number of monitoring sites in the county with an AQI that day"
+      },
+      {
+        "name": "validated",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "true for EPA AirData (validated AQS data); false for preliminary AirNow data"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "carbondata",
+    "id": "emission-factors",
+    "kind": "table",
+    "title": "Emission factors",
+    "description": "Scope 1, 2 and 3 emission factors in one table: the GHG Emission Factors Hub 2026 and eGRID2024 (Cornerstone releases of EPA methods), UK DESNZ 2026 conversion factors, Ember national grid intensity (1985 onward) and USEEIO v1.4 spend-based supply chain factors. Every row states its unit, gas, scope and GWP set.",
+    "cadence": "P1M",
+    "check_every": "P7D",
+    "sla": "P90D",
+    "discontinued": false,
+    "source": {
+      "name": "EPA GHG Emission Factors Hub 2026 and eGRID2024 (Cornerstone releases), Supply Chain GHG Emission Factors v1.4.0 (USEEIO, Cornerstone release), UK Government GHG Conversion Factors 2026 (DESNZ) and Ember Yearly Electricity Data",
+      "publisher": "Cornerstone Sustainability Data Initiative; UK Department for Energy Security and Net Zero; Ember",
+      "url": "https://doi.org/10.5281/zenodo.20403776",
+      "license": "CC-BY-4.0 AND OGL-UK-3.0",
+      "commercial_ok": true,
+      "attribution": "EPA methodology, Cornerstone release (not EPA-official): Cornerstone Sustainability Data Initiative. (2026). Emission Factors Hub 2026 (Version 2026.01) [Dataset]. Cornerstone Sustainability Data Initiative. https://doi.org/10.5281/zenodo.20403776. CC BY 4.0. EPA methodology, Cornerstone release (not EPA-official): Cornerstone Sustainability Data Initiative. (2026). eGRID2024 (Version 1.0.0) [Dataset]. Cornerstone Sustainability Data Initiative. https://doi.org/10.5281/zenodo.18968658. CC BY 4.0. EPA methodology, Cornerstone release (not EPA-official): Ingwersen, W., & Young, B. (2025). Supply Chain Greenhouse Gas Emission Factors for U.S. Commodities (Version v1.4.0) [Dataset]. Cornerstone Sustainability Data Initiative. https://doi.org/10.5281/zenodo.17202747. CC BY 4.0. UK conversion factors: Contains public sector information licensed under the Open Government Licence v3.0. Department for Energy Security and Net Zero, Greenhouse gas reporting: conversion factors 2026, https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2026. Grid intensity: Ember, Yearly Electricity Data, https://ember-energy.org/data/yearly-electricity-data/, CC BY 4.0. Changes: reshaped into one table with harmonized scope, category, region, unit and GWP-set labels; Ember intensities converted from g to kg CO2e per kWh. Factor values are otherwise as published."
+    },
+    "series": {},
+    "locations": {},
+    "schema": [
+      {
+        "name": "factor_id",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Stable, readable id: source, edition, category, activity, region, gas and activity unit"
+      },
+      {
+        "name": "source",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "epa-hub, egrid, uk-desnz, ember or useeio"
+      },
+      {
+        "name": "source_version",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "The publisher's release, e.g. 2026.01, eGRID2024 1.0.0, 2026 v1.2, v1.4.0"
+      },
+      {
+        "name": "source_ref",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Where the number is in the source: Hub sheet, eGRID sheet.field, DESNZ factor ID or NAICS code"
+      },
+      {
+        "name": "scope",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "1, 2, 3, or outside (biogenic CO2 reported outside the scopes)"
+      },
+      {
+        "name": "category",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "e.g. stationary-combustion, electricity, well-to-tank, business-travel, purchased-goods-and-services"
+      },
+      {
+        "name": "activity",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "The activity in the publisher's own words"
+      },
+      {
+        "name": "region",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "world, lowercase ISO 3166-1 alpha-3 (usa), US state (us-ca) or eGRID subregion code (CAMX)"
+      },
+      {
+        "name": "region_type",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "world, country, us-state or egrid-subregion"
+      },
+      {
+        "name": "activity_unit",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "The unit of activity the factor multiplies, e.g. mmBtu (the Hub uses higher heating values), kWh (gross CV), passenger-km, USD (2024, purchaser price)"
+      },
+      {
+        "name": "gas",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "CO2, CH4, N2O, or CO2e for all gases the factor covers. A named gas with a CO2e unit is that gas's share of the CO2e total"
+      },
+      {
+        "name": "value",
+        "type": "float",
+        "unit": null,
+        "nullable": false,
+        "description": "Kilograms of the gas (or of CO2e) per one activity unit"
+      },
+      {
+        "name": "unit",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "The value's unit, e.g. kg CO2/mmBtu, kg CO2e/kWh"
+      },
+      {
+        "name": "gwp_set",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "IPCC report whose 100-year GWPs weight a CO2e value (AR4, AR5, AR6, mixed), or none for per-gas mass factors"
+      },
+      {
+        "name": "valid_year",
+        "type": "year",
+        "unit": null,
+        "nullable": false,
+        "description": "Year the factor applies to: the edition year (Hub, DESNZ), data year (eGRID, Ember) or dollar year (USEEIO)"
+      },
+      {
+        "name": "notes",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Caveats from the publisher or about the scope label"
+      }
+    ],
+    "key": [
+      "factor_id"
+    ],
+    "partition": "source"
+  },
+  {
+    "site": "carbondata",
+    "id": "national-fossil-co2",
+    "kind": "series",
+    "title": "National fossil CO2 emissions",
+    "description": "Annual fossil CO2 emissions for every country and the world from 1750, in total and by source (coal, oil, gas, cement, flaring, other carbonates), from the Global Carbon Project's fossil CO2 dataset in the Global Carbon Budget.",
+    "cadence": "P1Y",
+    "check_every": "P7D",
+    "sla": "P400D",
+    "discontinued": false,
+    "source": {
+      "name": "The Global Carbon Project's fossil CO2 emissions dataset (Global Carbon Budget)",
+      "publisher": "Global Carbon Project (Robbie M. Andrew and Glen P. Peters, CICERO)",
+      "url": "https://doi.org/10.5281/zenodo.5569234",
+      "license": "CC-BY-4.0",
+      "commercial_ok": true,
+      "attribution": "Andrew, R. M., & Peters, G. P. The Global Carbon Project's fossil CO2 emissions dataset [Dataset]. Zenodo. https://doi.org/10.5281/zenodo.5569234 (all releases; each published version names the release file it was built from, e.g. GCB2025v15_MtCO2_flat.csv, https://doi.org/10.5281/zenodo.17417124). Source: Global Carbon Budget, Global Carbon Project; citation: Friedlingstein et al 2020 (DOI: 10.5194/essd-12-3269-2020). Licensed under Creative Commons Attribution 4.0 International. Changes: reshaped to one series per source; locations mapped to ISO 3166 ids; per capita figures and empty cells left out."
+    },
+    "series": {
+      "total": "Total fossil CO2 emissions",
+      "coal": "Fossil CO2 emissions from coal",
+      "oil": "Fossil CO2 emissions from oil",
+      "gas": "Fossil CO2 emissions from gas",
+      "cement": "Fossil CO2 emissions from cement (process emissions)",
+      "flaring": "Fossil CO2 emissions from flaring (includes vented methane)",
+      "other": "Fossil CO2 emissions from other carbonates"
+    },
+    "locations": {
+      "explicit": {
+        "gcb-international-aviation": "International aviation (bunker fuels)",
+        "gcb-international-shipping": "International shipping (bunker fuels)",
+        "gcb-kuwaiti-oil-fires": "Kuwaiti oil fires",
+        "gcb-kosovo": "Kosovo",
+        "gcb-pacific-islands-palau": "Pacific Islands (Palau)",
+        "gcb-ryukyu-islands": "Ryukyu Islands"
+      },
+      "registry": [
+        "world",
+        "country"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "year",
+        "unit": null,
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "value",
+        "type": "float",
+        "unit": "MtCO2",
+        "nullable": false,
+        "description": "Million tonnes of CO2"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
     "site": "climatedata",
     "id": "co2-monthly",
     "kind": "series",
@@ -57,6 +513,2556 @@
         "description": null
       }
     ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "climatedata",
+    "id": "county-climate",
+    "kind": "series",
+    "title": "County climate report card",
+    "description": "Monthly average, maximum and minimum temperature and precipitation for every US county (the contiguous US from 1895, Alaska from 1925, Hawaii from 1991), each with its 1991-2020 normal, the anomaly from that normal and its rank among all years for that calendar month.",
+    "cadence": "P1M",
+    "check_every": "P1D",
+    "sla": "P45D",
+    "discontinued": false,
+    "source": {
+      "name": "NOAA Monthly U.S. Climate Divisional Database (nClimDiv), county files",
+      "publisher": "NOAA NCEI",
+      "url": "https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.ncdc:C00005",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Vose, Russell S.; Applequist, Scott; Squires, Mike; Durre, Imke; Menne, Matthew J.; Williams, Claude N., Jr.; Fenimore, Chris; Gleason, Karin; Arndt, Derek (2014): NOAA Monthly U.S. Climate Divisional Database (NClimDiv). County average, maximum and minimum temperature and precipitation (climdiv-tmpccy, -tmaxcy, -tmincy, -pcpncy) and the county 1991-2020 normals (climdiv-norm-*cy). NOAA National Climatic Data Center. doi:10.7289/V5M32STR. Accessed on the retrieved_at date of this dataset version."
+    },
+    "series": {
+      "tavg": "Average temperature (°F)",
+      "tmax": "Maximum temperature (°F)",
+      "tmin": "Minimum temperature (°F)",
+      "pcpn": "Precipitation (inches)"
+    },
+    "locations": {
+      "explicit": {
+        "us-county-09001": "Fairfield County, CT (pre-2022)",
+        "us-county-09003": "Hartford County, CT (pre-2022)",
+        "us-county-09005": "Litchfield County, CT (pre-2022)",
+        "us-county-09007": "Middlesex County, CT (pre-2022)",
+        "us-county-09009": "New Haven County, CT (pre-2022)",
+        "us-county-09011": "New London County, CT (pre-2022)",
+        "us-county-09013": "Tolland County, CT (pre-2022)",
+        "us-county-09015": "Windham County, CT (pre-2022)"
+      },
+      "registry": [
+        "us-county"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "month",
+        "unit": null,
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "value",
+        "type": "float",
+        "unit": "degF (tavg, tmax, tmin); in (pcpn)",
+        "nullable": true,
+        "description": "Monthly mean temperature in degrees Fahrenheit, or total precipitation in inches, for the county"
+      },
+      {
+        "name": "normal",
+        "type": "float",
+        "unit": "degF (tavg, tmax, tmin); in (pcpn)",
+        "nullable": true,
+        "description": "NCEI's 1991-2020 average for this county and calendar month (climdiv-norm-*cy, period 0010)"
+      },
+      {
+        "name": "anomaly",
+        "type": "float",
+        "unit": "degF (tavg, tmax, tmin); in (pcpn)",
+        "nullable": true,
+        "description": "value minus normal"
+      },
+      {
+        "name": "rank",
+        "type": "int",
+        "unit": null,
+        "nullable": true,
+        "description": "Rank of value among all years with data for this county, series and calendar month: 1 is the warmest (or wettest); tied years share the smallest rank number"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "climatedata",
+    "id": "global-temperature",
+    "kind": "series",
+    "title": "Global surface temperature",
+    "description": "Monthly global and hemispheric surface temperature anomalies from NASA GISTEMP v4 (1880 to present, relative to 1951-1980) and the Met Office HadCRUT5 analysis (1850 to present, relative to 1961-1990, with a 95% confidence range). The two series use different baselines.",
+    "cadence": "P1M",
+    "check_every": "P1D",
+    "sla": "P45D",
+    "discontinued": false,
+    "source": {
+      "name": "NASA GISS Surface Temperature Analysis (GISTEMP v4) and Met Office Hadley Centre/CRU HadCRUT5",
+      "publisher": "NASA Goddard Institute for Space Studies; Met Office Hadley Centre",
+      "url": "https://www.metoffice.gov.uk/hadobs/hadcrut5/terms_and_conditions.html",
+      "license": "LicenseRef-US-Government-Work AND OGL-UK-3.0",
+      "commercial_ok": true,
+      "attribution": "GISTEMP Team, 2026: GISS Surface Temperature Analysis (GISTEMP), version 4. NASA Goddard Institute for Space Studies. Dataset accessed on the retrieved_at date of this dataset version at https://data.giss.nasa.gov/gistemp/. Lenssen, N., G.A. Schmidt, M. Hendrickson, P. Jacobs, M. Menne, and R. Ruedy, 2024: A GISTEMPv4 observational uncertainty ensemble. J. Geophys. Res. Atmos., 129, no. 17, e2023JD040179, doi:10.1029/2023JD040179. HadCRUT.5.2.0.0 data were obtained from http://www.metoffice.gov.uk/hadobs/hadcrut5 on the retrieved_at date of this dataset version and are © British Crown Copyright, Met Office 2020, provided under an Open Government License, http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+    },
+    "series": {
+      "gistemp": "NASA GISTEMP v4 land-ocean temperature anomaly (°C, relative to 1951-1980)",
+      "hadcrut5": "Met Office HadCRUT5 analysis temperature anomaly (°C, relative to 1961-1990)"
+    },
+    "locations": {
+      "explicit": {
+        "world": "World",
+        "nh": "Northern Hemisphere",
+        "sh": "Southern Hemisphere"
+      }
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "month",
+        "unit": null,
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "value",
+        "type": "float",
+        "unit": "degC",
+        "nullable": false,
+        "description": "Surface temperature anomaly. GISTEMP is relative to its 1951-1980 mean, HadCRUT5 to its 1961-1990 mean, so subtract a common-period mean before comparing the two"
+      },
+      {
+        "name": "lower",
+        "type": "float",
+        "unit": "degC",
+        "nullable": true,
+        "description": "HadCRUT5 lower 2.5% confidence limit; null for GISTEMP, whose tables give no monthly uncertainty"
+      },
+      {
+        "name": "upper",
+        "type": "float",
+        "unit": "degC",
+        "nullable": true,
+        "description": "HadCRUT5 upper 97.5% confidence limit; null for GISTEMP"
+      },
+      {
+        "name": "baseline",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Reference period the anomaly is relative to (1951-1980 or 1961-1990)"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "climatedata",
+    "id": "greenhouse-gases",
+    "kind": "series",
+    "title": "Global methane and nitrous oxide",
+    "description": "Monthly global mean atmospheric methane (from July 1983) and nitrous oxide (from January 2001) at the marine surface, from NOAA's global air sampling network, with the seasonal-cycle-removed trend.",
+    "cadence": "P1M",
+    "check_every": "P1D",
+    "sla": "P60D",
+    "discontinued": false,
+    "source": {
+      "name": "NOAA Global Monitoring Laboratory, Trends in Atmospheric Methane and Nitrous Oxide",
+      "publisher": "NOAA GML",
+      "url": "https://gml.noaa.gov/ccgg/trends_ch4/",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Lan, X., K.W. Thoning, and E.J. Dlugokencky: Trends in globally-averaged CH4, N2O, and SF6 determined from NOAA Global Monitoring Laboratory measurements. Version of the retrieved_at month of this dataset version, https://doi.org/10.15138/P8XG-AA10"
+    },
+    "series": {
+      "ch4": "Methane (CH4), monthly global mean",
+      "ch4-trend": "Methane (CH4), monthly global mean with the average seasonal cycle removed",
+      "n2o": "Nitrous oxide (N2O), monthly global mean",
+      "n2o-trend": "Nitrous oxide (N2O), monthly global mean with the average seasonal cycle removed"
+    },
+    "locations": {
+      "explicit": {
+        "world": "Global marine surface average"
+      }
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "month",
+        "unit": null,
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "value",
+        "type": "float",
+        "unit": "ppb",
+        "nullable": false,
+        "description": "Dry-air mole fraction in nanomol/mol"
+      },
+      {
+        "name": "uncertainty",
+        "type": "float",
+        "unit": "ppb",
+        "nullable": true,
+        "description": "NOAA's estimated uncertainty of the monthly value"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "climatedata",
+    "id": "us-climate",
+    "kind": "series",
+    "title": "State and national climate",
+    "description": "Monthly average, maximum and minimum temperature and precipitation for each US state and the contiguous United States (from 1895; Alaska from 1925, Hawaii from 1991), each with its 1991-2020 normal, the anomaly from that normal and its rank among all years for that calendar month.",
+    "cadence": "P1M",
+    "check_every": "P1D",
+    "sla": "P45D",
+    "discontinued": false,
+    "source": {
+      "name": "NOAA Monthly U.S. Climate Divisional Database (nClimDiv), statewide and national files",
+      "publisher": "NOAA NCEI",
+      "url": "https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.ncdc:C00005",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Vose, Russell S.; Applequist, Scott; Squires, Mike; Durre, Imke; Menne, Matthew J.; Williams, Claude N., Jr.; Fenimore, Chris; Gleason, Karin; Arndt, Derek (2014): NOAA Monthly U.S. Climate Divisional Database (NClimDiv). Statewide and national average, maximum and minimum temperature and precipitation (climdiv-tmpcst, -tmaxcst, -tmincst, -pcpnst) and their 1991-2020 normals (climdiv-norm-*st). NOAA National Climatic Data Center. doi:10.7289/V5M32STR. Accessed on the retrieved_at date of this dataset version."
+    },
+    "series": {
+      "tavg": "Average temperature (°F)",
+      "tmax": "Maximum temperature (°F)",
+      "tmin": "Minimum temperature (°F)",
+      "pcpn": "Precipitation (inches)"
+    },
+    "locations": {
+      "explicit": {
+        "usa": "Contiguous United States"
+      },
+      "registry": [
+        "us-state"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "month",
+        "unit": null,
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "value",
+        "type": "float",
+        "unit": "degF (tavg, tmax, tmin); in (pcpn)",
+        "nullable": true,
+        "description": "Monthly mean temperature in degrees Fahrenheit, or total precipitation in inches, for the area"
+      },
+      {
+        "name": "normal",
+        "type": "float",
+        "unit": "degF (tavg, tmax, tmin); in (pcpn)",
+        "nullable": true,
+        "description": "NCEI's 1991-2020 average for this area and calendar month (climdiv-norm-*st, period 0010)"
+      },
+      {
+        "name": "anomaly",
+        "type": "float",
+        "unit": "degF (tavg, tmax, tmin); in (pcpn)",
+        "nullable": true,
+        "description": "value minus normal"
+      },
+      {
+        "name": "rank",
+        "type": "int",
+        "unit": null,
+        "nullable": true,
+        "description": "Rank of value among all years with data for this area, series and calendar month: 1 is the warmest (or wettest); tied years share the smallest rank number"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "climatedata",
+    "id": "world-capitals",
+    "kind": "series",
+    "title": "World capitals climate",
+    "description": "Monthly air temperature at the capital of each country from NASA POWER (MERRA-2 reanalysis, 1981 to present), each with a 1991-2020 normal, the anomaly from that normal and its rank among all years for that calendar month, computed by climatedata.dev.",
+    "cadence": "P1M",
+    "check_every": "P7D",
+    "sla": "P75D",
+    "discontinued": false,
+    "source": {
+      "name": "NASA Langley Research Center POWER Project, Monthly and Annual API; capitals from Natural Earth",
+      "publisher": "NASA Langley Research Center",
+      "url": "https://power.larc.nasa.gov/docs/referencing/",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "The data was obtained from National Aeronautics and Space Administration (NASA) Langley Research Center's Prediction Of Worldwide Energy Resources (POWER) project funded through the NASA Earth Science Division. The data was obtained from the POWER Project's Monthly and Annual API v2.10.0 on the retrieved_at date of this dataset version. Capital locations: Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com."
+    },
+    "series": {
+      "tavg": "Air temperature at 2 m, monthly mean (°C)"
+    },
+    "locations": {
+      "registry": [
+        "country"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "month",
+        "unit": null,
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "value",
+        "type": "float",
+        "unit": "degC",
+        "nullable": true,
+        "description": "POWER T2M (2 m air temperature) for the MERRA-2 grid cell containing the capital"
+      },
+      {
+        "name": "normal",
+        "type": "float",
+        "unit": "degC",
+        "nullable": true,
+        "description": "Mean of the 1991-2020 values for this capital and calendar month (needs at least 24 of the 30 years)"
+      },
+      {
+        "name": "anomaly",
+        "type": "float",
+        "unit": "degC",
+        "nullable": true,
+        "description": "value minus normal"
+      },
+      {
+        "name": "rank",
+        "type": "int",
+        "unit": null,
+        "nullable": true,
+        "description": "Rank of value among all years since 1981 for this capital, series and calendar month: 1 is the warmest; tied years share the smallest rank number"
+      },
+      {
+        "name": "capital",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Capital city (Natural Earth NAME)"
+      },
+      {
+        "name": "latitude",
+        "type": "float",
+        "unit": "degrees_north",
+        "nullable": false,
+        "description": "Point sent to POWER (Natural Earth geometry)"
+      },
+      {
+        "name": "longitude",
+        "type": "float",
+        "unit": "degrees_east",
+        "nullable": false,
+        "description": "Point sent to POWER (Natural Earth geometry)"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "economicdata",
+    "id": "bea-county-income",
+    "kind": "series",
+    "title": "County personal income (BEA CAINC1)",
+    "description": "Annual personal income, population and per capita personal income for every county, state and the nation from the Bureau of Economic Analysis table CAINC1, 1969 to the latest year, in current (not inflation-adjusted) dollars. BEA combines some Virginia independent cities with their counties and Kalawao with Maui; those combination areas appear under BEA's own codes (bea-*). Connecticut has both its legacy counties and its planning regions where BEA publishes them.",
+    "cadence": "P1Y",
+    "check_every": "P7D",
+    "sla": "P400D",
+    "discontinued": false,
+    "source": {
+      "name": "BEA Regional Economic Accounts, CAINC1 County and MSA personal income summary",
+      "publisher": "U.S. Bureau of Economic Analysis",
+      "url": "https://www.bea.gov/data/income-saving/personal-income-by-county",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "U.S. Bureau of Economic Analysis, \"CAINC1 County and MSA personal income summary: personal income, population, per capita personal income\" (https://www.bea.gov/data/income-saving/personal-income-by-county). This product uses the Bureau of Economic Analysis (BEA) Data API but is not endorsed or certified by BEA."
+    },
+    "series": {
+      "annual": "Annual estimates"
+    },
+    "locations": {
+      "explicit": {
+        "usa": "United States",
+        "us-county-02010": "Aleutian Islands Census Area, AK (through 1987)",
+        "us-county-02201": "Prince of Wales-Outer Ketchikan Census Area, AK (through 2008)",
+        "us-county-02231": "Skagway-Yakutat-Angoon Census Area, AK (through 1992)",
+        "us-county-02232": "Skagway-Hoonah-Angoon Census Area, AK (through 2007)",
+        "us-county-02261": "Valdez-Cordova Census Area, AK (through 2019)",
+        "us-county-02280": "Wrangell-Petersburg Census Area, AK (through 2008)",
+        "us-county-09001": "Fairfield County, CT (legacy county)",
+        "us-county-09003": "Hartford County, CT (legacy county)",
+        "us-county-09005": "Litchfield County, CT (legacy county)",
+        "us-county-09007": "Middlesex County, CT (legacy county)",
+        "us-county-09009": "New Haven County, CT (legacy county)",
+        "us-county-09011": "New London County, CT (legacy county)",
+        "us-county-09013": "Tolland County, CT (legacy county)",
+        "us-county-09015": "Windham County, CT (legacy county)"
+      },
+      "registry": [
+        "us-state",
+        "us-county"
+      ],
+      "pattern": "bea-\\d{5}"
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "year",
+        "unit": null,
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "personal_income",
+        "type": "int",
+        "unit": "thousands of USD",
+        "nullable": true,
+        "description": "Personal income, thousands of current dollars (line 1)"
+      },
+      {
+        "name": "population",
+        "type": "int",
+        "unit": "persons",
+        "nullable": true,
+        "description": "Midyear population (line 2)"
+      },
+      {
+        "name": "per_capita_personal_income",
+        "type": "int",
+        "unit": "USD",
+        "nullable": true,
+        "description": "Per capita personal income, current dollars (line 3)"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "economicdata",
+    "id": "census-acs-income",
+    "kind": "series",
+    "title": "Median household income (ACS 5-year)",
+    "description": "Median household income with its 90 percent margin of error for every county, state and the nation from the Census Bureau's American Community Survey 5-year estimates (table B19013), one row per release from 2005-2009 onward; the date is the release's final year. Each release is in its own final year's inflation-adjusted dollars, so releases are not directly comparable, and overlapping 5-year periods should not be compared year to year. Geography follows each release.",
+    "cadence": "P1Y",
+    "check_every": "P7D",
+    "sla": "P450D",
+    "discontinued": false,
+    "source": {
+      "name": "U.S. Census Bureau, American Community Survey 5-Year Estimates, table B19013 (Census Data API)",
+      "publisher": "U.S. Census Bureau",
+      "url": "https://www.census.gov/data/developers/data-sets/acs-5year.html",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Source: U.S. Census Bureau, American Community Survey 5-Year Estimates, Table B19013: Median Household Income in the Past 12 Months. This product uses the Census Bureau Data API but is not endorsed or certified by the Census Bureau."
+    },
+    "series": {
+      "median-household-income": "Median household income in the past 12 months (B19013_001)"
+    },
+    "locations": {
+      "explicit": {
+        "usa": "United States",
+        "us-county-02201": "Prince of Wales-Outer Ketchikan Census Area, AK (legacy)",
+        "us-county-02232": "Skagway-Hoonah-Angoon Census Area, AK (legacy)",
+        "us-county-02261": "Valdez-Cordova Census Area, AK (through the 2015-2019 release)",
+        "us-county-02270": "Wade Hampton Census Area, AK (renamed Kusilvak, 02158)",
+        "us-county-02280": "Wrangell-Petersburg Census Area, AK (legacy)",
+        "us-county-09001": "Fairfield County, CT (through the 2017-2021 release)",
+        "us-county-09003": "Hartford County, CT (through the 2017-2021 release)",
+        "us-county-09005": "Litchfield County, CT (through the 2017-2021 release)",
+        "us-county-09007": "Middlesex County, CT (through the 2017-2021 release)",
+        "us-county-09009": "New Haven County, CT (through the 2017-2021 release)",
+        "us-county-09011": "New London County, CT (through the 2017-2021 release)",
+        "us-county-09013": "Tolland County, CT (through the 2017-2021 release)",
+        "us-county-09015": "Windham County, CT (through the 2017-2021 release)",
+        "us-county-46113": "Shannon County, SD (renamed Oglala Lakota, 46102)",
+        "us-county-51515": "Bedford city, VA (merged into Bedford County in 2013)"
+      },
+      "registry": [
+        "us-state",
+        "us-county"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "year",
+        "unit": null,
+        "nullable": false,
+        "description": "Final year of the 5-year period"
+      },
+      {
+        "name": "median_household_income",
+        "type": "int",
+        "unit": "USD",
+        "nullable": true,
+        "description": "Inflation-adjusted to the final year's dollars"
+      },
+      {
+        "name": "margin_of_error",
+        "type": "int",
+        "unit": "USD",
+        "nullable": true,
+        "description": "90 percent margin of error"
+      },
+      {
+        "name": "estimate_annotation",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Census annotation for the estimate: - N (X) 250,000+ 2,500-"
+      },
+      {
+        "name": "moe_annotation",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Census annotation for the margin of error: ** *** ***** N (X)"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "economicdata",
+    "id": "laus",
+    "kind": "series",
+    "title": "Local area unemployment (LAUS)",
+    "description": "Monthly labor force, employment, unemployment and unemployment rate from the BLS Local Area Unemployment Statistics program for every state (from 1976), metropolitan and micropolitan area and county (from 1990), not seasonally adjusted, plus BLS's seasonally adjusted series for states and three metros. October 2025 is missing for the 50 states, DC and their substate areas because the household survey was not collected during the federal shutdown; those months are null with footnote X and are never interpolated. The latest month is preliminary.",
+    "cadence": "P1M",
+    "check_every": "P1D",
+    "sla": "P45D",
+    "discontinued": false,
+    "source": {
+      "name": "BLS Local Area Unemployment Statistics (LAUS)",
+      "publisher": "U.S. Bureau of Labor Statistics",
+      "url": "https://www.bls.gov/lau/",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Source: U.S. Bureau of Labor Statistics, Local Area Unemployment Statistics (https://www.bls.gov/lau/)."
+    },
+    "series": {
+      "nsa": "Not seasonally adjusted (every state, CBSA and county)",
+      "sa": "Seasonally adjusted (states, Detroit, Cleveland and Seattle metros)"
+    },
+    "locations": {
+      "explicit": {
+        "us-county-02201": "Prince of Wales-Outer Ketchikan Census Area, AK (through 2009)",
+        "us-county-02232": "Skagway-Hoonah-Angoon Census Area, AK (through 2009)",
+        "us-county-02261": "Valdez-Cordova Census Area, AK (through 2019)",
+        "us-county-02280": "Wrangell-Petersburg Census Area, AK (through 2009)"
+      },
+      "registry": [
+        "us-state",
+        "us-county"
+      ],
+      "pattern": "us-cbsa-\\d{5}"
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "month",
+        "unit": null,
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "labor_force",
+        "type": "int",
+        "unit": "persons",
+        "nullable": true,
+        "description": "Civilian labor force by place of residence"
+      },
+      {
+        "name": "employed",
+        "type": "int",
+        "unit": "persons",
+        "nullable": true,
+        "description": "Employed persons (BLS measure \"employment\")"
+      },
+      {
+        "name": "unemployed",
+        "type": "int",
+        "unit": "persons",
+        "nullable": true,
+        "description": "Unemployed persons (BLS measure \"unemployment\")"
+      },
+      {
+        "name": "unemployment_rate",
+        "type": "float",
+        "unit": "percent",
+        "nullable": true,
+        "description": "Unemployed as a percent of the labor force"
+      },
+      {
+        "name": "preliminary",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True where BLS marks the estimate preliminary (footnote P)"
+      },
+      {
+        "name": "footnotes",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "BLS footnote codes for the month"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "economicdata",
+    "id": "qcew",
+    "kind": "series",
+    "title": "County employment and wages (QCEW)",
+    "description": "Quarterly employment, total wages, average weekly wage and establishment counts covered by unemployment insurance, all industries and ownerships combined, for every county, state and the nation from the BLS Quarterly Census of Employment and Wages, 2014 to the latest quarter. Each date is the first month of its quarter (2026-01 is Q1 2026). The national total covers the 50 states and DC; Puerto Rico and the Virgin Islands are listed separately. Connecticut appears as its eight legacy counties through 2023 and its nine planning regions from 2024, as BLS publishes it.",
+    "cadence": "P3M",
+    "check_every": "P1D",
+    "sla": "P120D",
+    "discontinued": false,
+    "source": {
+      "name": "BLS Quarterly Census of Employment and Wages (QCEW) open-data CSV slices",
+      "publisher": "U.S. Bureau of Labor Statistics",
+      "url": "https://www.bls.gov/cew/additional-resources/open-data/csv-data-slices.htm",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Source: U.S. Bureau of Labor Statistics, Quarterly Census of Employment and Wages (https://www.bls.gov/cew/)."
+    },
+    "series": {
+      "total-covered": "Total covered, all industries (ownership code 0, NAICS 10)"
+    },
+    "locations": {
+      "explicit": {
+        "usa": "United States (50 states and DC)",
+        "us-county-02261": "Valdez-Cordova Census Area, AK (through 2019)",
+        "us-county-02270": "Wade Hampton Census Area, AK (renamed Kusilvak, 02158, in 2015)",
+        "us-county-09001": "Fairfield County, CT (legacy county, through 2023)",
+        "us-county-09003": "Hartford County, CT (legacy county, through 2023)",
+        "us-county-09005": "Litchfield County, CT (legacy county, through 2023)",
+        "us-county-09007": "Middlesex County, CT (legacy county, through 2023)",
+        "us-county-09009": "New Haven County, CT (legacy county, through 2023)",
+        "us-county-09011": "New London County, CT (legacy county, through 2023)",
+        "us-county-09013": "Tolland County, CT (legacy county, through 2023)",
+        "us-county-09015": "Windham County, CT (legacy county, through 2023)",
+        "us-county-46113": "Shannon County, SD (renamed Oglala Lakota, 46102, in 2015)",
+        "us-county-78010": "St. Croix, VI",
+        "us-county-78020": "St. John, VI",
+        "us-county-78030": "St. Thomas, VI"
+      },
+      "registry": [
+        "us-state",
+        "us-county"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "month",
+        "unit": null,
+        "nullable": false,
+        "description": "First month of the quarter"
+      },
+      {
+        "name": "establishments",
+        "type": "int",
+        "unit": "establishments",
+        "nullable": true,
+        "description": "Establishments in the quarter"
+      },
+      {
+        "name": "month1_employment",
+        "type": "int",
+        "unit": "jobs",
+        "nullable": true,
+        "description": "Covered employment in the first month of the quarter"
+      },
+      {
+        "name": "month2_employment",
+        "type": "int",
+        "unit": "jobs",
+        "nullable": true,
+        "description": "Covered employment in the second month"
+      },
+      {
+        "name": "month3_employment",
+        "type": "int",
+        "unit": "jobs",
+        "nullable": true,
+        "description": "Covered employment in the third month"
+      },
+      {
+        "name": "total_wages",
+        "type": "int",
+        "unit": "USD",
+        "nullable": true,
+        "description": "Total wages paid in the quarter"
+      },
+      {
+        "name": "avg_weekly_wage",
+        "type": "int",
+        "unit": "USD",
+        "nullable": true,
+        "description": "Average weekly wage"
+      },
+      {
+        "name": "suppressed",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True where BLS withheld employment and wages for confidentiality"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "economicdata",
+    "id": "world-macro",
+    "kind": "series",
+    "title": "World macro core indicators",
+    "description": "Annual GDP (current US dollars), real GDP growth, GDP per capita, consumer price inflation, unemployment (ILO modeled estimate) and population for every economy and the world from the World Bank's World Development Indicators, 1960 to the latest year. Regional and income-group aggregates are left out; Kosovo and the Channel Islands, which have no ISO country code, are included as wb-xkx and wb-chi.",
+    "cadence": "P3M",
+    "check_every": "P1D",
+    "sla": "P200D",
+    "discontinued": false,
+    "source": {
+      "name": "World Bank World Development Indicators (Indicators API v2)",
+      "publisher": "The World Bank",
+      "url": "https://datacatalog.worldbank.org/search/dataset/0037712/World-Development-Indicators",
+      "license": "CC-BY-4.0",
+      "commercial_ok": true,
+      "attribution": "The World Bank: World Development Indicators: GDP, GDP growth and GDP per capita from country official statistics, National Statistical Organizations and/or Central Banks; National Accounts data files, Organisation for Economic Co-operation and Development (OECD); Staff estimates, World Bank (WB). Inflation from the International Financial Statistics database, International Monetary Fund (IMF). Unemployment from the ILO Modelled Estimates database (ILOEST), International Labour Organization (ILO). Population from World Population Prospects, United Nations (UN); national statistical offices; Eurostat; and the UN Population and Vital Statistics Report. Licensed under CC BY 4.0 (https://www.worldbank.org/ext/en/legal/terms-conditions/datasets)."
+    },
+    "series": {
+      "annual": "Annual values"
+    },
+    "locations": {
+      "explicit": {
+        "world": "World",
+        "wb-xkx": "Kosovo (World Bank code XKX; no ISO 3166-1 code)",
+        "wb-chi": "Channel Islands (World Bank code CHI; Jersey and Guernsey combined)"
+      },
+      "registry": [
+        "country"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "year",
+        "unit": null,
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "gdp_usd",
+        "type": "float",
+        "unit": "USD",
+        "nullable": true,
+        "description": "GDP, current US dollars (NY.GDP.MKTP.CD)"
+      },
+      {
+        "name": "gdp_growth_pct",
+        "type": "float",
+        "unit": "percent",
+        "nullable": true,
+        "description": "Real GDP growth, annual (NY.GDP.MKTP.KD.ZG)"
+      },
+      {
+        "name": "gdp_per_capita_usd",
+        "type": "float",
+        "unit": "USD",
+        "nullable": true,
+        "description": "GDP per capita, current US dollars (NY.GDP.PCAP.CD)"
+      },
+      {
+        "name": "inflation_cpi_pct",
+        "type": "float",
+        "unit": "percent",
+        "nullable": true,
+        "description": "Inflation, consumer prices, annual (FP.CPI.TOTL.ZG)"
+      },
+      {
+        "name": "unemployment_pct",
+        "type": "float",
+        "unit": "percent",
+        "nullable": true,
+        "description": "Unemployment, percent of total labor force, modeled ILO estimate (SL.UEM.TOTL.ZS)"
+      },
+      {
+        "name": "population",
+        "type": "int",
+        "unit": "persons",
+        "nullable": true,
+        "description": "Population, total (SP.POP.TOTL)"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "electiondata",
+    "id": "senate-results",
+    "kind": "table",
+    "title": "US Senate election results, 1976-2024",
+    "description": "Statewide returns for every US Senate election from 1976 to 2024, including special elections and runoffs: one row per candidate per ballot line, from the MIT Election Data + Science Lab.",
+    "cadence": "P2Y",
+    "check_every": "P7D",
+    "sla": "P3Y",
+    "discontinued": false,
+    "source": {
+      "name": "MIT Election Data and Science Lab, U.S. Senate statewide 1976-2024",
+      "publisher": "MIT Election Data and Science Lab (MEDSL)",
+      "url": "https://doi.org/10.7910/DVN/PEJ5QU",
+      "license": "CC0-1.0",
+      "commercial_ok": true,
+      "attribution": "MIT Election Data and Science Lab, 2017, \"U.S. Senate statewide 1976–2024\", https://doi.org/10.7910/DVN/PEJ5QU, Harvard Dataverse, V8, UNF:6:jRgjMTzXKaB+psjQ9tTqMQ== [fileUNF]"
+    },
+    "series": {},
+    "locations": {},
+    "schema": [
+      {
+        "name": "year",
+        "type": "year",
+        "unit": null,
+        "nullable": false,
+        "description": "Year of the election"
+      },
+      {
+        "name": "state",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "State name in upper case"
+      },
+      {
+        "name": "state_po",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "USPS state code"
+      },
+      {
+        "name": "state_fips",
+        "type": "int",
+        "unit": null,
+        "nullable": false,
+        "description": "State FIPS code"
+      },
+      {
+        "name": "state_cen",
+        "type": "int",
+        "unit": null,
+        "nullable": false,
+        "description": "Census Bureau state code"
+      },
+      {
+        "name": "state_ic",
+        "type": "int",
+        "unit": null,
+        "nullable": false,
+        "description": "ICPSR state code"
+      },
+      {
+        "name": "state_id",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Location id in the shared registry (us-<usps>)"
+      },
+      {
+        "name": "office",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Always US SENATE"
+      },
+      {
+        "name": "district",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Always STATEWIDE"
+      },
+      {
+        "name": "stage",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "GEN (general), RUNOFF, or PRE (a general that went to a runoff)"
+      },
+      {
+        "name": "special",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True for a special election to fill a vacancy"
+      },
+      {
+        "name": "race_row",
+        "type": "int",
+        "unit": null,
+        "nullable": false,
+        "description": "Position of the row within its race in MEDSL's file"
+      },
+      {
+        "name": "candidate",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Candidate as MEDSL spells it, upper case; null for unnamed write-ins"
+      },
+      {
+        "name": "party_detailed",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Ballot line (party) as reported"
+      },
+      {
+        "name": "party_simplified",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "DEMOCRAT, REPUBLICAN, LIBERTARIAN or OTHER"
+      },
+      {
+        "name": "writein",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True for write-in votes"
+      },
+      {
+        "name": "mode",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Vote mode; always TOTAL in this file"
+      },
+      {
+        "name": "candidatevotes",
+        "type": "int",
+        "unit": "votes",
+        "nullable": true,
+        "description": "Votes on this ballot line; null where MEDSL marks a race with no reported count"
+      },
+      {
+        "name": "totalvotes",
+        "type": "int",
+        "unit": "votes",
+        "nullable": true,
+        "description": "Total votes in the race as MEDSL reports it"
+      },
+      {
+        "name": "candidate_total_votes",
+        "type": "int",
+        "unit": "votes",
+        "nullable": true,
+        "description": "The candidate's votes on all ballot lines in the race (fusion voting); null for unnamed write-ins"
+      },
+      {
+        "name": "unofficial",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True where MEDSL took the figures from unofficial results"
+      },
+      {
+        "name": "version",
+        "type": "date",
+        "unit": null,
+        "nullable": false,
+        "description": "Date MEDSL finalized the row"
+      }
+    ],
+    "key": [
+      "year",
+      "state_po",
+      "special",
+      "stage",
+      "race_row"
+    ],
+    "partition": "year"
+  },
+  {
+    "site": "satellitedata",
+    "id": "gp-current",
+    "kind": "table",
+    "title": "Current orbital elements",
+    "description": "The newest general perturbations (SGP4) element set for every object in Earth orbit that the US Space Force publishes, as CCSDS Orbit Mean-Elements Message fields, with period, semi-major axis, perigee and apogee derived from them. Catalog numbers are full integers, so objects numbered 100000 and up are included.",
+    "cadence": "PT1H",
+    "check_every": "P1D",
+    "sla": "P2D",
+    "discontinued": false,
+    "source": {
+      "name": "Space-Track.org GP class (current general perturbations element sets)",
+      "publisher": "USSPACECOM, 18th Space Defense Squadron",
+      "url": "https://www.space-track.org/documentation#/odr",
+      "license": "LicenseRef-SpaceTrack-Basic-SSA-Redistribution",
+      "commercial_ok": true,
+      "attribution": "Orbital data from Space-Track.org, provided by USSPACECOM (18th Space Defense Squadron)."
+    },
+    "series": {},
+    "locations": {},
+    "schema": [
+      {
+        "name": "norad_cat_id",
+        "type": "int",
+        "unit": null,
+        "nullable": false,
+        "description": "US Space Force catalog number (up to nine digits)"
+      },
+      {
+        "name": "norad_block",
+        "type": "int",
+        "unit": null,
+        "nullable": false,
+        "description": "norad_cat_id rounded down to a multiple of 1000: the partition file holding the object"
+      },
+      {
+        "name": "object_name",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "OBJECT_NAME"
+      },
+      {
+        "name": "object_id",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "OBJECT_ID: international designator (2025-001A), or UNKNOWN"
+      },
+      {
+        "name": "epoch",
+        "type": "datetime",
+        "unit": null,
+        "nullable": false,
+        "description": "EPOCH of the mean elements, UTC"
+      },
+      {
+        "name": "mean_motion",
+        "type": "float",
+        "unit": "rev/day",
+        "nullable": false,
+        "description": "Kozai mean motion (SGP4)"
+      },
+      {
+        "name": "eccentricity",
+        "type": "float",
+        "unit": null,
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "inclination",
+        "type": "float",
+        "unit": "deg",
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "ra_of_asc_node",
+        "type": "float",
+        "unit": "deg",
+        "nullable": false,
+        "description": "Right ascension of the ascending node"
+      },
+      {
+        "name": "arg_of_pericenter",
+        "type": "float",
+        "unit": "deg",
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "mean_anomaly",
+        "type": "float",
+        "unit": "deg",
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "bstar",
+        "type": "float",
+        "unit": "1/earth_radii",
+        "nullable": true,
+        "description": "SGP4 drag term"
+      },
+      {
+        "name": "mean_motion_dot",
+        "type": "float",
+        "unit": "rev/day^2",
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "mean_motion_ddot",
+        "type": "float",
+        "unit": "rev/day^3",
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "ephemeris_type",
+        "type": "int",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "classification_type",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "U for unclassified"
+      },
+      {
+        "name": "element_set_no",
+        "type": "int",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "rev_at_epoch",
+        "type": "int",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "period_min",
+        "type": "float",
+        "unit": "min",
+        "nullable": false,
+        "description": "1440 / mean_motion"
+      },
+      {
+        "name": "semimajor_axis_km",
+        "type": "float",
+        "unit": "km",
+        "nullable": false,
+        "description": "From mean motion by Kepler's third law with SGP4's WGS-72 constants (mu 398600.8 km^3/s^2); approximate"
+      },
+      {
+        "name": "perigee_km",
+        "type": "float",
+        "unit": "km",
+        "nullable": false,
+        "description": "semimajor_axis_km * (1 - e) minus the WGS-72 equatorial radius (6378.135 km); approximate"
+      },
+      {
+        "name": "apogee_km",
+        "type": "float",
+        "unit": "km",
+        "nullable": false,
+        "description": "semimajor_axis_km * (1 + e) minus 6378.135 km; approximate"
+      },
+      {
+        "name": "center_name",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "CENTER_NAME (EARTH)"
+      },
+      {
+        "name": "ref_frame",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "REF_FRAME (TEME)"
+      },
+      {
+        "name": "time_system",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "TIME_SYSTEM (UTC)"
+      },
+      {
+        "name": "mean_element_theory",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "MEAN_ELEMENT_THEORY (SGP4)"
+      },
+      {
+        "name": "originator",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "ORIGINATOR of the message"
+      },
+      {
+        "name": "creation_date",
+        "type": "datetime",
+        "unit": null,
+        "nullable": true,
+        "description": "When Space-Track generated the message (UTC)"
+      }
+    ],
+    "key": [
+      "norad_cat_id"
+    ],
+    "partition": "norad_block"
+  },
+  {
+    "site": "satellitedata",
+    "id": "launches",
+    "kind": "table",
+    "title": "Launch log",
+    "description": "Every launch in GCAT's launch list, one row per launch since 1942: orbital and deep-space launches with their international designation, plus missiles, sounding rockets and other suborbital flights. Each row has the date and time at the precision GCAT knows it, the vehicle, launch site, agency and outcome.",
+    "cadence": "P1D",
+    "check_every": "P1D",
+    "sla": "P14D",
+    "discontinued": false,
+    "source": {
+      "name": "General Catalog of Artificial Space Objects (GCAT), launch list",
+      "publisher": "Jonathan C. McDowell",
+      "url": "https://planet4589.org/space/gcat/web/launch/index.html",
+      "license": "CC-BY-4.0",
+      "commercial_ok": true,
+      "attribution": "data from GCAT (J. McDowell, planet4589.org/space/gcat)"
+    },
+    "series": {},
+    "locations": {},
+    "schema": [
+      {
+        "name": "launch_tag",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "COSPAR designation for orbital launches (1998-067; Harvard style before 1963, 1957 ALP), GCAT's own yyyy-Xnnn tag for others (1942-A01, 1957-F01 failed orbital)"
+      },
+      {
+        "name": "launch_class",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "LaunchCode category: orbital, deep-space, missile, lofted-missile, near-orbital, test-rocket, atmospheric, suborbital, high-altitude-sounding, reentry-test, off-earth (from another world), crewed-suborbital, not-a-launch (GCAT placeholder entries)"
+      },
+      {
+        "name": "launch_date",
+        "type": "date",
+        "unit": null,
+        "nullable": true,
+        "description": "UTC date of first motion; null when GCAT knows it less precisely than a day, or gives a day after its own file date (a typo, e.g. 2026-M02 dated 2027 Jan 3); see launch_date_text"
+      },
+      {
+        "name": "launch_time",
+        "type": "datetime",
+        "unit": null,
+        "nullable": true,
+        "description": "UTC time at exactly the precision GCAT gives (to the minute, second or millisecond); null when it is less precise or uncertain"
+      },
+      {
+        "name": "launch_date_text",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "The date exactly as GCAT writes it, in its Vague Date format ('1957 Oct  4 1928:34', '1944 Jan', '1971?')"
+      },
+      {
+        "name": "launch_date_precision",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Precision of launch_date_text: millisecond, second, minute, hour, day, month, quarter, year, ...; '(uncertain)' when it ends in ?, which widens it by one unit each way. Null if GCAT's text is not a valid vague date"
+      },
+      {
+        "name": "launch_jd",
+        "type": "float",
+        "unit": "JD",
+        "nullable": false,
+        "description": "GCAT's Julian Date (UTC) of launch, for sorting; nominal when the date is vague"
+      },
+      {
+        "name": "lv_type",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Launch vehicle type"
+      },
+      {
+        "name": "lv_variant",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "flight_id",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Serial number or mission number of this flight"
+      },
+      {
+        "name": "flight",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "mission",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "flight_code",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "platform",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Mobile launch platform (ship, submarine, aircraft), if any"
+      },
+      {
+        "name": "launch_site",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "GCAT launch site code"
+      },
+      {
+        "name": "launch_pad",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "ascent_site",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Where the rocket actually ignited, when different (air launches: the drop zone)"
+      },
+      {
+        "name": "ascent_pad",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "apogee_km",
+        "type": "float",
+        "unit": "km",
+        "nullable": true,
+        "description": "Highest altitude of a suborbital flight, or apogee of the initial orbit"
+      },
+      {
+        "name": "apogee_estimated",
+        "type": "bool",
+        "unit": null,
+        "nullable": true,
+        "description": "GCAT marks the apogee with ? (a guess from the vehicle's capability)"
+      },
+      {
+        "name": "orbital_payload_t",
+        "type": "float",
+        "unit": "t",
+        "nullable": false,
+        "description": "Payload mass delivered to orbit (0 when nothing reached orbit); GCAT generates it from its payload tables and asks users to treat it with caution"
+      },
+      {
+        "name": "agency",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "GCAT org code of the launch service provider"
+      },
+      {
+        "name": "agency_name",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "launch_code",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "GCAT LaunchCode: category letter plus outcome (OS, OF, MS, OS80, ...)"
+      },
+      {
+        "name": "outcome",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "success (propulsive success; the payload may still have failed), failure, unknown, pad-explosion or pad-abort. Null for not-a-launch entries"
+      },
+      {
+        "name": "success_percent",
+        "type": "int",
+        "unit": null,
+        "nullable": true,
+        "description": "GCAT's partial-success score for reliability statistics (OS80 -> 80); null for plain S or F"
+      },
+      {
+        "name": "category",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "For orbital launches GCAT's launch profile code (Sat LEO O); for others the kind of flight (Meteo, Aeron, Test, Weapon)"
+      }
+    ],
+    "key": [
+      "launch_tag"
+    ],
+    "partition": "launch_class"
+  },
+  {
+    "site": "satellitedata",
+    "id": "satellite-catalog",
+    "kind": "table",
+    "title": "Satellite catalog",
+    "description": "Every artificial object GCAT catalogs, one record per object since Sputnik in 1957: payloads, rocket stages, components and debris, including those that reentered, left for deep space or failed to reach orbit. Each record has the GCAT id, the US catalog number (six digits and up since the 2026 rollover), the international designator, owner, state, launch and decay dates, mass, status and the latest orbit with its class.",
+    "cadence": "P1D",
+    "check_every": "P1D",
+    "sla": "P14D",
+    "discontinued": false,
+    "source": {
+      "name": "General Catalog of Artificial Space Objects (GCAT), object catalogs and currentcat",
+      "publisher": "Jonathan C. McDowell",
+      "url": "https://planet4589.org/space/gcat/",
+      "license": "CC-BY-4.0",
+      "commercial_ok": true,
+      "attribution": "data from GCAT (J. McDowell, planet4589.org/space/gcat)"
+    },
+    "series": {},
+    "locations": {},
+    "schema": [
+      {
+        "name": "jcat",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "GCAT's object id: catalog letter (S, A, T, F) and sequence number, e.g. S25544"
+      },
+      {
+        "name": "norad_cat_id",
+        "type": "int",
+        "unit": null,
+        "nullable": true,
+        "description": "US Space Force (NORAD) catalog number. Not unique: objects that stayed attached share their parent's number, and the S-catalog row (jcat S plus the number) is the one the US catalog lists. Null when GCAT does not tie the object to a number (see satcat_note), including S entries it cannot match to a specific satellite of the launch"
+      },
+      {
+        "name": "satcat_note",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "GCAT's reason for a missing catalog number: NNA (not assigned or not identified), NNA A/C/E/I/P/R/S/T/X (attached, component, spacesuit, internal, partial orbit, ...), NSO (suborbital)"
+      },
+      {
+        "name": "piece",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "International (COSPAR) designator as GCAT records it, e.g. 1998-067A. Launches before 1963 keep their original Harvard designations (1957 ALP 2), which Space-Track shows renumbered (1957-001B)"
+      },
+      {
+        "name": "launch_tag",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Launch the object belongs to; joins launches.launch_tag"
+      },
+      {
+        "name": "catalog",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "GCAT catalog holding the object: satcat, satcat100k, satcat270k, auxcat, tmpcat or ftocat"
+      },
+      {
+        "name": "name",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "GCAT's recommended current name (after any renaming)"
+      },
+      {
+        "name": "original_name",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Name in the object's first phase"
+      },
+      {
+        "name": "object_type",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "payload, rocket-stage, component, debris, suborbital-payload or spurious (GCAT SatType byte 1)"
+      },
+      {
+        "name": "gcat_type",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "GCAT's 12-byte SatType string (byte 1 coarse type, byte 2 modifier, byte 3 attachment, byte 4 subtype, ...)"
+      },
+      {
+        "name": "identity_uncertain",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "SatType byte 9 is '?': GCAT knows the objects of the launch but not which catalog number is which"
+      },
+      {
+        "name": "status_group",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "in-orbit, lost (in orbit but untracked), reentered (decayed, deorbited or landed), suborbital, deep-space, failed-to-orbit, broken-up (exploded or destroyed in a collision) or spurious (no real object)"
+      },
+      {
+        "name": "status_code",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "GCAT phase status code of the latest phase: O in orbit, AO attached in orbit, OX lost, R reentered, D deorbited, L landed, AR reentered attached, DSO deep space, E exploded, ERR not a real object, ... A trailing ? marks it unconfirmed"
+      },
+      {
+        "name": "status",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "GCAT's plain-language current status (currentcat ExpandedStatus), e.g. 'Attached to S25544 Zarya'. Null for objects currentcat does not cover (ftocat and a few others)"
+      },
+      {
+        "name": "active",
+        "type": "bool",
+        "unit": null,
+        "nullable": true,
+        "description": "GCAT counts the object as an active satellite (currentcat Ac = A). Null where currentcat does not cover it"
+      },
+      {
+        "name": "owner",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "GCAT org code of the owner/operator in the latest phase (e.g. SPXS, JSC). A trailing ? marks an uncertain attribution; joint owners are slash-separated"
+      },
+      {
+        "name": "owner_name",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Owner's name from GCAT's organizations table"
+      },
+      {
+        "name": "state",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "GCAT code of the country or intergovernmental body responsible (US, CN, SU, F for France, I-ESA, ...); not ISO codes"
+      },
+      {
+        "name": "state_name",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "launch_date",
+        "type": "date",
+        "unit": null,
+        "nullable": true,
+        "description": "UTC launch date; null when GCAT gives it only roughly, or gives a day after its own file date (a typo); see launch_date_text"
+      },
+      {
+        "name": "launch_date_text",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Launch date exactly as GCAT writes it, in its Vague Date format ('1957 Oct  4', '1971?')"
+      },
+      {
+        "name": "decay_date",
+        "type": "date",
+        "unit": null,
+        "nullable": true,
+        "description": "UTC date the object reentered, landed, crashed or impacted another body; null while in orbit or flying, and when GCAT gives the date only roughly"
+      },
+      {
+        "name": "decay_date_text",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "That date exactly as GCAT writes it ('1958 Jan  4?', '1960 Apr 26 1730?')"
+      },
+      {
+        "name": "mass_kg",
+        "type": "float",
+        "unit": "kg",
+        "nullable": true,
+        "description": "Mass at orbital insertion, not counting attached objects. Null when GCAT gives none (0 or '-'), as for most debris"
+      },
+      {
+        "name": "mass_estimated",
+        "type": "bool",
+        "unit": null,
+        "nullable": true,
+        "description": "GCAT flags the mass as an estimate (good to about 20%)"
+      },
+      {
+        "name": "orbit_source",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "latest: currentcat's most recent orbit (objects still in space); canonical: the representative early-operations orbit GCAT lists for the latest phase"
+      },
+      {
+        "name": "orbit_epoch",
+        "type": "date",
+        "unit": null,
+        "nullable": true,
+        "description": "Epoch of that orbit when GCAT pins it to a day"
+      },
+      {
+        "name": "orbit_epoch_text",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "period_min",
+        "type": "float",
+        "unit": "min",
+        "nullable": true,
+        "description": "Orbital period (latest orbits only)"
+      },
+      {
+        "name": "perigee_km",
+        "type": "float",
+        "unit": "km",
+        "nullable": true,
+        "description": "Perigee height above the central body's equatorial radius. Negative for trajectories that intersect the Earth or are hyperbolic"
+      },
+      {
+        "name": "apogee_km",
+        "type": "float",
+        "unit": "km",
+        "nullable": true,
+        "description": "Apogee height. Negative for hyperbolic (escape) trajectories; null where GCAT writes Inf"
+      },
+      {
+        "name": "inclination_deg",
+        "type": "float",
+        "unit": "deg",
+        "nullable": true,
+        "description": "Inclination to the equator of date (Earth orbits)"
+      },
+      {
+        "name": "orbit_estimated",
+        "type": "bool",
+        "unit": null,
+        "nullable": true,
+        "description": "GCAT flags a perigee/apogee/inclination value as a guess"
+      },
+      {
+        "name": "orbit_category",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "GCAT OpOrbit category: LLEO/I, LEO/S, MEO, HEO/M, GTO, GEO/S, GEO/ID, VHEO, CLO, EEO, ..."
+      },
+      {
+        "name": "orbit_class",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "LEO (below 2000 km), MEO, GEO (geosynchronous, incl. inclined and drifting), HEO (highly elliptical incl. Molniya and GTO), VHEO, cislunar, escape or suborbital, mapped from orbit_category"
+      }
+    ],
+    "key": [
+      "jcat"
+    ],
+    "partition": "status_group"
+  },
+  {
+    "site": "visualizedata",
+    "id": "boundaries",
+    "kind": "files",
+    "title": "Map boundaries",
+    "description": "GeoJSON boundaries for US states, counties and 119th Congress congressional districts (Census 2025 cartographic boundary files at 1:20m and 1:5m) and world countries (Natural Earth 1:110m and 1:50m). Every feature's id is the location id the rest of the family uses (us-ca, us-county-06037, usa), so a map joins to any dataset by id. index.json lists every layer with its source, vintage and caveats.",
+    "cadence": "P1Y",
+    "check_every": "P30D",
+    "sla": "P400D",
+    "discontinued": false,
+    "source": {
+      "name": "U.S. Census Bureau 2025 Cartographic Boundary Files (state, county, 119th Congress congressional district; 1:20,000,000 and 1:5,000,000) and Natural Earth Admin 0 Countries v5.1.2 (1:110m, 1:50m)",
+      "publisher": "U.S. Census Bureau; Natural Earth",
+      "url": "https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html",
+      "license": "LicenseRef-US-Government-Work AND LicenseRef-Public-Domain",
+      "commercial_ok": true,
+      "attribution": "Source: U.S. Census Bureau, 2025 Cartographic Boundary Files. Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com."
+    },
+    "series": {},
+    "locations": {},
+    "schema": [],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "waterdata",
+    "id": "drought-county",
+    "kind": "series",
+    "title": "County drought categories",
+    "description": "Weekly percent of each US county's area in each US Drought Monitor category over the last 400 days: none, D0 abnormally dry, D1 moderate, D2 severe, D3 extreme and D4 exceptional drought. The categories don't overlap and add up to 100.",
+    "cadence": "P7D",
+    "check_every": "P1D",
+    "sla": "P15D",
+    "discontinued": false,
+    "source": {
+      "name": "U.S. Drought Monitor county statistics (categorical percent of area)",
+      "publisher": "National Drought Mitigation Center, University of Nebraska-Lincoln",
+      "url": "https://droughtmonitor.unl.edu/DmData/DataDownload/WebServiceInfo.aspx",
+      "license": "LicenseRef-USDM-Credit-Required",
+      "commercial_ok": true,
+      "attribution": "The U.S. Drought Monitor is jointly produced by the National Drought Mitigation Center at the University of Nebraska-Lincoln, the United States Department of Agriculture, the National Oceanic and Atmospheric Administration and the National Aeronautics and Space Administration. Map courtesy of NDMC."
+    },
+    "series": {
+      "area": "Percent of county area by drought category"
+    },
+    "locations": {
+      "registry": [
+        "us-county"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "date",
+        "unit": null,
+        "nullable": false,
+        "description": "The map's valid date (a Tuesday); USDM releases it two days later"
+      },
+      {
+        "name": "none",
+        "type": "float",
+        "unit": "percent",
+        "nullable": false,
+        "description": "Not in any category"
+      },
+      {
+        "name": "d0",
+        "type": "float",
+        "unit": "percent",
+        "nullable": false,
+        "description": "D0 abnormally dry (only)"
+      },
+      {
+        "name": "d1",
+        "type": "float",
+        "unit": "percent",
+        "nullable": false,
+        "description": "D1 moderate drought (only)"
+      },
+      {
+        "name": "d2",
+        "type": "float",
+        "unit": "percent",
+        "nullable": false,
+        "description": "D2 severe drought (only)"
+      },
+      {
+        "name": "d3",
+        "type": "float",
+        "unit": "percent",
+        "nullable": false,
+        "description": "D3 extreme drought (only)"
+      },
+      {
+        "name": "d4",
+        "type": "float",
+        "unit": "percent",
+        "nullable": false,
+        "description": "D4 exceptional drought"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "waterdata",
+    "id": "stream-gages",
+    "kind": "table",
+    "title": "USGS stream gages",
+    "description": "Every USGS stream gage (streams, canals, ditches and tidal streams) that reported a daily mean discharge in the last 400 days: name, state, county, hydrologic unit, coordinates, drainage area and period of daily record. These are the gages in streamflow-daily, under the same ids.",
+    "cadence": "P1D",
+    "check_every": "P1D",
+    "sla": "P3D",
+    "discontinued": false,
+    "source": {
+      "name": "USGS Water Data APIs (OGC API), monitoring-locations and time-series-metadata",
+      "publisher": "U.S. Geological Survey",
+      "url": "https://api.waterdata.usgs.gov/docs/ogcapi/",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Stream gage information courtesy of the U.S. Geological Survey."
+    },
+    "series": {},
+    "locations": {},
+    "schema": [
+      {
+        "name": "site_id",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Location id used across waterdata: usgs- plus the site number"
+      },
+      {
+        "name": "site_number",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "USGS site number (8 to 15 digits)"
+      },
+      {
+        "name": "name",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "USGS station name"
+      },
+      {
+        "name": "site_type_code",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "ST stream, ST-CA canal, ST-DCH ditch, ST-TS tidal stream"
+      },
+      {
+        "name": "site_type",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "region",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Registry id of the state or territory (us-md); for gages outside the US, of the country (can)"
+      },
+      {
+        "name": "country",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Registry id of the country (usa or can)"
+      },
+      {
+        "name": "state",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Two-letter USPS code; null outside the US"
+      },
+      {
+        "name": "county_fips",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Five-digit county FIPS code (matches drought-county's us-county-<FIPS>)"
+      },
+      {
+        "name": "county_name",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "huc",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Hydrologic unit code as USGS records it (8 or 12 digits)"
+      },
+      {
+        "name": "huc8",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "The 8-digit subbasin containing the gage"
+      },
+      {
+        "name": "latitude",
+        "type": "float",
+        "unit": "degrees",
+        "nullable": false,
+        "description": "WGS 84"
+      },
+      {
+        "name": "longitude",
+        "type": "float",
+        "unit": "degrees",
+        "nullable": false,
+        "description": "WGS 84"
+      },
+      {
+        "name": "drainage_area",
+        "type": "float",
+        "unit": "mi^2",
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "contributing_drainage_area",
+        "type": "float",
+        "unit": "mi^2",
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "altitude",
+        "type": "float",
+        "unit": "ft",
+        "nullable": true,
+        "description": "Gage datum altitude above altitude_datum"
+      },
+      {
+        "name": "altitude_datum",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Vertical datum, e.g. NAVD88 or NGVD29"
+      },
+      {
+        "name": "time_zone",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Standard time zone abbreviation"
+      },
+      {
+        "name": "time_series_id",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "USGS id of the daily mean discharge series used in streamflow-daily"
+      },
+      {
+        "name": "sublocation",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "USGS sublocation of that series"
+      },
+      {
+        "name": "daily_begin",
+        "type": "date",
+        "unit": null,
+        "nullable": true,
+        "description": "First day of the daily discharge record"
+      },
+      {
+        "name": "daily_end",
+        "type": "date",
+        "unit": null,
+        "nullable": false,
+        "description": "Latest day of the daily discharge record"
+      }
+    ],
+    "key": [
+      "site_id"
+    ],
+    "partition": "region"
+  },
+  {
+    "site": "waterdata",
+    "id": "streamflow-daily",
+    "kind": "series",
+    "title": "Daily streamflow",
+    "description": "Daily mean discharge at every USGS stream gage over the last 400 days, flagged provisional, estimated or ice-affected, with the USGS qualifier codes. Re-read in full every day, because USGS revises provisional values for months.",
+    "cadence": "P1D",
+    "check_every": "P1D",
+    "sla": "P3D",
+    "discontinued": false,
+    "source": {
+      "name": "USGS Water Data APIs (OGC API), daily values",
+      "publisher": "U.S. Geological Survey",
+      "url": "https://api.waterdata.usgs.gov/docs/ogcapi/",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Streamflow data courtesy of the U.S. Geological Survey."
+    },
+    "series": {
+      "discharge": "Daily mean discharge"
+    },
+    "locations": {
+      "pattern": "usgs-\\d{8,15}"
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "date",
+        "unit": null,
+        "nullable": false,
+        "description": "Local calendar day at the gage"
+      },
+      {
+        "name": "value",
+        "type": "float",
+        "unit": "ft^3/s",
+        "nullable": true,
+        "description": "Daily mean discharge. Null where USGS publishes the day without a value (ice, equipment, seasonal); negative where tidal or regulated flow runs upstream"
+      },
+      {
+        "name": "provisional",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True until USGS approves the value; provisional data are subject to revision"
+      },
+      {
+        "name": "estimated",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "USGS qualifier ESTIMATED"
+      },
+      {
+        "name": "ice",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "USGS qualifier ICE (ice-affected)"
+      },
+      {
+        "name": "qualifiers",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Every USGS qualifier code for the day, comma-separated, e.g. BACKWATER,ESTIMATED"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "wildfiredata",
+    "id": "active-fires",
+    "kind": "table",
+    "title": "Active fires (US and Canada)",
+    "description": "Satellite fire detections from the last 7 days over the United States and Canada, grouped into fire events and linked to the official incident (name, acres, containment, IRWIN id) where one exists. Detections in the same or adjacent 1 km grid cells within 48 hours of each other form one event; repeat views of the same spot by a second satellite on the same overpass are counted once. Built from NASA FIRMS VIIRS near-real-time detections (S-NPP, NOAA-20 and NOAA-21), NIFC WFIGS current incidents and perimeters, and Natural Earth state and province boundaries.",
+    "cadence": "PT1H",
+    "check_every": "PT3H",
+    "sla": "PT12H",
+    "discontinued": false,
+    "source": {
+      "name": "NASA LANCE FIRMS VIIRS 375 m Active Fire NRT (VNP14IMGTDL_NRT, VJ114IMGTDL_NRT, VJ214IMGTDL_NRT); incidents and perimeters from NIFC WFIGS; boundaries from Natural Earth",
+      "publisher": "NASA LANCE FIRMS",
+      "url": "https://www.earthdata.nasa.gov/data/tools/firms/faq",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "We acknowledge the use of imagery from the NASA LANCE FIRMS (https://earthdata.nasa.gov/firms), part of the NASA Earth Science Data and Information System (ESDIS). VIIRS 375 m active fire NRT products: S-NPP doi:10.5067/FIRMS/VIIRS/VNP14IMGT_NRT.002, NOAA-20 doi:10.5067/FIRMS/VIIRS/VJ114IMGT_NRT.002, NOAA-21 doi:10.5067/FIRMS/VIIRS/VJ214IMGT_NRT.002. Incident data: National Interagency Fire Center, Wildland Fire Interagency Geospatial Services (WFIGS). Boundaries: Made with Natural Earth."
+    },
+    "series": {},
+    "locations": {},
+    "schema": [
+      {
+        "name": "event_id",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Stable while the event's earliest detection stays in the 7-day window"
+      },
+      {
+        "name": "country",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "usa or can (ISO 3166-1 alpha-3, lowercase)"
+      },
+      {
+        "name": "region",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "State (us-ca) or province/territory (ca-bc, ISO 3166-2) of the event centroid"
+      },
+      {
+        "name": "region_name",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "first_detection",
+        "type": "datetime",
+        "unit": null,
+        "nullable": false,
+        "description": "Earliest detection (satellite acquisition time)"
+      },
+      {
+        "name": "last_detection",
+        "type": "datetime",
+        "unit": null,
+        "nullable": false,
+        "description": "Latest detection"
+      },
+      {
+        "name": "detections",
+        "type": "int",
+        "unit": null,
+        "nullable": false,
+        "description": "Fire pixels after removing cross-satellite repeats (same 0.5 km cell, same ~75 min overpass sequence)"
+      },
+      {
+        "name": "raw_detections",
+        "type": "int",
+        "unit": null,
+        "nullable": false,
+        "description": "All distinct FIRMS detections in the event"
+      },
+      {
+        "name": "low_confidence_detections",
+        "type": "int",
+        "unit": null,
+        "nullable": false,
+        "description": "Detections FIRMS rates low confidence"
+      },
+      {
+        "name": "satellites",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Satellites with detections, e.g. S-NPP,NOAA-20,NOAA-21"
+      },
+      {
+        "name": "latitude",
+        "type": "float",
+        "unit": "degrees",
+        "nullable": false,
+        "description": "Centroid of the deduplicated detections"
+      },
+      {
+        "name": "longitude",
+        "type": "float",
+        "unit": "degrees",
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "min_latitude",
+        "type": "float",
+        "unit": "degrees",
+        "nullable": false,
+        "description": "Bounding box of the detection centres"
+      },
+      {
+        "name": "max_latitude",
+        "type": "float",
+        "unit": "degrees",
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "min_longitude",
+        "type": "float",
+        "unit": "degrees",
+        "nullable": false,
+        "description": "Greater than max_longitude for a fire across the 180th meridian"
+      },
+      {
+        "name": "max_longitude",
+        "type": "float",
+        "unit": "degrees",
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "max_frp",
+        "type": "float",
+        "unit": "MW",
+        "nullable": false,
+        "description": "Highest fire radiative power of any detection"
+      },
+      {
+        "name": "days_detected",
+        "type": "int",
+        "unit": null,
+        "nullable": false,
+        "description": "Distinct UTC dates with detections"
+      },
+      {
+        "name": "likely_static_source",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "Seen on 5+ days within 4 km and no incident: probably industrial (steel mill, refinery, flare), not a wildfire"
+      },
+      {
+        "name": "incident_irwin_id",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "IRWIN id of the linked WFIGS incident (braces removed)"
+      },
+      {
+        "name": "incident_name",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "incident_type",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "WF wildfire, RX prescribed fire, CX complex"
+      },
+      {
+        "name": "incident_acres",
+        "type": "float",
+        "unit": "acres",
+        "nullable": true,
+        "description": "Incident size reported to IRWIN"
+      },
+      {
+        "name": "incident_percent_contained",
+        "type": "float",
+        "unit": "percent",
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "incident_discovered",
+        "type": "datetime",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "incident_link",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "perimeter (detections inside a current perimeter), near-perimeter (within 2 km of one), origin (near the reported origin point)"
+      },
+      {
+        "name": "incident_distance_km",
+        "type": "float",
+        "unit": "km",
+        "nullable": true,
+        "description": "0 inside a perimeter; else the nearest detection's distance to the perimeter or origin"
+      }
+    ],
+    "key": [
+      "event_id"
+    ],
+    "partition": "country"
+  },
+  {
+    "site": "wildfiredata",
+    "id": "fire-incidents",
+    "kind": "table",
+    "title": "Current wildland fire incidents (US)",
+    "description": "Every current US wildland fire incident in IRWIN: wildfires, prescribed fires and complexes that are not yet out, with name, location, size, containment, cause and resources. From the NIFC WFIGS current incident locations service, which drops an incident 3 to 14 days after its last update.",
+    "cadence": "PT1H",
+    "check_every": "PT3H",
+    "sla": "PT12H",
+    "discontinued": false,
+    "source": {
+      "name": "NIFC WFIGS Current Wildland Fire Incident Locations",
+      "publisher": "National Interagency Fire Center (NIFC)",
+      "url": "https://data-nifc.opendata.arcgis.com/datasets/nifc::current-wildland-fire-incident-locations",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "National Interagency Fire Center, Wildland Fire Interagency Geospatial Services (WFIGS). Credits: US Department of Interior Office of Wildland Fire: IRWIN, USDA Forest Service, National Park Service, Fish and Wildlife Service, Bureau of Indian Affairs, and Bureau of Land Management, National Association of State Foresters, US Fire Administration, National Wildfire Coordinating Group"
+    },
+    "series": {},
+    "locations": {},
+    "schema": [
+      {
+        "name": "irwin_id",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "IRWIN incident id (braces removed)"
+      },
+      {
+        "name": "unique_fire_id",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Year-unit-number, e.g. 2026-WAOWF-260406"
+      },
+      {
+        "name": "name",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "type",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "WF wildfire, RX prescribed fire, CX complex"
+      },
+      {
+        "name": "state",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Point of origin state (us-wa); unknown where IRWIN has none"
+      },
+      {
+        "name": "county",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "county_fips",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "gacc",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Geographic Area Coordination Center"
+      },
+      {
+        "name": "latitude",
+        "type": "float",
+        "unit": "degrees",
+        "nullable": true,
+        "description": "Point of origin (WGS84)"
+      },
+      {
+        "name": "longitude",
+        "type": "float",
+        "unit": "degrees",
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "discovered",
+        "type": "datetime",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "acres",
+        "type": "float",
+        "unit": "acres",
+        "nullable": true,
+        "description": "Current incident size"
+      },
+      {
+        "name": "discovery_acres",
+        "type": "float",
+        "unit": "acres",
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "percent_contained",
+        "type": "float",
+        "unit": "percent",
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "contained",
+        "type": "datetime",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "controlled",
+        "type": "datetime",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "out",
+        "type": "datetime",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "cause",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "complexity",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Incident complexity level (Type 1 to 5)"
+      },
+      {
+        "name": "personnel",
+        "type": "int",
+        "unit": null,
+        "nullable": true,
+        "description": "Total incident personnel"
+      },
+      {
+        "name": "cost_to_date",
+        "type": "float",
+        "unit": "USD",
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "management_organization",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "jurisdictional_agency",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "landowner_kind",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "complex_name",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "complex_irwin_id",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "is_complex_child",
+        "type": "bool",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "modified",
+        "type": "datetime",
+        "unit": null,
+        "nullable": true,
+        "description": "Last update of the IRWIN record"
+      }
+    ],
+    "key": [
+      "irwin_id"
+    ],
+    "partition": "state"
+  },
+  {
+    "site": "wildfiredata",
+    "id": "fire-perimeters",
+    "kind": "files",
+    "title": "Fire perimeters (US), current and archived",
+    "description": "Current US interagency wildland fire perimeters as GeoJSON, plus an archive of every perimeter shape and every snapshot of the current layer since this dataset started, so a fire's growth can be followed after WFIGS drops it. From the NIFC WFIGS current interagency perimeters service.",
+    "cadence": "PT1H",
+    "check_every": "PT3H",
+    "sla": "P2D",
+    "discontinued": false,
+    "source": {
+      "name": "NIFC WFIGS Current Interagency Fire Perimeters",
+      "publisher": "National Interagency Fire Center (NIFC)",
+      "url": "https://data-nifc.opendata.arcgis.com/datasets/nifc::wfigs-current-interagency-fire-perimeters",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "National Interagency Fire Center, Wildland Fire Interagency Geospatial Services (WFIGS). Credits: US Department of Interior Office of Wildland Fire: IRWIN, USDA Forest Service, National Park Service, Fish and Wildlife Service, Bureau of Indian Affairs, and Bureau of Land Management, National Association of State Foresters, US Fire Administration, National Wildfire Coordinating Group"
+    },
+    "series": {},
+    "locations": {},
+    "schema": [],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "wildfiredata",
+    "id": "smoke",
+    "kind": "files",
+    "title": "Smoke plumes (NOAA HMS), last 7 days",
+    "description": "Daily smoke plume polygons over North America for the last 7 days, drawn by NOAA Hazard Mapping System analysts from satellite imagery and labelled Light, Medium or Heavy. The labels are visual density categories of smoke anywhere in the air column, not surface concentrations.",
+    "cadence": "P1D",
+    "check_every": "PT3H",
+    "sla": "P3D",
+    "discontinued": false,
+    "source": {
+      "name": "NOAA NESDIS Hazard Mapping System (HMS) Fire and Smoke Analysis, smoke polygons",
+      "publisher": "NOAA NESDIS Office of Satellite and Product Operations",
+      "url": "https://catalog.data.gov/dataset/nesdis-hazard-mapping-system-fire-and-smoke-program",
+      "license": "CC0-1.0",
+      "commercial_ok": true,
+      "attribution": "NOAA NESDIS Office of Satellite and Product Operations, Hazard Mapping System (HMS) Fire and Smoke Analysis."
+    },
+    "series": {},
+    "locations": {},
+    "schema": [],
     "key": [],
     "partition": null
   }

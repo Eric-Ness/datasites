@@ -20,6 +20,26 @@ export function formatBytes(bytes: number | null | undefined): string {
   return `${value.toFixed(digits)} ${units[unit]}`;
 }
 
+// Contracts store units as plain ASCII codes ("degC", "ft^3/s"); charts and tables show the usual symbols.
+const UNIT_SYMBOLS: Record<string, string> = {
+  degC: "°C",
+  degF: "°F",
+  deg: "°",
+  degrees: "°",
+  percent: "%",
+  "ft^3/s": "ft³/s",
+  "mi^2": "mi²",
+  "km^3/s^2": "km³/s²",
+  "rev/day^2": "rev/day²",
+  "rev/day^3": "rev/day³",
+};
+
+/** A contract unit as people read it: "degC" -> "°C". Unknown units pass through unchanged. */
+export function displayUnit(unit: string | null | undefined): string | null {
+  if (!unit) return null;
+  return UNIT_SYMBOLS[unit] ?? unit;
+}
+
 const NUMBER = new Intl.NumberFormat("en-US", { maximumFractionDigits: 6 });
 
 export function formatInt(n: number): string {
