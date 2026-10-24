@@ -3,6 +3,7 @@ name = "datasites-climate"
 version = "0.1.0"
 description = "Pipelines for climatedata.dev"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 dependencies = ["datasites-core", "polars>=1.0"]
 
 [tool.uv.sources]
