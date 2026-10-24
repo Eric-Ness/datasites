@@ -1,4 +1,5 @@
 import sitesJson from "./sites.json";
+import datasetsJson from "./datasets.json";
 
 export interface Site {
   id: string;
@@ -10,7 +11,47 @@ export interface Site {
   phase: number;
 }
 
+export type DatasetKind = "series" | "table" | "files";
+export type ColumnType = "month" | "date" | "year" | "datetime" | "float" | "int" | "str" | "bool";
+
+export interface Column {
+  name: string;
+  type: ColumnType;
+  unit: string | null;
+  nullable: boolean;
+  description: string | null;
+}
+
+export interface Dataset {
+  site: string;
+  id: string;
+  kind: DatasetKind;
+  title: string;
+  description: string;
+  cadence: string;
+  check_every: string;
+  sla: string;
+  discontinued: boolean;
+  source: {
+    name: string;
+    publisher: string | null;
+    url: string;
+    license: string;
+    commercial_ok: boolean | null;
+    attribution: string;
+  };
+  /** Series datasets: series id -> display name. */
+  series: Record<string, string>;
+  /** Series datasets: where location ids come from (see contracts.py Locations). */
+  locations: { explicit?: Record<string, string>; registry?: string[]; pattern?: string };
+  schema: Column[];
+  /** Table datasets */
+  key: string[];
+  partition: string | null;
+}
+
 export const sites: readonly Site[] = sitesJson as Site[];
+export const datasets: readonly Dataset[] = datasetsJson as Dataset[];
 
 const byId = new Map(sites.map((site) => [site.id, site]));
 
@@ -28,4 +69,12 @@ export function siteById(id: string): Site | undefined {
 /** Resolves a site, www or api hostname to its site. */
 export function siteByHost(hostname: string): Site | undefined {
   return byHost.get(hostname.toLowerCase());
+}
+
+export function datasetsForSite(siteId: string): Dataset[] {
+  return datasets.filter((d) => d.site === siteId);
+}
+
+export function dataset(siteId: string, id: string): Dataset | undefined {
+  return datasets.find((d) => d.site === siteId && d.id === id);
 }

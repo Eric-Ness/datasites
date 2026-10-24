@@ -31,9 +31,36 @@ const deploy = wf["deploy.yml"]?.jobs?.deploy;
 check(deploy && /vars\.DEPLOY_ENABLED == 'true'/.test(deploy.if), "deploy job is not gated on DEPLOY_ENABLED");
 const deployRun = runText(deploy);
 for (const app of ["coming-soon", "api"]) check(new RegExp(`@datasites/${app} exec wrangler deploy`).test(deployRun), `deploy does not deploy ${app}`);
-const ingest = wf["ingest-climate.yml"]?.jobs?.ingest;
-check(ingest && /vars\.INGEST_ENABLED == 'true'/.test(ingest.if), "ingest job is not gated on INGEST_ENABLED");
-check(wf["ingest-climate.yml"].on?.schedule?.length > 0, "ingest-climate has no schedule");
+
+// every ingest workflow: gated, scheduled at odd minutes, runs the pipelines, fits the private-repo minutes budget
+const ingestFiles = Object.keys(wf).filter((f) => /^ingest-[a-z]+\.ya?ml$/.test(f)).sort();
+check(ingestFiles.includes("ingest-climate.yml"), "ingest-climate.yml is missing");
+const runsPerDay = (cron) => {
+  const [minute, hour, dom, month, dow] = cron.trim().split(/\s+/);
+  const count = (field, size) => {
+    if (field === "*") return size;
+    const step = /^\*\/(\d+)$/.exec(field);
+    if (step) return Math.ceil(size / Number(step[1]));
+    return field.split(",").length;
+  };
+  const daysFraction = dom === "*" && month === "*" && dow === "*" ? 1 : dow !== "*" ? count(dow, 7) / 7 : 1 / 30;
+  return count(minute, 60) * count(hour, 24) * daysFraction;
+};
+let monthlyRuns = 0;
+for (const file of ingestFiles) {
+  const job = wf[file].jobs?.ingest;
+  check(job && /vars\.INGEST_ENABLED == 'true'/.test(job.if ?? ""), `${file}: ingest job is not gated on INGEST_ENABLED`);
+  const crons = (wf[file].on?.schedule ?? []).map((s) => s.cron);
+  check(crons.length > 0, `${file} has no schedule`);
+  for (const cron of crons) {
+    const minute = cron.trim().split(/\s+/)[0];
+    check(minute !== "0" && minute !== "*", `${file}: schedule "${cron}" runs at minute ${minute}; use a specific odd minute`);
+    monthlyRuns += runsPerDay(cron) * 30;
+  }
+  check(/datasites run /.test(runText(job)), `${file}: does not run a pipeline`);
+}
+// ~2 minutes per run keeps ingest under ~1,400 of the ~2,000 private-repo minutes, leaving room for CI.
+check(monthlyRuns * 2 <= 1400, `ingest schedules add up to ~${Math.round(monthlyRuns)} runs/month (~${Math.round(monthlyRuns * 2)} Actions minutes); budget is 1,400`);
 
 // every secret and variable a workflow reads is explained in docs/SETUP.md
 const setup = readFileSync(join(ROOT, "docs", "SETUP.md"), "utf8");
@@ -45,4 +72,6 @@ check(names.size > 0, "found no secrets or variables in the workflows (pattern b
 const undocumented = [...names].filter((n) => !setup.includes(n)).sort();
 check(undocumented.length === 0, `docs/SETUP.md does not mention: ${undocumented.join(", ")}`);
 
-console.log(`WORKFLOWS OK (${Object.keys(wf).length} workflows; documented: ${[...names].sort().join(", ")})`);
+console.log(
+  `WORKFLOWS OK (${Object.keys(wf).length} workflows, ${ingestFiles.length} ingest, ~${Math.round(monthlyRuns)} scheduled runs/month; documented: ${[...names].sort().join(", ")})`,
+);

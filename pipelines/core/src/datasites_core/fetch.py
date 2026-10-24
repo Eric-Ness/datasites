@@ -6,7 +6,7 @@ import os
 import time
 from dataclasses import dataclass
 from email.utils import parsedate_to_datetime
-from typing import Callable
+from typing import Any, Callable
 
 import httpx
 
@@ -36,32 +36,72 @@ class Fetched:
 Fetcher = Callable[[str, "str | None", "str | None"], Fetched]
 
 
-def fetch(url: str, etag: str | None = None, last_modified: str | None = None, *, retries: int = 3) -> Fetched:
-    headers = {"User-Agent": user_agent()}
-    if etag:
-        headers["If-None-Match"] = etag
-    if last_modified:
-        headers["If-Modified-Since"] = last_modified
-
+def request(
+    url: str,
+    *,
+    params: dict[str, Any] | None = None,
+    headers: dict[str, str] | None = None,
+    retries: int = 3,
+    timeout: float = 120,
+) -> httpx.Response:
+    """GET with retries on transport errors, 429 and 5xx (honoring Retry-After). Raises on other errors."""
+    all_headers = {"User-Agent": user_agent(), **(headers or {})}
     delay = 2.0
     for attempt in range(retries + 1):
         try:
-            res = httpx.get(url, headers=headers, timeout=60, follow_redirects=True)
+            res = httpx.get(url, params=params, headers=all_headers, timeout=timeout, follow_redirects=True)
         except httpx.TransportError:
             if attempt == retries:
                 raise
         else:
             if res.status_code == 304:
-                return Fetched(url, 304, None, etag, last_modified)
+                return res
             if res.status_code not in RETRY_STATUSES or attempt == retries:
                 res.raise_for_status()
-                return Fetched(url, res.status_code, res.content, res.headers.get("etag"), res.headers.get("last-modified"))
+                return res
             retry_after = res.headers.get("retry-after", "")
             if retry_after.isdigit():
                 delay = max(delay, float(retry_after))
         time.sleep(delay)
         delay *= 3
     raise AssertionError("unreachable")
+
+
+def fetch(url: str, etag: str | None = None, last_modified: str | None = None, *, retries: int = 3) -> Fetched:
+    headers = {}
+    if etag:
+        headers["If-None-Match"] = etag
+    if last_modified:
+        headers["If-Modified-Since"] = last_modified
+    res = request(url, headers=headers, retries=retries)
+    if res.status_code == 304:
+        return Fetched(url, 304, None, etag, last_modified)
+    return Fetched(url, res.status_code, res.content, res.headers.get("etag"), res.headers.get("last-modified"))
+
+
+class CollectContext:
+    """Handed to a pipeline's collect(ctx) for sources that need paging or query parameters."""
+
+    def __init__(self, contract: Any, now: Any):
+        self.contract = contract
+        self.now = now
+        self.requests = 0
+
+    def get(self, url: str, *, params: dict[str, Any] | None = None, headers: dict[str, str] | None = None, timeout: float = 120) -> bytes:
+        self.requests += 1
+        return request(url, params=params, headers=headers, timeout=timeout).content
+
+    def get_json(self, url: str, **kwargs: Any) -> Any:
+        import json
+
+        return json.loads(self.get(url, **kwargs))
+
+    def env(self, name: str) -> str:
+        """A required secret or setting from the environment, with a clear error when it's missing."""
+        value = os.environ.get(name)
+        if not value:
+            raise RuntimeError(f"{self.contract.ref} needs the environment variable {name} (see docs/SETUP.md)")
+        return value
 
 
 def http_date_to_iso(value: str | None) -> str | None:

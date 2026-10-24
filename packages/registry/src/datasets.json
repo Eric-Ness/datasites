@@ -1,0 +1,63 @@
+[
+  {
+    "site": "climatedata",
+    "id": "co2-monthly",
+    "kind": "series",
+    "title": "Monthly atmospheric CO2",
+    "description": "Monthly mean atmospheric carbon dioxide at Mauna Loa Observatory (1958 to present) and the global marine-surface average (1979 to present), with the seasonal-cycle-removed trend.",
+    "cadence": "P1M",
+    "check_every": "P1D",
+    "sla": "P45D",
+    "discontinued": false,
+    "source": {
+      "name": "NOAA Global Monitoring Laboratory, Trends in Atmospheric Carbon Dioxide",
+      "publisher": "NOAA GML",
+      "url": "https://gml.noaa.gov/ccgg/trends/",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Lan, X., Tans, P. and K.W. Thoning: Trends in globally-averaged CO2 determined from NOAA Global Monitoring Laboratory measurements. NOAA GML (https://gml.noaa.gov/ccgg/trends/). Mauna Loa data from March 1958 to April 1974 obtained by C. David Keeling, Scripps Institution of Oceanography."
+    },
+    "series": {
+      "average": "Monthly mean mole fraction",
+      "trend": "Monthly mean with the average seasonal cycle removed"
+    },
+    "locations": {
+      "explicit": {
+        "noaa-mlo": "Mauna Loa Observatory, Hawaii",
+        "world": "Global marine surface average"
+      }
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "month",
+        "unit": null,
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "value",
+        "type": "float",
+        "unit": "ppm",
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "uncertainty",
+        "type": "float",
+        "unit": "ppm",
+        "nullable": true,
+        "description": null
+      },
+      {
+        "name": "interpolated",
+        "type": "bool",
+        "unit": null,
+        "nullable": true,
+        "description": null
+      }
+    ],
+    "key": [],
+    "partition": null
+  }
+]

@@ -6,6 +6,7 @@ Exit codes: 0 published or unchanged, 2 blocked by validation, 1 error.
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 import os
 import sys
@@ -60,7 +61,11 @@ def cmd_run(args: argparse.Namespace) -> int:
         _summary(results, failures, args.summary)
     if failures:
         return 1
-    return 2 if any(r.outcome == "blocked" for r in results) else 0
+    if any(r.outcome == "blocked" for r in results):
+        return 2
+    counts = {o: sum(1 for r in results if r.outcome == o) for o in ("published", "unchanged")}
+    print(f"RUN OK {len(results)} datasets (published {counts['published']}, unchanged {counts['unchanged']})")
+    return 0
 
 
 def cmd_set(args: argparse.Namespace, *, promote: bool) -> int:
@@ -87,10 +92,13 @@ def cmd_geo(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_lint(_args: argparse.Namespace) -> int:
-    contracts = all_contracts()
+def cmd_lint(args: argparse.Namespace) -> int:
+    contracts = site_contracts(args.site) if args.site else all_contracts()
+    if args.site and not contracts:
+        raise ContractError(f"no dataset contracts for site {args.site!r}")
     for c in contracts:
-        print(f"ok  {c.ref}  ({c.source.license}, commercial_ok={c.source.commercial_ok})")
+        importlib.import_module(c.pipeline)  # the pipeline module named by the contract must exist
+        print(f"ok  {c.ref}  [{c.kind}] ({c.source.license}, commercial_ok={c.source.commercial_ok})")
     print(f"{len(contracts)} contracts valid")
     return 0
 
@@ -110,7 +118,8 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("version")
         p.add_argument("--target", choices=TARGETS, default="local")
 
-    sub.add_parser("lint", help="check every dataset contract")
+    lint = sub.add_parser("lint", help="check dataset contracts and that their pipeline modules import")
+    lint.add_argument("--site", help="only this site's contracts")
 
     geo_parser = sub.add_parser("geo", help="build or check the shared location registry (packages/geo)")
     geo_parser.add_argument("action", choices=("build", "check"))

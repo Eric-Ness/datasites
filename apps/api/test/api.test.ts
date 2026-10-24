@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { app } from "../src/index";
 import { clearMemo } from "../src/store";
+import { keys } from "../src/types";
 import { BULK_CSV, CURRENT, MLO_CSV, MLO_JSON, OLD, BLOCKED, seededBucket } from "./fixtures";
 import type { FakeR2 } from "./fake-r2";
 
@@ -113,6 +114,63 @@ describe("data files", () => {
     const ver = await request("/v1/co2-monthly@not-a-version");
     expect(ver.status).toBe(404);
     expect(await ver.json()).toMatchObject({ title: "Unknown version" });
+  });
+});
+
+describe("big and non-series datasets", () => {
+  function seedBig() {
+    const json = (v: unknown) => JSON.stringify(v);
+    const blob = (n: number) => String(n).repeat(64).slice(0, 64);
+    r2.putText(keys.blob(blob(5)), "county-data");
+    r2.putText(keys.blob(blob(6)), '{"type":"FeatureCollection","features":[]}');
+    r2.putText(keys.blob(blob(7)), json({ "tavg/us-county-06037.json": { blob: blob(5), bytes: 11, rows: 1, type: "application/json" } }));
+    r2.putText(keys.blob(blob(8)), json({ "us-county-06037": "Los Angeles County" }));
+    r2.putText(keys.blob(blob(9)), json({ "table/x.json": { blob: blob(5), bytes: 11, rows: 2, type: "application/json" } }));
+    const version = "2026-10-24.dddddddddd";
+    r2.putJson(keys.manifest("climatedata", "county-climate"), {
+      site: "climatedata", dataset: "county-climate", current: version, published_at: "2026-10-24T12:00:00Z",
+      previous: [], snapshots: {}, quarantined: [], rev: 1,
+    });
+    r2.putJson(keys.version("climatedata", "county-climate", version), {
+      version, site: "climatedata", dataset: "county-climate", kind: "series", title: "County climate", description: "",
+      cadence: "P1M", contract_version: 1, transform_version: "t", coverage: { start: null, end: null },
+      source: { id: "s", name: "s", url: "", license: "x", commercial_ok: true, attribution: "" },
+      series: { tavg: "Average temperature" }, validation: { status: "pass", errors: [], warnings: [] }, run: null, tree: "t",
+      files: { "download/county-climate.parquet": { blob: blob(5), bytes: 11, type: "application/vnd.apache.parquet" },
+               "boundaries/states.geojson": { blob: blob(6), bytes: 42, type: "application/geo+json" } },
+      file_shards: { tavg: blob(7), table: blob(9) },
+      locations_blob: blob(8),
+    });
+  }
+
+  it("finds files through their series shard", async () => {
+    seedBig();
+    const res = await request("/v1/county-climate/tavg/us-county-06037.json");
+    expect(res.status).toBe(200);
+    expect(await res.text()).toBe("county-data");
+    expect((await request("/v1/county-climate/tavg/us-county-99999.json")).status).toBe(404);
+    expect((await request("/v1/county-climate/precip/us-county-06037.json")).status).toBe(404); // no such shard
+  });
+
+  it("serves table partitions and files with any extension", async () => {
+    seedBig();
+    expect((await request("/v1/county-climate/table/x.json")).status).toBe(200);
+    const geo = await request("/v1/county-climate/boundaries/states.geojson");
+    expect(geo.status).toBe(200);
+    expect(geo.headers.get("content-type")).toBe("application/geo+json");
+    expect((await request("/v1/county-climate/tavg/us-county-06037")).status).toBe(404); // no extension
+  });
+
+  it("lists locations from the shards and the locations blob", async () => {
+    seedBig();
+    const body = (await (await request("/v1/county-climate/locations")).json()) as {
+      kind: string;
+      series: { id: string; locations: string[] }[];
+      locations: { id: string; name: string }[];
+    };
+    expect(body.kind).toBe("series");
+    expect(body.series.find((s) => s.id === "tavg")?.locations).toEqual(["us-county-06037"]);
+    expect(body.locations).toEqual([{ id: "us-county-06037", name: "Los Angeles County" }]);
   });
 });
 

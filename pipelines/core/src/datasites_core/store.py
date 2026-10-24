@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import threading
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -54,6 +55,7 @@ class LocalStore:
     def __init__(self, root: Path):
         self.root = Path(root)
         self.writes = 0
+        self._lock = threading.Lock()
 
     def _path(self, key: str) -> Path:
         if key.startswith("/") or ".." in key.split("/"):
@@ -78,10 +80,11 @@ class LocalStore:
             raise PreconditionFailed(f"{key} changed since it was read")
         path = self._path(key)
         path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = path.with_name(path.name + ".tmp")
+        tmp = path.with_name(f"{path.name}.{threading.get_ident()}.tmp")
         tmp.write_bytes(body)
         os.replace(tmp, path)
-        self.writes += 1
+        with self._lock:
+            self.writes += 1
         return hashlib.md5(body).hexdigest()
 
     def list(self, prefix: str) -> list[str]:
@@ -101,6 +104,7 @@ class R2Store:
 
         self.bucket = bucket
         self.writes = 0
+        self._lock = threading.Lock()
         self.client = boto3.client(
             "s3",
             endpoint_url=endpoint,
@@ -143,7 +147,8 @@ class R2Store:
             if err.response.get("Error", {}).get("Code") in ("PreconditionFailed", "412"):
                 raise PreconditionFailed(f"{key}: {err}") from err
             raise
-        self.writes += 1
+        with self._lock:
+            self.writes += 1
         return result["ETag"].strip('"')
 
     def list(self, prefix: str) -> list[str]:

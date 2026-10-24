@@ -23,8 +23,10 @@ function devServer(app, port) {
 async function api() {
   // 1. live pipeline into the local bucket (.data/r2)
   const pipeline = run("uv", ["run", "datasites", "run", "climatedata", "--target", "local"], { cwd: join(ROOT, "pipelines") });
-  const outcomes = pipeline.stdout.trim().split(/\r?\n/).map((l) => JSON.parse(l));
+  const runLines = pipeline.stdout.trim().split(/\r?\n/);
+  const outcomes = runLines.filter((l) => l.startsWith("{")).map((l) => JSON.parse(l));
   check(outcomes.length > 0 && outcomes.every((o) => ["published", "unchanged"].includes(o.outcome)), `pipeline outcomes: ${pipeline.stdout}`);
+  check(runLines.some((l) => l.startsWith("RUN OK ")), `pipeline did not report RUN OK:\n${pipeline.stdout}`);
 
   // 2. copy it into wrangler's local R2, 3. serve it
   run("node", [join(ROOT, "apps", "api", "scripts", "seed-local.mjs")]);

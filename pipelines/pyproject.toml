@@ -3,7 +3,18 @@ name = "datasites-pipelines"
 version = "0.1.0"
 description = "Workspace root for the datasites ingestion pipelines"
 requires-python = ">=3.12"
-dependencies = ["datasites-core", "datasites-climate"]
+dependencies = [
+  "datasites-core",
+  "datasites-climate",
+  "datasites-water",
+  "datasites-election",
+  "datasites-carbon",
+  "datasites-economic",
+  "datasites-wildfire",
+  "datasites-air",
+  "datasites-satellite",
+  "datasites-visualize",
+]
 
 [dependency-groups]
 dev = ["pytest>=8"]
@@ -12,11 +23,19 @@ dev = ["pytest>=8"]
 package = false
 
 [tool.uv.workspace]
-members = ["core", "climate"]
+members = ["core", "climate", "water", "election", "carbon", "economic", "wildfire", "air", "satellite", "visualize"]
 
 [tool.uv.sources]
 datasites-core = { workspace = true }
 datasites-climate = { workspace = true }
+datasites-water = { workspace = true }
+datasites-election = { workspace = true }
+datasites-carbon = { workspace = true }
+datasites-economic = { workspace = true }
+datasites-wildfire = { workspace = true }
+datasites-air = { workspace = true }
+datasites-satellite = { workspace = true }
+datasites-visualize = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
