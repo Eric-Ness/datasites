@@ -1,0 +1,10 @@
+id: satellitedata
+domain: satellitedata.dev
+name: Satellite Data
+tagline: A unified, up-to-date catalog of every object in orbit.
+description: >-
+  One record per object with owner, operator, orbit and status, ready for the
+  new 6-digit catalog numbers, plus a daily changelog of launches, decays and
+  orbit changes.
+status: coming-soon
+phase: 5

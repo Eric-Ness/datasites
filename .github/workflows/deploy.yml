@@ -1,0 +1,49 @@
+name: deploy
+
+# Deploys both Workers when main changes. Stays off until the repository variable
+# DEPLOY_ENABLED is "true" and the Cloudflare secrets exist (see docs/SETUP.md).
+
+on:
+  push:
+    branches: [main]
+    paths: ["apps/**", "packages/**", "contracts/sites/*/site.yaml", "pnpm-lock.yaml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check:registry
+      - run: pnpm typecheck
+      - run: pnpm test
+
+      - name: Apply D1 migrations (signups)
+        run: pnpm --filter @datasites/coming-soon exec wrangler d1 migrations apply datasites-signups --remote
+      - name: Deploy coming-soon Worker
+        run: pnpm --filter @datasites/coming-soon exec wrangler deploy
+      - name: Deploy API Worker
+        run: pnpm --filter @datasites/api exec wrangler deploy
+
+      - name: Smoke test
+        run: |
+          curl -fsS https://api.climatedata.dev/v1/status
+          curl -fsS -o /dev/null https://climatedata.dev/

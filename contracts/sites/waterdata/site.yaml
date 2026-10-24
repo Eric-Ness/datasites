@@ -1,0 +1,10 @@
+id: waterdata
+domain: waterdata.dev
+name: Water Data
+tagline: Streamflow and drought conditions for every active US stream gage.
+description: >-
+  Daily flow at every active USGS stream gage with percent of normal for the
+  date, flood status and drought category, built on the new USGS Water Data
+  APIs. A stable replacement for scripts that used the legacy WaterServices API.
+status: coming-soon
+phase: 2

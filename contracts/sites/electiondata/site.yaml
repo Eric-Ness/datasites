@@ -1,0 +1,10 @@
+id: electiondata
+domain: electiondata.dev
+name: Election Data
+tagline: Certified election results by county, with every number traced to its source.
+description: >-
+  Certified 2026 general-election results for every federal and statewide race,
+  county by county, joined to results back to 2000. Each row is labeled
+  certified or unofficial and links to the official document it came from.
+status: coming-soon
+phase: 2

@@ -1,0 +1,92 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  workers:
+    name: Workers (TypeScript)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - name: Site registry matches contracts
+        run: pnpm check:registry
+      - run: pnpm typecheck
+      - run: pnpm test
+
+  preview:
+    name: Preview Workers
+    # Needs the Cloudflare deploy token, so it waits for DEPLOY_ENABLED and never runs for forks.
+    if: >-
+      github.event_name == 'pull_request' && vars.DEPLOY_ENABLED == 'true' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    needs: workers
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - name: Upload preview versions (not deployed to production)
+        run: |
+          alias="pr-${PR_NUMBER}"
+          {
+            echo "Preview versions for ${GITHUB_SHA::7} (alias \`${alias}\`):"
+            for app in api coming-soon; do
+              pnpm --filter "@datasites/${app}" exec wrangler versions upload \
+                --preview-alias "${alias}" --message "PR #${PR_NUMBER} ${GITHUB_SHA::7}" | tee "upload-${app}.log"
+              url=$(grep -oE "https://${alias}-[a-z0-9.-]+\.workers\.dev" "upload-${app}.log" | head -n1 || true)
+              echo "- **${app}**: ${url:-URL not printed; see the job log} (add \`?site=climatedata\`)"
+            done
+          } > "${RUNNER_TEMP}/preview-comment.md"
+          cat "${RUNNER_TEMP}/preview-comment.md"
+      - name: Comment the preview links on the PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment "${PR_NUMBER}" --body-file "${RUNNER_TEMP}/preview-comment.md" --edit-last \
+            || gh pr comment "${PR_NUMBER}" --body-file "${RUNNER_TEMP}/preview-comment.md"
+
+  pipelines:
+    name: Pipelines (Python)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: pipelines
+    steps:
+      - uses: actions/checkout@v7
+      # setup-uv publishes exact release tags only; there is no moving "v10" tag.
+      - uses: astral-sh/setup-uv@v10.3.2
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - name: Every dataset contract is valid
+        run: uv run datasites lint
+      - run: uv run pytest -q

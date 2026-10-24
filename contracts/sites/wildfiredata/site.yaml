@@ -1,0 +1,10 @@
+id: wildfiredata
+domain: wildfiredata.dev
+name: Wildfire Data
+tagline: Active fires from satellites, linked to official incidents and perimeters.
+description: >-
+  Satellite fire detections grouped into fires and matched to the official
+  incident name, size, containment and perimeter, with a daily smoke overlay.
+  Updated every 15 to 30 minutes.
+status: coming-soon
+phase: 4

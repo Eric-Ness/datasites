@@ -1,0 +1,25 @@
+# --------------------------------------------------------------------
+# USE OF NOAA GML DATA
+#
+# Excerpt of https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_mlo.csv
+# (rows copied verbatim from the file published 2026-10-09).
+#
+# File Creation: Fri Oct  9 13:08:07 2026
+#
+# Missing months have been interpolated, for NOAA data indicated by negative stdev
+# and uncertainty. We have no information for SIO data about Ndays, stdv, unc
+# so that they are also indicated by negative numbers
+#
+year,month,decimal date,average,deseasonalized,ndays,sdev,unc
+1958,3,1958.2027,315.71,314.44,-1,-9.99,-0.99
+1958,4,1958.2877,317.45,315.16,-1,-9.99,-0.99
+1958,5,1958.3699,317.51,314.69,-1,-9.99,-0.99
+1974,3,1974.2027,331.49,330.15,-1,-9.99,-0.99
+1974,4,1974.2877,332.65,330.24,-1,-9.99,-0.99
+1974,5,1974.3750,333.19,330.22,13,0.31,0.16
+1974,6,1974.4583,332.20,329.79,25,0.37,0.14
+1975,12,1975.9583,330.77,331.73,-1,-9.99,0.00
+1984,4,1984.2917,347.37,344.75,2,-9.99,0.00
+2026,7,2026.5417,429.13,428.74,21,0.61,0.26
+2026,8,2026.6250,427.55,429.48,17,0.38,0.18
+2026,9,2026.7083,426.07,429.55,18,0.51,0.23

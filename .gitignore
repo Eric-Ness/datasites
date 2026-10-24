@@ -1,0 +1,23 @@
+# Node / Workers
+node_modules/
+dist/
+.wrangler/
+.dev.vars
+*.log
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.env
+
+# Local pipeline output (mirrors the R2 bucket layout)
+.data/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

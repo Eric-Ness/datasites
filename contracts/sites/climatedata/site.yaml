@@ -1,0 +1,10 @@
+id: climatedata
+domain: climatedata.dev
+name: Climate Data
+tagline: Clean climate data for every US county and the world, updated monthly.
+description: >-
+  Monthly temperature and precipitation for every US county since 1895, with
+  normals, anomalies and rankings, plus the global temperature and greenhouse-gas
+  records. Free JSON, CSV and Parquet downloads and an open API.
+status: coming-soon
+phase: 1
