@@ -2,7 +2,7 @@
 
 Everything in the repo builds and runs locally without these steps. They're what it takes to put the sites on the internet. Work through them in order. Each step says how to check it worked.
 
-Commands assume PowerShell in the repo root (`C:\Users\ericn\source\repos\datasites`).
+Commands assume PowerShell in the repo root.
 
 ---
 

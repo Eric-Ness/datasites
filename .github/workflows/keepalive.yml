@@ -1,0 +1,32 @@
+name: keepalive
+
+# In a public repository GitHub disables scheduled workflows after 60 days without repository activity, which
+# would silently stop every ingest on a stable site. Once a month this re-enables each scheduled workflow
+# (itself included) through the API, which resets that clock without making commits. Harmless while the repo
+# is private. If it ever fails, the healthchecks.io alerts on the ingest workflows are the backstop.
+# Stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md).
+
+on:
+  schedule:
+    - cron: "17 9 1 * *" # 09:17 UTC on the 1st of each month; odd minutes avoid GitHub's top-of-the-hour queue
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+jobs:
+  keepalive:
+    if: vars.INGEST_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Re-enable every scheduled workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          for file in ingest-air ingest-carbon ingest-climate ingest-economic ingest-election ingest-satellite \
+                      ingest-visualize ingest-water ingest-wildfire storage-gc keepalive; do
+            gh api --method PUT "repos/$REPO/actions/workflows/$file.yml/enable" --silent
+            echo "enabled $file.yml"
+          done

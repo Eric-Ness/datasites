@@ -3,6 +3,7 @@ name = "datasites-carbon"
 version = "0.1.0"
 description = "Pipelines for carbondata.dev"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 dependencies = ["datasites-core", "polars>=1.0", "fastexcel>=0.11"]
 
 [tool.uv.sources]

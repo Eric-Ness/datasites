@@ -102,6 +102,18 @@ check(
   `ingest schedules need ~${Math.round(monthlyMinutes)} Actions minutes/month (${perWorkflow.join(", ")}); budget is ${INGEST_BUDGET}`,
 );
 
+// keepalive: public repos lose scheduled workflows after 60 idle days, so every scheduled workflow is re-enabled monthly
+const keep = wf["keepalive.yml"]?.jobs?.keepalive;
+check(keep && /vars\.INGEST_ENABLED == 'true'/.test(keep.if ?? ""), "keepalive.yml: missing, or not gated on INGEST_ENABLED");
+check(wf["keepalive.yml"].permissions?.actions === "write", "keepalive.yml needs permissions: actions: write");
+const keepRuns = (wf["keepalive.yml"].on?.schedule ?? []).reduce((n, s) => n + runsPerDay(s.cron) * 30, 0);
+check(keepRuns >= 1, "keepalive.yml must run at least monthly (GitHub disables idle schedules after 60 days)");
+const keepText = runText(keep);
+const scheduled = Object.keys(wf).filter((f) => (wf[f].on?.schedule ?? []).length > 0);
+const keepWords = new Set(keepText.split(/[\s;\\]+/));
+const unkept = scheduled.filter((f) => !keepWords.has(f.replace(/\.ya?ml$/, "")));
+check(unkept.length === 0, `keepalive.yml does not re-enable: ${unkept.join(", ")}`);
+
 // every secret and variable a workflow reads is explained in docs/SETUP.md
 const setup = readFileSync(join(ROOT, "docs", "SETUP.md"), "utf8");
 const names = new Set();

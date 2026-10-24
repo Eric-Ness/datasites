@@ -3,6 +3,7 @@ name = "datasites-pipelines"
 version = "0.1.0"
 description = "Workspace root for the datasites ingestion pipelines"
 requires-python = ">=3.12"
+license = "Apache-2.0"
 dependencies = [
   "datasites-core",
   "datasites-climate",
