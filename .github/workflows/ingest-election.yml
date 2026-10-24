@@ -8,7 +8,7 @@ name: ingest-election
 
 on:
   schedule:
-    - cron: "41 15 * * *" # 15:41 UTC; odd minutes avoid GitHub's top-of-the-hour queue
+    - cron: "41 15 * * 1" # Mondays 15:41 UTC: every election dataset is checked weekly (check_every P7D); odd minute
   workflow_dispatch:
     inputs:
       dataset:

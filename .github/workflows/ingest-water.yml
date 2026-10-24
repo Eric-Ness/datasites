@@ -49,7 +49,7 @@ jobs:
           R2_BUCKET: ${{ vars.R2_BUCKET }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          USGS_WATERDATA_API_KEY: ${{ secrets.USGS_WATERDATA_API_KEY }} # optional; raises the USGS rate limit
+          USGS_WATERDATA_API_KEY: ${{ secrets.USGS_WATERDATA_API_KEY }} # raises the USGS rate limit; without it a run can take an hour of Actions minutes (docs/SETUP.md)
         run: >
           uv run --frozen datasites run "${{ inputs.dataset || 'waterdata' }}"
           --target "${{ inputs.target || 'production' }}"

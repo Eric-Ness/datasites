@@ -74,7 +74,13 @@ Same pattern for each .dev domain:
 
 ## 3. GitHub settings
 
-The repo is private, so GitHub Actions minutes count against your plan: 2,000 a month on Free, 3,000 on Pro. CI takes about 2–3 minutes per push, and the daily ingest about 1 minute.
+The repo is private, so GitHub Actions minutes count against your plan: 2,000 a month on Free, 3,000 on Pro. GitHub rounds each job up to a whole minute. Measured on 2026-10-24:
+
+- **CI:** about 2 billed minutes per push.
+- **Ingest:** about 1,380 minutes a month across the nine schedules. The biggest are wildfire every 3 hours (480), water (330) and air and climate (210 each). `node scripts/verify/workflows.mjs` keeps the schedules under 1,500 and prints the breakdown.
+- **Water needs its API key** (section 6) while the repo is private: without one, USGS throttling can stretch a run to its 60-minute limit, about 1,800 minutes a month on its own.
+
+Making the repository public removes the limit: Actions minutes are free for public repositories.
 
 1. Create an Actions **environment** named `production`: **Settings → Environments → New environment**.
 2. In it, add the **variables** and **secrets**:
@@ -162,7 +168,7 @@ Every dataset works without these except the ones named. Until a dataset's crede
 | BEA API key (free) | economicdata `bea-county-income` | Sign up at https://apps.bea.gov/api/signup/, then `gh secret set BEA_API_KEY --env production` |
 | Census API key (free) | economicdata `census-acs-income` | Sign up at https://api.census.gov/data/key_signup.html, then `gh secret set CENSUS_API_KEY --env production` |
 | Space-Track account (free; one per person, never shared) | satellitedata `gp-current` | Register at https://www.space-track.org, then `gh secret set SPACETRACK_USERNAME --env production` and `gh secret set SPACETRACK_PASSWORD --env production` |
-| USGS Water Data API key (free, optional) | waterdata `stream-gages`, `streamflow-daily` | Works without it, but the anonymous rate limit can stretch a daily run past half an hour. It is an api.data.gov key: sign up at https://api.data.gov/signup/, then `gh secret set USGS_WATERDATA_API_KEY --env production` |
+| USGS Water Data API key (free; needed while the repo is private) | waterdata `stream-gages`, `streamflow-daily` | Works without it, but the anonymous rate limit can stretch a daily run to an hour of Actions minutes (see section 3). It is an api.data.gov key: sign up at https://api.data.gov/signup/, then `gh secret set USGS_WATERDATA_API_KEY --env production` |
 | MIT Election Lab files | electiondata county presidential and House history | Download them in your browser (Dataverse guestbook) into `data/sources/medsl/`; see the README there |
 
 **API keys and billing (Phases 3 and 6):**
