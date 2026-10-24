@@ -36,7 +36,7 @@ jobs:
       HC_URL: ${{ secrets.HC_INGEST_CLIMATE }}
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.3.2 # exact tag: setup-uv has no moving major tag
         with:
           enable-cache: true
       - name: Ping healthchecks.io (start)

@@ -133,10 +133,15 @@ Deploy only when the zones in the Workers' `routes` lists are **Active**. If som
 
 **Check it worked:**
 ```powershell
-curl.exe -s https://api.climatedata.dev/v1/status
-curl.exe -s https://climatedata.dev/ -o NUL -w "%{http_code}`n"
+pnpm verify:live
 ```
-The first should show `"overall":"ok"` and the second `200`.
+This checks everything in one go:
+- all ten domains on Cloudflare nameservers and answering HTTPS;
+- the nine coming-soon pages;
+- the votingdata.net redirect;
+- `api.climatedata.dev/v1/status` reporting every dataset ok.
+
+It prints `LIVE DNS OK` and `LIVE PROD OK` when everything is up. Otherwise it lists exactly what isn't up yet, so you can also run it partway through these steps to see what's left.
 
 ---
 

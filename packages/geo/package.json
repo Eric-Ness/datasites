@@ -1,0 +1,17 @@
+{
+  "name": "@datasites/geo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared location registry: world, ISO 3166-1 countries, US states and counties",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.5"
+  }
+}

@@ -70,6 +70,23 @@ def cmd_set(args: argparse.Namespace, *, promote: bool) -> int:
     return 0
 
 
+def cmd_geo(args: argparse.Namespace) -> int:
+    from . import geo
+
+    doc = geo.build()
+    counts = {level: sum(1 for loc in doc["locations"] if loc["level"] == level) for level in geo.LEVELS}
+    summary = ", ".join(f"{n} {level}" for level, n in counts.items())
+    if args.action == "check":
+        if not geo.check(doc):
+            print(f"packages/geo/src/locations.json is out of date ({summary}). Run: uv run datasites geo build", file=sys.stderr)
+            return 1
+        print(f"geo registry up to date ({summary})")
+        return 0
+    geo.write(doc, geo.cldr_license())
+    print(f"wrote packages/geo/src/locations.json ({summary})")
+    return 0
+
+
 def cmd_lint(_args: argparse.Namespace) -> int:
     contracts = all_contracts()
     for c in contracts:
@@ -95,12 +112,17 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("lint", help="check every dataset contract")
 
+    geo_parser = sub.add_parser("geo", help="build or check the shared location registry (packages/geo)")
+    geo_parser.add_argument("action", choices=("build", "check"))
+
     args = parser.parse_args(argv)
     try:
         if args.command == "run":
             return cmd_run(args)
         if args.command in ("rollback", "promote"):
             return cmd_set(args, promote=args.command == "promote")
+        if args.command == "geo":
+            return cmd_geo(args)
         return cmd_lint(args)
     except (ContractError, ValueError, RuntimeError) as err:
         print(f"error: {err}", file=sys.stderr)
