@@ -65,10 +65,16 @@ def cmd_run(args: argparse.Namespace) -> int:
     results: list[RunResult] = []
     failures: list[tuple[str, str]] = []
     skipped = 0
+    needs_credentials: list[str] = []
     now = datetime.now(timezone.utc)
     for ref in _refs(args.dataset):
         try:
             contract = load_contract(ref)
+            missing = [name for name in contract.requires_env if not os.environ.get(name)]
+            if missing:
+                needs_credentials.append(ref)
+                print(json.dumps({"dataset": ref, "outcome": "needs-credentials", "missing": missing}))
+                continue
             if not args.force and not_due(contract, store, now):
                 skipped += 1
                 print(json.dumps({"dataset": ref, "outcome": "not-due", "check_every": contract.check_every}))
@@ -87,8 +93,9 @@ def cmd_run(args: argparse.Namespace) -> int:
         return 2
     counts = {o: sum(1 for r in results if r.outcome == o) for o in ("published", "unchanged")}
     print(
-        f"RUN OK {len(results) + skipped} datasets "
-        f"(published {counts['published']}, unchanged {counts['unchanged']}, not due {skipped})"
+        f"RUN OK {len(results) + skipped + len(needs_credentials)} datasets "
+        f"(published {counts['published']}, unchanged {counts['unchanged']}, not due {skipped}, "
+        f"needs credentials {len(needs_credentials)})"
     )
     return 0
 

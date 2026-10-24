@@ -1,6 +1,7 @@
 // Shared helpers for the verification scripts in this folder. Each script prints one success marker
 // only after every assertion passes, and exits nonzero (printing FAIL: ...) otherwise.
 import { spawn, spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -83,6 +84,58 @@ export async function waitForHttp(url, { timeoutMs = 120_000, server } = {}) {
     }
   }
   fail(`${url} did not respond within ${timeoutMs / 1000}s\n${server ? server.log().slice(-3000) : ""}`);
+}
+
+/**
+ * Reads a dataset published to the local bucket (.data/r2) by `datasites run ... --target local`.
+ * Handles sharded file maps and location blobs, so verification scripts never parse the layout themselves.
+ *   const ds = localDataset("climatedata", "co2-monthly");
+ *   ds.doc.version; ds.paths(); ds.text("average/world.csv"); ds.json("average/world.json"); ds.locations()
+ */
+export function localDataset(site, dataset) {
+  const bucket = join(ROOT, ".data", "r2");
+  const read = (key) => {
+    try {
+      return readFileSync(join(bucket, key));
+    } catch {
+      return null;
+    }
+  };
+  const readJson = (key) => {
+    const body = read(key);
+    return body ? JSON.parse(body.toString("utf8")) : null;
+  };
+  const blob = (hash) => read(`blobs/sha256/${hash.slice(0, 2)}/${hash}`);
+  const manifest = readJson(`sites/${site}/datasets/${dataset}/manifest.json`);
+  check(manifest, `${site}/${dataset} has not been published to .data/r2 (run: uv run datasites run ${site}/${dataset} --target local)`);
+  const doc = readJson(`sites/${site}/datasets/${dataset}/versions/${manifest.current}.json`);
+  check(doc, `${site}/${dataset}: version document ${manifest.current} is missing`);
+  let files = null;
+  const allFiles = () => {
+    if (!files) {
+      files = { ...doc.files };
+      for (const hash of Object.values(doc.file_shards ?? {})) Object.assign(files, JSON.parse(blob(hash).toString("utf8")));
+    }
+    return files;
+  };
+  const file = (path) => {
+    const entry = allFiles()[path];
+    check(entry, `${site}/${dataset}: no file ${path} in version ${doc.version}`);
+    const body = blob(entry.blob);
+    check(body, `${site}/${dataset}: blob for ${path} is missing`);
+    return body;
+  };
+  return {
+    manifest,
+    doc,
+    paths: () => Object.keys(allFiles()).sort(),
+    entry: (path) => allFiles()[path],
+    buffer: file,
+    text: (path) => file(path).toString("utf8"),
+    json: (path) => JSON.parse(file(path).toString("utf8")),
+    locations: () => doc.locations ?? (doc.locations_blob ? JSON.parse(blob(doc.locations_blob).toString("utf8")) : {}),
+    state: () => readJson(`ops/state/${site}/${dataset}.json`),
+  };
 }
 
 export function originRepo() {

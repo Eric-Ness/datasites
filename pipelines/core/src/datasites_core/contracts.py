@@ -108,6 +108,7 @@ class Contract:
     key: tuple[str, ...] = ()
     partition: str | None = None
     raw_archive_max_mb: int = 100
+    requires_env: tuple[str, ...] = ()
     discontinued: bool = False
 
     @property
@@ -258,6 +259,7 @@ def parse_contract(site: str, data: dict[str, Any], where: str) -> Contract:
         key=key,
         partition=partition,
         raw_archive_max_mb=int(data.get("raw_archive_max_mb", 100)),
+        requires_env=tuple(data.get("requires_env") or ()),
         discontinued=bool(data.get("discontinued", False)),
     )
 
