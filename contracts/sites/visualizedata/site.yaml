@@ -1,0 +1,10 @@
+id: visualizedata
+domain: visualizedata.dev
+name: Visualize Data
+tagline: Charts, maps and embeds built from the whole data family.
+description: >-
+  The chart and map layer for climatedata, economicdata, electiondata and the
+  other sites: ready-made visualizations, embeddable charts and shared map
+  boundaries.
+status: coming-soon
+phase: 5

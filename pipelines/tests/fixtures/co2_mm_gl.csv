@@ -1,0 +1,13 @@
+# --------------------------------------------------------------------
+# USE OF NOAA GML DATA
+#
+# Excerpt of https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_gl.csv
+# (rows copied verbatim from the file published 2026-10-09).
+#
+# File Creation: Fri Oct  9 13:08:02 2026
+#
+year,month,decimal,average,average_unc,trend,trend_unc
+1979,1,1979.042,336.56,0.10,335.92,0.09
+1979,2,1979.125,337.29,0.09,336.26,0.09
+2026,6,2026.458,427.79,0.10,427.36,0.06
+2026,7,2026.542,426.10,0.10,427.55,0.06

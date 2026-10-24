@@ -1,0 +1,57 @@
+name: ingest-climate
+
+# Daily check of every climatedata.dev dataset. Conditional GETs make no-change days nearly free.
+# Stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md).
+
+on:
+  schedule:
+    - cron: "23 14 * * *" # 14:23 UTC; odd minutes avoid GitHub's top-of-the-hour queue
+  workflow_dispatch:
+    inputs:
+      dataset:
+        description: "<site> or <site>/<dataset>"
+        default: climatedata
+      target:
+        type: choice
+        options: [production, staging]
+        default: production
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ingest-climate
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    if: vars.INGEST_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: ${{ inputs.target || 'production' }}
+    defaults:
+      run:
+        working-directory: pipelines
+    env:
+      HC_URL: ${{ secrets.HC_INGEST_CLIMATE }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with:
+          enable-cache: true
+      - name: Ping healthchecks.io (start)
+        if: env.HC_URL != ''
+        run: curl -fsS -m 10 --retry 3 "$HC_URL/start" || true
+      - name: Run pipelines
+        env:
+          R2_ENDPOINT: ${{ vars.R2_ENDPOINT }}
+          R2_BUCKET: ${{ vars.R2_BUCKET }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: >
+          uv run --frozen datasites run "${{ inputs.dataset || 'climatedata' }}"
+          --target "${{ inputs.target || 'production' }}"
+          --summary "$GITHUB_STEP_SUMMARY"
+      - name: Ping healthchecks.io (result)
+        if: always() && env.HC_URL != ''
+        run: curl -fsS -m 10 --retry 3 "$HC_URL/${{ job.status == 'success' && '0' || '1' }}" || true

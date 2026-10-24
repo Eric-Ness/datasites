@@ -230,7 +230,11 @@ A month with 300M requests and no rate limits would cost about $120. The rate li
 ## 9. Decisions for you
 
 1. **Build order.** I recommend the deadline order in section 7. The alternative is the original climatedata + economicdata first, but it misses the election and USGS windows.
-2. **Public or private repo.** I recommend **public**. GitHub Actions minutes are unlimited for public repos, the runners are faster (4 CPUs and 16 GB vs 2 and 8), and the data is public anyway. A private repo gets about 2,000 minutes a month, and one hourly job would use most of that.
+2. **Public or private repo. Decided 2026-10-24: private** (`Eric-Ness/datasites`). The consequences:
+   - Actions minutes are capped: about 2,000 a month on GitHub Free, 3,000 on Pro.
+   - Runners are smaller: 2 CPUs and 8 GB.
+   - **Hourly feeds must run on Cloudflare Workflows**, not GitHub Actions.
+   - GitHub Actions keeps the daily and slower jobs, which cost about a minute each when nothing has changed.
 3. **Workers Paid at $5/month now.** I recommend yes.
 4. **Election-night live results.** I recommend skipping them. It means scraping hundreds of county sites under deadline pressure and risking spreading wrong numbers, and AP and Decision Desk HQ already own that market.
 5. **votingdata.net.** I recommend the redirect now. The roll-call API is a real gap, though, so it could move earlier if it interests you more than satellitedata.

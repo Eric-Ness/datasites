@@ -1,0 +1,83 @@
+[
+  {
+    "id": "airdata",
+    "domain": "airdata.dev",
+    "name": "Air Data",
+    "tagline": "Air quality for every US county, from 1980 to the last hour.",
+    "description": "Validated EPA air-quality history joined to preliminary hourly readings, by monitor, county and metro area. Each row says whether it is validated or preliminary.",
+    "status": "coming-soon",
+    "phase": 4
+  },
+  {
+    "id": "carbondata",
+    "domain": "carbondata.dev",
+    "name": "Carbon Data",
+    "tagline": "Open, versioned emission factors for carbon accounting.",
+    "description": "Scope 1, 2 and 3 emission factors in consistent units, with permanent versioned URLs that auditors can cite. Facility and company emissions to follow.",
+    "status": "coming-soon",
+    "phase": 3
+  },
+  {
+    "id": "climatedata",
+    "domain": "climatedata.dev",
+    "name": "Climate Data",
+    "tagline": "Clean climate data for every US county and the world, updated monthly.",
+    "description": "Monthly temperature and precipitation for every US county since 1895, with normals, anomalies and rankings, plus the global temperature and greenhouse-gas records. Free JSON, CSV and Parquet downloads and an open API.",
+    "status": "coming-soon",
+    "phase": 1
+  },
+  {
+    "id": "economicdata",
+    "domain": "economicdata.dev",
+    "name": "Economic Data",
+    "tagline": "Regional and international economic data in one consistent schema.",
+    "description": "Unemployment, jobs, wages, income and GDP for every US county, metro and state in a single panel, with international indicators to follow. Every number keeps its source, release date and revision history.",
+    "status": "coming-soon",
+    "phase": 3
+  },
+  {
+    "id": "electiondata",
+    "domain": "electiondata.dev",
+    "name": "Election Data",
+    "tagline": "Certified election results by county, with every number traced to its source.",
+    "description": "Certified 2026 general-election results for every federal and statewide race, county by county, joined to results back to 2000. Each row is labeled certified or unofficial and links to the official document it came from.",
+    "status": "coming-soon",
+    "phase": 2
+  },
+  {
+    "id": "satellitedata",
+    "domain": "satellitedata.dev",
+    "name": "Satellite Data",
+    "tagline": "A unified, up-to-date catalog of every object in orbit.",
+    "description": "One record per object with owner, operator, orbit and status, ready for the new 6-digit catalog numbers, plus a daily changelog of launches, decays and orbit changes.",
+    "status": "coming-soon",
+    "phase": 5
+  },
+  {
+    "id": "visualizedata",
+    "domain": "visualizedata.dev",
+    "name": "Visualize Data",
+    "tagline": "Charts, maps and embeds built from the whole data family.",
+    "description": "The chart and map layer for climatedata, economicdata, electiondata and the other sites: ready-made visualizations, embeddable charts and shared map boundaries.",
+    "status": "coming-soon",
+    "phase": 5
+  },
+  {
+    "id": "waterdata",
+    "domain": "waterdata.dev",
+    "name": "Water Data",
+    "tagline": "Streamflow and drought conditions for every active US stream gage.",
+    "description": "Daily flow at every active USGS stream gage with percent of normal for the date, flood status and drought category, built on the new USGS Water Data APIs. A stable replacement for scripts that used the legacy WaterServices API.",
+    "status": "coming-soon",
+    "phase": 2
+  },
+  {
+    "id": "wildfiredata",
+    "domain": "wildfiredata.dev",
+    "name": "Wildfire Data",
+    "tagline": "Active fires from satellites, linked to official incidents and perimeters.",
+    "description": "Satellite fire detections grouped into fires and matched to the official incident name, size, containment and perimeter, with a daily smoke overlay. Updated every 15 to 30 minutes.",
+    "status": "coming-soon",
+    "phase": 4
+  }
+]

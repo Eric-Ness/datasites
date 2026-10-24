@@ -1,0 +1,10 @@
+id: carbondata
+domain: carbondata.dev
+name: Carbon Data
+tagline: Open, versioned emission factors for carbon accounting.
+description: >-
+  Scope 1, 2 and 3 emission factors in consistent units, with permanent
+  versioned URLs that auditors can cite. Facility and company emissions to
+  follow.
+status: coming-soon
+phase: 3

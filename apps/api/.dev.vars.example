@@ -1,0 +1,4 @@
+# Copy to .dev.vars for local development (it is gitignored).
+# ENV=development lets ?site=<id> pick the site, because `wrangler dev` rewrites every
+# request's hostname to the first route in wrangler.jsonc.
+ENV=development

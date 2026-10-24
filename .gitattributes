@@ -1,0 +1,8 @@
+# Normalize line endings to LF everywhere. Content hashes of generated files
+# must match between Windows and Linux CI.
+* text=auto eol=lf
+
+*.parquet binary
+*.png binary
+*.ico binary
+*.gz binary

@@ -1,0 +1,22 @@
+{
+  "name": "@datasites/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8787",
+    "deploy": "wrangler deploy",
+    "seed:local": "node scripts/seed-local.mjs",
+    "types": "wrangler types --strict-vars=false",
+    "typecheck": "tsc -p .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@datasites/registry": "workspace:*",
+    "hono": "^4.13.13"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.5",
+    "wrangler": "^4.152.0"
+  }
+}

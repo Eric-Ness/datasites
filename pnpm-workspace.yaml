@@ -1,0 +1,8 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Wrangler's runtime (workerd) and bundler (esbuild) need their install scripts.
+onlyBuiltDependencies:
+  - esbuild
+  - workerd
