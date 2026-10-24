@@ -22,7 +22,8 @@ function devServer(app, port) {
 
 async function api() {
   // 1. live pipeline into the local bucket (.data/r2)
-  const pipeline = run("uv", ["run", "datasites", "run", "climatedata", "--target", "local"], { cwd: join(ROOT, "pipelines") });
+  // --force: this check must exercise the live fetch even if the dataset was checked moments ago.
+  const pipeline = run("uv", ["run", "datasites", "run", "climatedata", "--target", "local", "--force"], { cwd: join(ROOT, "pipelines") });
   const runLines = pipeline.stdout.trim().split(/\r?\n/);
   const outcomes = runLines.filter((l) => l.startsWith("{")).map((l) => JSON.parse(l));
   check(outcomes.length > 0 && outcomes.every((o) => ["published", "unchanged"].includes(o.outcome)), `pipeline outcomes: ${pipeline.stdout}`);
