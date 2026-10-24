@@ -12,8 +12,11 @@ import os
 import sys
 from pathlib import Path
 
+from datetime import datetime, timezone
+
+from . import durations
 from .contracts import ContractError, all_contracts, load_contract, site_contracts
-from .publish import RunResult, run_dataset, set_current
+from .publish import RunResult, load_state, run_dataset, set_current
 from .store import TARGETS, open_store
 
 
@@ -45,13 +48,32 @@ def _summary(results: list[RunResult], failures: list[tuple[str, str]], path: st
         fh.write("\n".join(lines) + "\n")
 
 
+DUE_TOLERANCE = 0.9  # a daily job firing a few seconds early still counts as due
+
+
+def not_due(contract, store, now: datetime) -> bool:
+    """True when the last successful check is more recent than the contract's check_every allows."""
+    checked = load_state(store, contract).get("checked_at")
+    if not checked:
+        return False
+    elapsed = now - datetime.fromisoformat(checked.replace("Z", "+00:00"))
+    return elapsed < durations.parse(contract.check_every) * DUE_TOLERANCE
+
+
 def cmd_run(args: argparse.Namespace) -> int:
     store = open_store(args.target)
     results: list[RunResult] = []
     failures: list[tuple[str, str]] = []
+    skipped = 0
+    now = datetime.now(timezone.utc)
     for ref in _refs(args.dataset):
         try:
-            result = run_dataset(load_contract(ref), store, run_url=_run_url())
+            contract = load_contract(ref)
+            if not args.force and not_due(contract, store, now):
+                skipped += 1
+                print(json.dumps({"dataset": ref, "outcome": "not-due", "check_every": contract.check_every}))
+                continue
+            result = run_dataset(contract, store, run_url=_run_url())
             results.append(result)
             print(json.dumps(result.as_dict()))
         except Exception as err:  # keep going so one broken source doesn't stop the others
@@ -64,7 +86,10 @@ def cmd_run(args: argparse.Namespace) -> int:
     if any(r.outcome == "blocked" for r in results):
         return 2
     counts = {o: sum(1 for r in results if r.outcome == o) for o in ("published", "unchanged")}
-    print(f"RUN OK {len(results)} datasets (published {counts['published']}, unchanged {counts['unchanged']})")
+    print(
+        f"RUN OK {len(results) + skipped} datasets "
+        f"(published {counts['published']}, unchanged {counts['unchanged']}, not due {skipped})"
+    )
     return 0
 
 
@@ -111,6 +136,7 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("dataset", help="<site>/<dataset> or <site>")
     run.add_argument("--target", choices=TARGETS, default="local")
     run.add_argument("--summary", help="append a Markdown summary to this file (e.g. $GITHUB_STEP_SUMMARY)")
+    run.add_argument("--force", action="store_true", help="run even if the dataset was checked within its check_every")
 
     for name, text in (("rollback", "point a dataset back at a previous version"), ("promote", "publish a reviewed quarantined version")):
         p = sub.add_parser(name, help=text)
