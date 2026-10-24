@@ -1,0 +1,84 @@
+# Source: https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=CT&startdate=8/25/2026&enddate=10/24/2026&statisticsType=2
+# Captured: 2026-10-24. Verbatim response body below this header.
+MapDate,FIPS,County,State,None,D0,D1,D2,D3,D4,ValidStart,ValidEnd,StatisticFormatID
+20261020,09110,Capitol Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-20,2026-10-26,2
+20261013,09110,Capitol Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-13,2026-10-19,2
+20261006,09110,Capitol Planning Region,CT,84.71,15.29,0.00,0.00,0.00,0.00,2026-10-06,2026-10-12,2
+20260929,09110,Capitol Planning Region,CT,84.71,15.29,0.00,0.00,0.00,0.00,2026-09-29,2026-10-05,2
+20260922,09110,Capitol Planning Region,CT,67.03,32.97,0.00,0.00,0.00,0.00,2026-09-22,2026-09-28,2
+20260915,09110,Capitol Planning Region,CT,67.03,32.97,0.00,0.00,0.00,0.00,2026-09-15,2026-09-21,2
+20260908,09110,Capitol Planning Region,CT,44.19,55.81,0.00,0.00,0.00,0.00,2026-09-08,2026-09-14,2
+20260901,09110,Capitol Planning Region,CT,44.19,55.81,0.00,0.00,0.00,0.00,2026-09-01,2026-09-07,2
+20260825,09110,Capitol Planning Region,CT,30.71,69.29,0.00,0.00,0.00,0.00,2026-08-25,2026-08-31,2
+20261020,09120,Greater Bridgeport Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-20,2026-10-26,2
+20261013,09120,Greater Bridgeport Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-13,2026-10-19,2
+20261006,09120,Greater Bridgeport Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-06,2026-10-12,2
+20260929,09120,Greater Bridgeport Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-29,2026-10-05,2
+20260922,09120,Greater Bridgeport Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-22,2026-09-28,2
+20260915,09120,Greater Bridgeport Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-15,2026-09-21,2
+20260908,09120,Greater Bridgeport Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-08,2026-09-14,2
+20260901,09120,Greater Bridgeport Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-01,2026-09-07,2
+20260825,09120,Greater Bridgeport Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-08-25,2026-08-31,2
+20261020,09130,Lower Connecticut River Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-20,2026-10-26,2
+20261013,09130,Lower Connecticut River Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-13,2026-10-19,2
+20261006,09130,Lower Connecticut River Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-06,2026-10-12,2
+20260929,09130,Lower Connecticut River Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-29,2026-10-05,2
+20260922,09130,Lower Connecticut River Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-22,2026-09-28,2
+20260915,09130,Lower Connecticut River Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-15,2026-09-21,2
+20260908,09130,Lower Connecticut River Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-08,2026-09-14,2
+20260901,09130,Lower Connecticut River Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-01,2026-09-07,2
+20260825,09130,Lower Connecticut River Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-08-25,2026-08-31,2
+20261020,09140,Naugatuck Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-20,2026-10-26,2
+20261013,09140,Naugatuck Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-13,2026-10-19,2
+20261006,09140,Naugatuck Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-06,2026-10-12,2
+20260929,09140,Naugatuck Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-29,2026-10-05,2
+20260922,09140,Naugatuck Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-22,2026-09-28,2
+20260915,09140,Naugatuck Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-15,2026-09-21,2
+20260908,09140,Naugatuck Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-08,2026-09-14,2
+20260901,09140,Naugatuck Valley Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-01,2026-09-07,2
+20260825,09140,Naugatuck Valley Planning Region,CT,99.99,0.01,0.00,0.00,0.00,0.00,2026-08-25,2026-08-31,2
+20261020,09150,Northeastern Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-20,2026-10-26,2
+20261013,09150,Northeastern Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-13,2026-10-19,2
+20261006,09150,Northeastern Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-06,2026-10-12,2
+20260929,09150,Northeastern Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-29,2026-10-05,2
+20260922,09150,Northeastern Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-22,2026-09-28,2
+20260915,09150,Northeastern Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-15,2026-09-21,2
+20260908,09150,Northeastern Connecticut Planning Region,CT,99.82,0.18,0.00,0.00,0.00,0.00,2026-09-08,2026-09-14,2
+20260901,09150,Northeastern Connecticut Planning Region,CT,99.82,0.18,0.00,0.00,0.00,0.00,2026-09-01,2026-09-07,2
+20260825,09150,Northeastern Connecticut Planning Region,CT,99.80,0.20,0.00,0.00,0.00,0.00,2026-08-25,2026-08-31,2
+20261020,09160,Northwest Hills Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-20,2026-10-26,2
+20261013,09160,Northwest Hills Planning Region,CT,46.95,53.05,0.00,0.00,0.00,0.00,2026-10-13,2026-10-19,2
+20261006,09160,Northwest Hills Planning Region,CT,37.76,62.24,0.00,0.00,0.00,0.00,2026-10-06,2026-10-12,2
+20260929,09160,Northwest Hills Planning Region,CT,37.76,62.24,0.00,0.00,0.00,0.00,2026-09-29,2026-10-05,2
+20260922,09160,Northwest Hills Planning Region,CT,35.16,64.84,0.00,0.00,0.00,0.00,2026-09-22,2026-09-28,2
+20260915,09160,Northwest Hills Planning Region,CT,35.16,64.84,0.00,0.00,0.00,0.00,2026-09-15,2026-09-21,2
+20260908,09160,Northwest Hills Planning Region,CT,35.16,64.84,0.00,0.00,0.00,0.00,2026-09-08,2026-09-14,2
+20260901,09160,Northwest Hills Planning Region,CT,35.16,64.84,0.00,0.00,0.00,0.00,2026-09-01,2026-09-07,2
+20260825,09160,Northwest Hills Planning Region,CT,34.69,65.31,0.00,0.00,0.00,0.00,2026-08-25,2026-08-31,2
+20261020,09170,South Central Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-20,2026-10-26,2
+20261013,09170,South Central Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-13,2026-10-19,2
+20261006,09170,South Central Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-06,2026-10-12,2
+20260929,09170,South Central Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-29,2026-10-05,2
+20260922,09170,South Central Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-22,2026-09-28,2
+20260915,09170,South Central Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-15,2026-09-21,2
+20260908,09170,South Central Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-08,2026-09-14,2
+20260901,09170,South Central Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-01,2026-09-07,2
+20260825,09170,South Central Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-08-25,2026-08-31,2
+20261020,09180,Southeastern Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-20,2026-10-26,2
+20261013,09180,Southeastern Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-13,2026-10-19,2
+20261006,09180,Southeastern Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-06,2026-10-12,2
+20260929,09180,Southeastern Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-29,2026-10-05,2
+20260922,09180,Southeastern Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-22,2026-09-28,2
+20260915,09180,Southeastern Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-15,2026-09-21,2
+20260908,09180,Southeastern Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-08,2026-09-14,2
+20260901,09180,Southeastern Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-01,2026-09-07,2
+20260825,09180,Southeastern Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-08-25,2026-08-31,2
+20261020,09190,Western Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-20,2026-10-26,2
+20261013,09190,Western Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-13,2026-10-19,2
+20261006,09190,Western Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-10-06,2026-10-12,2
+20260929,09190,Western Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-29,2026-10-05,2
+20260922,09190,Western Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-22,2026-09-28,2
+20260915,09190,Western Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-15,2026-09-21,2
+20260908,09190,Western Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-08,2026-09-14,2
+20260901,09190,Western Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-09-01,2026-09-07,2
+20260825,09190,Western Connecticut Planning Region,CT,100.00,0.00,0.00,0.00,0.00,0.00,2026-08-25,2026-08-31,2

@@ -1,0 +1,48 @@
+id: streamflow-daily
+version: 1
+title: Daily streamflow
+description: >-
+  Daily mean discharge at every USGS stream gage over the last 400 days, flagged provisional,
+  estimated or ice-affected, with the USGS qualifier codes. Re-read in full every day, because USGS
+  revises provisional values for months.
+pipeline: datasites_water.usgs_daily
+check_every: P1D
+cadence: P1D
+sla: P3D
+# The ~80 daily blocks (about 2.8 MB of CSV each, ~220 MB a run) change whenever USGS revises a provisional
+# value, so archiving them would add gigabytes a month; only the small ones are kept. The series and location
+# responses are the same requests stream-gages makes, and it archives them under the same source id.
+raw_archive_max_mb: 1
+# Terms: https://www.usgs.gov/information-policies-and-instructions/copyrights-and-credits (U.S. Public Domain),
+# credit line from https://www.usgs.gov/information-policies-and-instructions/acknowledging-or-crediting-usgs
+source:
+  id: usgs-water-data
+  name: USGS Water Data APIs (OGC API), daily values
+  publisher: U.S. Geological Survey
+  url: https://api.waterdata.usgs.gov/docs/ogcapi/
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true
+  attribution: >-
+    Streamflow data courtesy of the U.S. Geological Survey.
+series:
+  discharge: Daily mean discharge
+locations:
+  pattern: "usgs-\\d{8,15}"      # names come from the gage's USGS station name
+schema:
+  - { name: date, type: date, description: Local calendar day at the gage }
+  - { name: value, type: float, unit: ft^3/s, nullable: true, description: "Daily mean discharge. Null where USGS publishes the day without a value (ice, equipment, seasonal); negative where tidal or regulated flow runs upstream" }
+  - { name: provisional, type: bool, description: True until USGS approves the value; provisional data are subject to revision }
+  - { name: estimated, type: bool, description: USGS qualifier ESTIMATED }
+  - { name: ice, type: bool, description: USGS qualifier ICE (ice-affected) }
+  - { name: qualifiers, type: str, nullable: true, description: "Every USGS qualifier code for the day, comma-separated, e.g. BACKWATER,ESTIMATED" }
+checks:
+  min_rows: 3000000              # 3.39 million on 2026-10-24: 8,300 to 9,000 gages report each day
+  rows_min_ratio: 0.97
+  ranges:
+    value: [-1000000, 5000000]   # catches unit or parsing errors; the largest US daily means are ~2 million ft^3/s
+  max_null_fraction:
+    value: 0.15                  # 1.5% for 2025-09-20..2026-10-24, winter ice included
+  # Off: every day some gage's newest provisional value is withdrawn, or a discontinued gage leaves the
+  # window, and either would block the whole national dataset. The row checks above catch a partial fetch.
+  newest_not_older: false
+  revisions: { max_changed_fraction: 0.10, tolerance: 0.5 }   # warn only

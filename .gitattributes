@@ -6,3 +6,6 @@
 *.png binary
 *.ico binary
 *.gz binary
+
+# Verbatim captures of upstream responses (USDM answers with CRLF); tests depend on the exact bytes.
+pipelines/tests/water/fixtures/** -text

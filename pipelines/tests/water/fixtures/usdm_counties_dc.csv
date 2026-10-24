@@ -1,0 +1,12 @@
+# Source: https://usdmdataservices.unl.edu/api/CountyStatistics/GetDroughtSeverityStatisticsByAreaPercent?aoi=DC&startdate=8/25/2026&enddate=10/24/2026&statisticsType=2
+# Captured: 2026-10-24. Verbatim response body below this header.
+MapDate,FIPS,County,State,None,D0,D1,D2,D3,D4,ValidStart,ValidEnd,StatisticFormatID
+20261020,11001,District of Columbia,DC,0.00,100.00,0.00,0.00,0.00,0.00,2026-10-20,2026-10-26,2
+20261013,11001,District of Columbia,DC,0.00,100.00,0.00,0.00,0.00,0.00,2026-10-13,2026-10-19,2
+20261006,11001,District of Columbia,DC,0.00,100.00,0.00,0.00,0.00,0.00,2026-10-06,2026-10-12,2
+20260929,11001,District of Columbia,DC,0.00,100.00,0.00,0.00,0.00,0.00,2026-09-29,2026-10-05,2
+20260922,11001,District of Columbia,DC,0.00,100.00,0.00,0.00,0.00,0.00,2026-09-22,2026-09-28,2
+20260915,11001,District of Columbia,DC,0.00,100.00,0.00,0.00,0.00,0.00,2026-09-15,2026-09-21,2
+20260908,11001,District of Columbia,DC,0.00,100.00,0.00,0.00,0.00,0.00,2026-09-08,2026-09-14,2
+20260901,11001,District of Columbia,DC,0.00,100.00,0.00,0.00,0.00,0.00,2026-09-01,2026-09-07,2
+20260825,11001,District of Columbia,DC,0.00,100.00,0.00,0.00,0.00,0.00,2026-08-25,2026-08-31,2
