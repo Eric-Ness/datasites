@@ -238,7 +238,7 @@ A month with 300M requests and no rate limits would cost about $120. The rate li
 3. **Workers Paid at $5/month now.** I recommend yes.
 4. **Election-night live results.** I recommend skipping them. It means scraping hundreds of county sites under deadline pressure and risking spreading wrong numbers, and AP and Decision Desk HQ already own that market.
 5. **votingdata.net.** I recommend the redirect now. The roll-call API is a real gap, though, so it could move earlier if it interests you more than satellitedata.
-6. **Project folder.** Where the monorepo lives, for example `C:\Users\ericn\source\repos\datasites`, next to your other projects.
+6. **Project folder.** Where the monorepo lives, for example `source\repos\datasites` in your home folder, next to your other projects.
 
 ---
 
