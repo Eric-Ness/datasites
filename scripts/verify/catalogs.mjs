@@ -2,6 +2,9 @@
 // is waiting on credentials), and the real API Worker under `wrangler dev` serves metadata, locations and a
 // data file for every published dataset.
 //
+// --allow-unpublished <site>/<id>[,...] names datasets that may be unpublished for a recorded reason (an
+// upstream outage); each one is printed in the success line, so the exception is never silent.
+//
 // Seeding all of .data/r2 into wrangler's local R2 would take hours at county scale (one `wrangler r2 object
 // put` per file), so this seeds only the objects the API reads for each dataset.
 import { readFileSync, readdirSync, existsSync } from "node:fs";
@@ -15,6 +18,9 @@ const readJson = (key) => JSON.parse(readFileSync(join(bucket, key), "utf8"));
 const blobKey = (hash) => `blobs/sha256/${hash.slice(0, 2)}/${hash}`;
 
 // 1. catalogs in the local bucket match the contracts
+const allowArg = process.argv.indexOf("--allow-unpublished");
+const allowed = new Set(allowArg === -1 ? [] : (process.argv[allowArg + 1] ?? "").split(",").filter(Boolean));
+const excused = [];
 const keys = new Set();
 const targets = [];
 let waiting = 0;
@@ -31,6 +37,10 @@ for (const site of sites) {
     const entry = catalog.datasets.find((d) => d.id === c.id);
     check(entry, `${site.id}: catalog does not list ${c.id}`);
     if (!entry.current) {
+      if (allowed.has(`${site.id}/${c.id}`)) {
+        excused.push(`${site.id}/${c.id}`);
+        continue;
+      }
       check((c.requires_env ?? []).length > 0, `${site.id}/${c.id}: never published and it doesn't need credentials`);
       waiting += 1;
       continue;
@@ -88,5 +98,5 @@ const bySite = targets.reduce((acc, t) => ({ ...acc, [t.site]: (acc[t.site] ?? 0
 console.log(
   `CATALOGS OK (${targets.length} datasets served across ${Object.keys(bySite).length} sites: ${Object.entries(bySite)
     .map(([s, n]) => `${s}=${n}`)
-    .join(", ")}; ${waiting} waiting on credentials)`,
+    .join(", ")}; ${waiting} waiting on credentials${excused.length ? `; allowed unpublished: ${excused.join(", ")}` : ""})`,
 );

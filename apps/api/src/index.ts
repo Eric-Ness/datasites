@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { BILLING_CRON, reportUsage, webhook } from "./billing";
-import { catalog, datasetMeta, download, index, locations, seriesFile, versions } from "./data";
+import { catalog, datasetMeta, download, index, locations, seriesFile, topFile, versions } from "./data";
 import { problem, shortCache, json } from "./http";
 import { authenticate, cors, meter, rateLimit, resolveSite, type AppEnv } from "./middleware";
 import { openapi } from "./openapi";
@@ -25,6 +25,8 @@ app.get("/v1/openapi.json", (c) => openapi(c));
 app.get("/v1/:ref", (c) => datasetMeta(c, c.req.param("ref")));
 app.get("/v1/:ref/versions", (c) => versions(c, c.req.param("ref")));
 app.get("/v1/:ref/locations", (c) => locations(c, c.req.param("ref")));
+// Only names with an extension, so it never shadows /versions or /locations.
+app.get("/v1/:ref/:file{[^/]+\.[A-Za-z0-9]+}", (c) => topFile(c, c.req.param("ref"), c.req.param("file")));
 app.get("/v1/:ref/download/:file", (c) => download(c, c.req.param("ref"), c.req.param("file")));
 app.get("/v1/:ref/:series/:file", (c) => seriesFile(c, c.req.param("ref"), c.req.param("series"), c.req.param("file")));
 

@@ -286,6 +286,18 @@ function datasetPaths(d: Dataset, paths: Obj, schemas: Obj): void {
         fileResponses,
         pinNote,
       );
+      paths[`${base}/{file}`] = op(
+        `get${P}TopFile${suffix}`,
+        `${d.title}: a published file at the top of the dataset (such as index.json), from ${which}`,
+        tags,
+        [
+          ...pin,
+          { name: "file", in: "path", required: true, description: "File name, with its extension.", schema: { type: "string", pattern: "^[^/]+\.[A-Za-z0-9]+$" } },
+          ifNoneMatch,
+        ],
+        fileResponses,
+        pinNote,
+      );
     }
     if (!pinned) {
       paths[`${base}/versions`] = op(`get${P}Versions`, `${d.title}: version history`, tags, [], {

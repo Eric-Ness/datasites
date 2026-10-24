@@ -137,7 +137,8 @@ describe("big and non-series datasets", () => {
       source: { id: "s", name: "s", url: "", license: "x", commercial_ok: true, attribution: "" },
       series: { tavg: "Average temperature" }, validation: { status: "pass", errors: [], warnings: [] }, run: null, tree: "t",
       files: { "download/county-climate.parquet": { blob: blob(5), bytes: 11, type: "application/vnd.apache.parquet" },
-               "boundaries/states.geojson": { blob: blob(6), bytes: 42, type: "application/geo+json" } },
+               "boundaries/states.geojson": { blob: blob(6), bytes: 42, type: "application/geo+json" },
+               "index.json": { blob: blob(6), bytes: 42, type: "application/json" } },
       file_shards: { tavg: blob(7), table: blob(9) },
       locations_blob: blob(8),
     });
@@ -159,6 +160,15 @@ describe("big and non-series datasets", () => {
     expect(geo.status).toBe(200);
     expect(geo.headers.get("content-type")).toBe("application/geo+json");
     expect((await request("/v1/county-climate/tavg/us-county-06037")).status).toBe(404); // no extension
+  });
+
+  it("serves a file at the top of the dataset, without shadowing versions or locations", async () => {
+    seedBig();
+    const top = await request("/v1/county-climate/index.json");
+    expect(top.status).toBe(200);
+    expect(top.headers.get("content-type")).toBe("application/json");
+    expect((await request("/v1/county-climate/missing.json")).status).toBe(404);
+    expect((await request("/v1/county-climate/locations")).status).toBe(200);
   });
 
   it("lists locations from the shards and the locations blob", async () => {
