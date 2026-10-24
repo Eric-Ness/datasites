@@ -1,0 +1,12 @@
+#! Source: https://aqs.epa.gov/aqsweb/airdata/daily_aqi_by_county_2026.zip
+#! Captured 2026-10-24. The CSV inside the zip: its header and rows for Los Angeles, Dukes MA, Kittitas WA, Catano PR, Windham CT (former county), a Mexico border county and Washington DC on the last day in the file, copied verbatim.
+"State Name","county Name","State Code","County Code","Date","AQI","Category","Defining Parameter","Defining Site","Number of Sites Reporting"
+"California","Los Angeles","06","037","2026-04-29",87,"Moderate","Ozone","06-037-0016",4
+"California","Los Angeles","06","037","2026-04-30",80,"Moderate","Ozone","06-037-0016",4
+"Connecticut","Windham","09","015","2026-01-01",37,"Good","Ozone","09-015-9991",1
+"Connecticut","Windham","09","015","2026-01-02",34,"Good","Ozone","09-015-9991",1
+"Country Of Mexico","SONORA","80","026","2026-01-01",56,"Moderate","PM2.5","80-026-0006",2
+"District Of Columbia","District of Columbia","11","001","2026-06-01",5,"Good","CO","11-001-0051",2
+"Massachusetts","Dukes","25","007","2026-02-28",43,"Good","Ozone","25-007-0001",1
+"Puerto Rico","Catano","72","033","2026-03-31",19,"Good","PM2.5","72-033-0004",1
+"Washington","Kittitas","53","037","2026-02-28",31,"Good","PM2.5","53-037-0002",1

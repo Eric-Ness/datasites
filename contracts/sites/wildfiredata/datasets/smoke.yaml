@@ -1,0 +1,27 @@
+id: smoke
+version: 1
+kind: files
+title: Smoke plumes (NOAA HMS), last 7 days
+description: >-
+  Daily smoke plume polygons over North America for the last 7 days, drawn by NOAA Hazard Mapping
+  System analysts from satellite imagery and labelled Light, Medium or Heavy. The labels are visual
+  density categories of smoke anywhere in the air column, not surface concentrations.
+pipeline: datasites_wildfire.hms_smoke
+check_every: PT3H                # the current day's file is updated through the day
+cadence: P1D
+sla: P3D
+source:
+  id: noaa-hms-smoke
+  name: NOAA NESDIS Hazard Mapping System (HMS) Fire and Smoke Analysis, smoke polygons
+  publisher: NOAA NESDIS Office of Satellite and Product Operations
+  url: https://catalog.data.gov/dataset/nesdis-hazard-mapping-system-fire-and-smoke-program
+  # The NOAA catalog record gives https://creativecommons.org/publicdomain/zero/1.0/ as the licence.
+  license: CC0-1.0
+  commercial_ok: true
+  # NOAA requests no particular credit for HMS; this names the product.
+  attribution: >-
+    NOAA NESDIS Office of Satellite and Product Operations, Hazard Mapping System (HMS) Fire and Smoke
+    Analysis.
+checks:
+  # No min_rows: a week can pass with little smoke, and a day with none is a valid empty day.
+  required_files: [index.json, latest.geojson]

@@ -1,0 +1,6 @@
+# Source: https://planet4589.org/space/gcat/tsv/cat/satcat270k.tsv
+# Captured: 2026-10-24. Verbatim excerpt: the column header, the '# Updated' line and selected records, in file order.
+#JCAT	Satcat	Launch_Tag	Piece	Type	Name	PLName	LDate	Parent	SDate	Primary	DDate	Status	Dest	Owner	State	Manufacturer	Bus	Motor	Mass	MassFlag	DryMass	DryFlag	TotMass	TotFlag	Length	LFlag	Diameter	DFlag	Span	SpanFlag	Shape	ODate	Perigee	PF	Apogee	AF	Inc	IF	OpOrbit	OQUAL	AltNames
+# Updated 2026 Oct 24 0114:18
+S270000   	270000	1965-027	1965-027	D  J        	deb SNAPSHOT	-	1965 Apr  3	S01314	1985 Jan?	Earth	-	O	-	AFSMC	US	-	-	-	       0 	 	      0 	 	       0 	 	   0.0 	 	  0.0 	 	    0.0 	 	-	2022 Jan 22	    1256	 	    1306	 	 90.29 	 	LEO/P	-	-
+S270289   	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-

@@ -1,0 +1,30 @@
+id: fire-perimeters
+version: 1
+kind: files
+title: Fire perimeters (US), current and archived
+description: >-
+  Current US interagency wildland fire perimeters as GeoJSON, plus an archive of every perimeter shape
+  and every snapshot of the current layer since this dataset started, so a fire's growth can be followed
+  after WFIGS drops it. From the NIFC WFIGS current interagency perimeters service.
+pipeline: datasites_wildfire.wfigs_perimeters
+check_every: PT3H
+cadence: PT1H
+sla: P2D                         # in winter perimeters can go a day or more without an edit
+raw_archive_max_mb: 100
+source:
+  id: nifc-wfigs-perimeters
+  name: NIFC WFIGS Current Interagency Fire Perimeters
+  publisher: National Interagency Fire Center (NIFC)
+  url: https://data-nifc.opendata.arcgis.com/datasets/nifc::wfigs-current-interagency-fire-perimeters
+  # No licence on the item, only a liability disclaimer; federal interagency records (US Government works).
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true
+  # WFIGS asks for no particular credit; this is the item's own Credits line, verbatim.
+  attribution: >-
+    National Interagency Fire Center, Wildland Fire Interagency Geospatial Services (WFIGS). Credits:
+    US Department of Interior Office of Wildland Fire: IRWIN, USDA Forest Service, National Park Service,
+    Fish and Wildlife Service, Bureau of Indian Affairs, and Bureau of Land Management, National
+    Association of State Foresters, US Fire Administration, National Wildfire Coordinating Group
+checks:
+  # No min_rows: late in a quiet winter the current layer can legitimately hold no perimeters.
+  required_files: [current.geojson, perimeters/index.json, snapshots/index.json]

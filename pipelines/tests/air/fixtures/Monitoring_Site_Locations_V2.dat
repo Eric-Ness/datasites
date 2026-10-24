@@ -1,0 +1,7 @@
+#! Source: https://files.airnowtech.org/airnow/2026/20261001/Monitoring_Site_Locations_V2.dat
+#! Captured 2026-10-24. The header and every row for the two tribal sites and Ellensburg WA (listed under Chelan County though its AQS id says Kittitas), copied verbatim.
+StationID|AQSID|FullAQSID|Parameter|MonitorType|SiteCode|SiteName|Status|AgencyID|AgencyName|EPARegion|Latitude|Longitude|Elevation|GMTOffset|CountryFIPS|CBSA_ID|CBSA_Name|StateAQSCode|StateAbbreviation|CountyAQSCode|CountyName
+530370002|530370002|840530370002|PM2.5|Permanent|0002|Ellensburg-Ruby St|Active|WA1|Washington Department of Ecology|R10|46.993600|-120.545000|500.200|-8.00|US|21260| Ellensburg, WA |53|WA|007|CHELAN
+TT0300001|TT0300001|840TT0300001|O3|Permanent|0001|Wampanoag Laboratory-Martha's Vineyard|Active|WT1|Wampanoag Tribe|R1|41.330470|-70.785840||-5.00|US||||||
+TT0328801|TT0328801|840TT0328801|O3|Permanent|8801|Catawba Indian Nation|Active|CAT|Catawba Indian Nation|R4|34.912630|-80.874283||-5.00|US|16740| Charlotte-Gastonia-Concord, NC-SC |45|SC|091|YORK
+TT0328801|TT0328801|840TT0328801|PM2.5|Permanent|8801|Catawba Indian Nation|Active|CAT|Catawba Indian Nation|R4|34.912630|-80.874283||-5.00|US|16740| Charlotte-Gastonia-Concord, NC-SC |45|SC|091|YORK

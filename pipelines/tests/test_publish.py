@@ -35,8 +35,10 @@ def test_first_run_publishes_everything(contract, store, upstream):
     assert all(store.exists(r["key"]) for r in doc["source"]["raw"])  # raw archive
 
     catalog = get_json(store, catalog_key("climatedata"))[0]
-    assert catalog["datasets"][0]["current"] == result.version
-    assert catalog["datasets"][0]["coverage"]["end"] == "2026-09"
+    # The catalog lists every climatedata contract; find this one by id rather than by position.
+    entry = next(d for d in catalog["datasets"] if d["id"] == "co2-monthly")
+    assert entry["current"] == result.version
+    assert entry["coverage"]["end"] == "2026-09"
 
     s = state(store)
     assert s["consecutive_failures"] == 0 and s["blocked_version"] is None

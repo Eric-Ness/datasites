@@ -138,6 +138,35 @@ export function localDataset(site, dataset) {
   };
 }
 
+/**
+ * The bucket keys the API reads to serve one dataset: its site catalog, manifest, current version doc, state,
+ * shards, locations blob and (with allFiles) every published file. Seeding just these into wrangler's local R2
+ * takes seconds, where copying the whole local bucket would take hours at county scale.
+ */
+export function datasetKeys(site, dataset, { allFiles = true } = {}) {
+  const ds = localDataset(site, dataset);
+  const keys = new Set([
+    `sites/${site}/catalog.json`,
+    `sites/${site}/datasets/${dataset}/manifest.json`,
+    `sites/${site}/datasets/${dataset}/versions/${ds.manifest.current}.json`,
+    `ops/state/${site}/${dataset}.json`,
+  ]);
+  const blob = (hash) => `blobs/sha256/${hash.slice(0, 2)}/${hash}`;
+  for (const hash of Object.values(ds.doc.file_shards ?? {})) keys.add(blob(hash));
+  if (ds.doc.locations_blob) keys.add(blob(ds.doc.locations_blob));
+  if (allFiles) for (const path of ds.paths()) keys.add(blob(ds.entry(path).blob));
+  return keys;
+}
+
+/** Copies the given keys from .data/r2 into wrangler's local R2 bucket for apps/api. */
+export function seedLocalR2(keys) {
+  const bucket = join(ROOT, ".data", "r2");
+  const api = join(ROOT, "apps", "api");
+  for (const key of keys) {
+    run("pnpm", ["exec", "wrangler", "r2", "object", "put", `datasites-data/${key}`, "--file", join(bucket, key), "--local"], { cwd: api });
+  }
+}
+
 export function originRepo() {
   const url = run("git", ["remote", "get-url", "origin"]).stdout.trim();
   const m = /github\.com[/:]([^/]+)\/([^/.]+)(\.git)?$/.exec(url);

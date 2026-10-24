@@ -4,7 +4,7 @@
 // Uses ports 8797/8798 so it doesn't collide with `pnpm dev:*`, and stops its servers on exit.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { ROOT, check, fail, run, startServer, waitForHttp } from "./lib.mjs";
+import { ROOT, check, datasetKeys, fail, run, seedLocalR2, startServer, waitForHttp } from "./lib.mjs";
 
 const mode = process.argv[2];
 const sites = JSON.parse(readFileSync(join(ROOT, "packages", "registry", "src", "sites.json"), "utf8"));
@@ -23,14 +23,14 @@ function devServer(app, port) {
 async function api() {
   // 1. live pipeline into the local bucket (.data/r2)
   // --force: this check must exercise the live fetch even if the dataset was checked moments ago.
-  const pipeline = run("uv", ["run", "datasites", "run", "climatedata", "--target", "local", "--force"], { cwd: join(ROOT, "pipelines") });
+  const pipeline = run("uv", ["run", "datasites", "run", "climatedata/co2-monthly", "--target", "local", "--force"], { cwd: join(ROOT, "pipelines") });
   const runLines = pipeline.stdout.trim().split(/\r?\n/);
   const outcomes = runLines.filter((l) => l.startsWith("{")).map((l) => JSON.parse(l));
   check(outcomes.length > 0 && outcomes.every((o) => ["published", "unchanged"].includes(o.outcome)), `pipeline outcomes: ${pipeline.stdout}`);
   check(runLines.some((l) => l.startsWith("RUN OK ")), `pipeline did not report RUN OK:\n${pipeline.stdout}`);
 
-  // 2. copy it into wrangler's local R2, 3. serve it
-  run("node", [join(ROOT, "apps", "api", "scripts", "seed-local.mjs")]);
+  // 2. copy just this dataset into wrangler's local R2, 3. serve it
+  seedLocalR2(datasetKeys("climatedata", "co2-monthly"));
   const base = "http://127.0.0.1:8797";
   const server = devServer("api", 8797);
   await waitForHttp(`${base}/v1?site=climatedata`, { server });
@@ -38,7 +38,8 @@ async function api() {
 
   const status = await (await fetch(`${base}/v1/status?${q}`)).json();
   const co2 = status.datasets.find((d) => d.id === "co2-monthly");
-  check(status.overall === "ok" && co2?.status === "ok", `status: ${JSON.stringify(status)}`);
+  // Only co2-monthly's state is seeded, so the site's other datasets read "pending"; judge this dataset alone.
+  check(co2?.status === "ok", `co2-monthly status: ${JSON.stringify(co2)}`);
 
   const catalog = await (await fetch(`${base}/v1/catalog?${q}`)).json();
   const entry = catalog.datasets.find((d) => d.id === "co2-monthly");

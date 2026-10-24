@@ -80,12 +80,47 @@ def fetch(url: str, etag: str | None = None, last_modified: str | None = None, *
 
 
 class CollectContext:
-    """Handed to a pipeline's collect(ctx) for sources that need paging or query parameters."""
+    """Handed to a pipeline's collect(ctx) / resources(ctx), and to build(raw, ctx) if it takes two arguments.
 
-    def __init__(self, contract: Any, now: Any):
+    ctx.read_blob(hash) reads an immutable blob this dataset published earlier (for archives that grow
+    across versions, such as fire-perimeter history). It is read-only: pipelines never write to the store.
+    """
+
+    def __init__(self, contract: Any, now: Any, store: Any = None):
         self.contract = contract
         self.now = now
         self.requests = 0
+        self._store = store
+
+    def read_blob(self, sha256: str) -> bytes | None:
+        if self._store is None:
+            return None
+        from .layout import blob_key
+
+        found = self._store.get(blob_key(sha256))
+        return found[0] if found else None
+
+    def previous_files(self) -> dict[str, dict[str, Any]]:
+        """{path: entry} of this dataset's current published version (shards included), or {} if none."""
+        if self._store is None:
+            return {}
+        from .layout import blob_key, manifest_key, version_key
+        from .store import get_json
+
+        manifest, _ = get_json(self._store, manifest_key(self.contract.site, self.contract.id))
+        if not manifest:
+            return {}
+        doc, _ = get_json(self._store, version_key(self.contract.site, self.contract.id, manifest["current"]))
+        if not doc:
+            return {}
+        files = dict(doc["files"])
+        for shard in (doc.get("file_shards") or {}).values():
+            found = self._store.get(blob_key(shard))
+            if found:
+                import json
+
+                files.update(json.loads(found[0]))
+        return files
 
     def get(self, url: str, *, params: dict[str, Any] | None = None, headers: dict[str, str] | None = None, timeout: float = 120) -> bytes:
         self.requests += 1

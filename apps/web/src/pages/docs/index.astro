@@ -1,0 +1,241 @@
+---
+import Base from "../../layouts/Base.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
+import { apiBase, site, siteDatasets } from "../../lib/site";
+import { defaultSelection } from "../../lib/datasets";
+import { quickstart } from "../../lib/snippets";
+import { apiUrl, needsSiteParam, paths } from "../../lib/urls";
+import { problemExample, seriesShape, tableShape } from "../../lib/docs";
+import {
+  ANONYMOUS_RATE_LIMIT,
+  CORS,
+  PINNED_CACHE,
+  RETRY_AFTER_SECONDS,
+  STALE_DIRECTIVES,
+  TABLE_ALL_MAX_ROWS,
+} from "../../lib/api-facts";
+
+const first = siteDatasets.find((d) => !d.discontinued) ?? siteDatasets[0];
+const firstSeries = siteDatasets.find((d) => d.kind === "series");
+const firstTable = siteDatasets.find((d) => d.kind === "table");
+const lines = quickstart({
+  siteId: site.id,
+  base: apiBase,
+  first: first ? { siteId: site.id, base: apiBase, id: first.id, kind: first.kind, ...defaultSelection(first) } : null,
+});
+const exampleId = first?.id ?? "{dataset}";
+const sel = first ? defaultSelection(first) : null;
+const u = (path: string) => apiUrl(apiBase, site.id, path);
+const dataUrl =
+  first?.kind === "series" && sel?.series && sel.location
+    ? u(paths.series(first.id, sel.series, sel.location, "csv"))
+    : first
+      ? u(paths.download(first.id, "csv"))
+      : u(paths.catalog());
+const pinnedExample = `${exampleId}@2026-10-23.3f9a1c2e4b`;
+const local = needsSiteParam(apiBase);
+
+const toc = [
+  ["quickstart", "Quickstart"],
+  ["urls", "URL scheme"],
+  ["ids", "IDs"],
+  ["formats", "Formats"],
+  ["versions", "Pinned versions"],
+  ["caching", "Caching and ETags"],
+  ["errors", "Errors"],
+  ["rate-limits", "Rate limits and keys"],
+  ["cors", "CORS"],
+  ["licenses", "Licenses and credit"],
+];
+
+const etagExample = [
+  `curl -si ${JSON.stringify(dataUrl)} | grep -i etag`,
+  `# etag: "3f9a…"   (the SHA-256 of the file)`,
+  "",
+  `curl -si -H 'If-None-Match: "3f9a…"' ${JSON.stringify(dataUrl)}`,
+  "# HTTP/2 304   (nothing downloaded; your copy is current)",
+].join("\n");
+---
+
+<Base title="Docs" description={`How the ${site.name} API works: URLs, formats, versions, caching, errors and rate limits.`}>
+  <header class="hero">
+    <p class="eyebrow">Docs</p>
+    <h1>Using the {site.name} API</h1>
+    <p class="lede">
+      Every dataset is a set of static files behind one base URL. There is nothing to install and no key to request.
+    </p>
+  </header>
+
+  <div class="split">
+    <div class="prose" style="max-width:none;min-width:0">
+      <section class="section" id="quickstart" aria-labelledby="quickstart-h" style="margin-top:8px">
+        <h2 id="quickstart-h">Quickstart</h2>
+        <p>The catalog lists the datasets; each dataset's metadata links to its files.</p>
+        <CodeBlock code={lines.join("\n")} label="Quickstart commands" id="docs-quickstart" />
+        {
+          local && (
+            <p class="notice small">
+              This build points at a local API, so every URL carries <code>?site={site.id}</code>. On the public API the host
+              name picks the site and the parameter is not needed.
+            </p>
+          )
+        }
+      </section>
+
+      <section class="section" id="urls" aria-labelledby="urls-h">
+        <h2 id="urls-h">URL scheme</h2>
+        <p>All paths start at <code>{apiBase}</code>. Data paths end in a format extension.</p>
+        <div class="table-wrap" tabindex="0" role="region" aria-label="URL scheme">
+          <table>
+            <thead>
+              <tr><th scope="col">Path</th><th scope="col">What it returns</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="code-cell">/v1</td><td>The API index: site name and links.</td></tr>
+              <tr><td class="code-cell">/v1/catalog</td><td>Every dataset on the site with its current version and coverage.</td></tr>
+              <tr><td class="code-cell">/v1/status</td><td>Freshness of every dataset (see the <a href="/status/">status page</a>).</td></tr>
+              <tr><td class="code-cell">/v1/{"{dataset}"}</td><td>Metadata: version, coverage, source, license, validation and downloads.</td></tr>
+              <tr><td class="code-cell">/v1/{"{dataset}"}/versions</td><td>The current version, previous versions and monthly snapshots.</td></tr>
+              <tr><td class="code-cell">/v1/{"{dataset}"}/locations</td><td>Series ids with their location ids, and location names. For tables: the partitions.</td></tr>
+              <tr><td class="code-cell">/v1/{"{dataset}"}/{"{series}"}/{"{location}"}.json</td><td>One series at one place (also <code>.csv</code>).</td></tr>
+              <tr><td class="code-cell">/v1/{"{dataset}"}/table/{"{partition}"}.json</td><td>Rows of a table for one partition value, or <code>table/all</code> for tables up to {TABLE_ALL_MAX_ROWS.toLocaleString("en-US")} rows (also <code>.csv</code>).</td></tr>
+              <tr><td class="code-cell">/v1/{"{dataset}"}/download/{"{dataset}"}.csv</td><td>The whole dataset in one file (also <code>.parquet</code>).</td></tr>
+              <tr><td class="code-cell">/v1/{"{dataset}"}/{"{path}"}</td><td>A file of a files dataset, at the path its metadata lists.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          The <a href="/docs/reference/">API reference</a> lists the exact URLs for every dataset on this site.
+        </p>
+      </section>
+
+      <section class="section" id="ids" aria-labelledby="ids-h">
+        <h2 id="ids-h">IDs</h2>
+        <p>Dataset and series ids are lowercase and kebab-case. Location ids follow one scheme across all the sites:</p>
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Location ids">
+          <table>
+            <thead><tr><th scope="col">Place</th><th scope="col">Format</th><th scope="col">Example</th></tr></thead>
+            <tbody>
+              <tr><td>The world</td><td><code>world</code></td><td class="code-cell">world</td></tr>
+              <tr><td>Country</td><td>ISO 3166-1 alpha-3, lowercase</td><td class="code-cell">usa, twn</td></tr>
+              <tr><td>US state or equivalent</td><td><code>us-</code> and the USPS code</td><td class="code-cell">us-ca, us-dc, us-pr</td></tr>
+              <tr><td>US county</td><td><code>us-county-</code> and the 5-digit FIPS code</td><td class="code-cell">us-county-06037</td></tr>
+              <tr><td>Station or monitor</td><td>source prefix and the source's id</td><td class="code-cell">usgs-01646500, aqs-060371103</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="formats" aria-labelledby="formats-h">
+        <h2 id="formats-h">Formats</h2>
+        <h3>JSON</h3>
+        <p>A series file has a <code>meta</code> object and a <code>data</code> array ordered by date{firstSeries ? <>; this sketch uses <a href={`/datasets/${firstSeries.id}/`}>{firstSeries.title}</a></> : ""}:</p>
+        <CodeBlock code={seriesShape(firstSeries)} label="Shape of a series JSON file" id="shape-series" />
+        <p>A table file has <code>meta</code> and a <code>rows</code> array ordered by the key columns{firstTable ? <>, as in <a href={`/datasets/${firstTable.id}/`}>{firstTable.title}</a></> : ""}:</p>
+        <CodeBlock code={tableShape(firstTable)} label="Shape of a table JSON file" id="shape-table" />
+        <p>
+          Missing values are <code>null</code>, never sentinel numbers. Dates are strings: <code>YYYY-MM</code> for months,
+          <code>YYYY-MM-DD</code> for days, <code>YYYY</code> for years and ISO 8601 UTC ending in <code>Z</code> for
+          times.
+        </p>
+        <h3>CSV</h3>
+        <p>UTF-8, a header row, comma-separated, <code>\n</code> line endings, and an empty field for a missing value. The same columns as the JSON.</p>
+        <h3>Parquet</h3>
+        <p>
+          Zstandard-compressed with column statistics, so tools such as polars and DuckDB can read only the row groups
+          they need over HTTP range requests. Bulk Parquet files are usually a fraction of the size of the CSV.
+        </p>
+      </section>
+
+      <section class="section" id="versions" aria-labelledby="versions-h">
+        <h2 id="versions-h">Pinned versions</h2>
+        <p>
+          Each published update is a version with an id like <code>2026-10-23.3f9a1c2e4b</code>: the publish date and the
+          start of a hash of every file. Plain URLs always serve the current version. Put a version after the dataset id
+          to pin it:
+        </p>
+        <CodeBlock
+          code={[
+            `curl -s ${JSON.stringify(u(paths.versions(exampleId)))}`,
+            "",
+            "# the same data, frozen at one version",
+            `curl -s ${JSON.stringify(u(`/v1/${pinnedExample}`))}`,
+          ].join("\n")}
+          label="Pinned version example"
+          id="pinned-example"
+        />
+        <ul>
+          <li><code>{"/v1/{dataset}@{version}/..."}</code> works for every path of a dataset: metadata, series, tables and downloads.</li>
+          <li>Pinned responses never change and are cached as immutable for a year. Cite them in papers and reports.</li>
+          <li><code>/versions</code> lists the current version, recent previous ones and one snapshot per month.</li>
+          <li>A version that failed validation is never served. Asking for it returns <a href="/docs/errors/#unknown-version">unknown-version</a>.</li>
+        </ul>
+      </section>
+
+      <section class="section" id="caching" aria-labelledby="caching-h">
+        <h2 id="caching-h">Caching and ETags</h2>
+        <ul>
+          <li>Every data file has an <code>ETag</code>: the SHA-256 of its content. Send it back in <code>If-None-Match</code> and an unchanged file returns <code>304 Not Modified</code> with no body.</li>
+          <li>Current-version data URLs are cached for 5 minutes for datasets that update more than every 2 hours, 30 minutes for those updating up to every 2 days, and an hour otherwise, with <code>{STALE_DIRECTIVES}</code>.</li>
+          <li>Pinned URLs send <code>{PINNED_CACHE}</code>.</li>
+          <li>The catalog and dataset metadata are cached for 5 minutes, and the status for 1 minute.</li>
+          <li><code>X-Data-Version</code> names the version that answered, <code>Last-Modified</code> is when it was published, and <code>Link: rel="describedby"</code> points to the metadata.</li>
+          <li>Range requests (<code>Range: bytes=…</code>) return <code>206 Partial Content</code>.</li>
+        </ul>
+        <CodeBlock code={etagExample} label="Conditional request example" id="etag-example" />
+      </section>
+
+      <section class="section" id="errors" aria-labelledby="errors-h">
+        <h2 id="errors-h">Errors</h2>
+        <p>
+          Errors are <a href="https://www.rfc-editor.org/rfc/rfc9457" rel="external">RFC 9457</a> problem documents with
+          <code>Content-Type: application/problem+json</code>. The <code>type</code> URL points to an explanation, and
+          most add a <code>hint</code> with the request to make instead.
+        </p>
+        <CodeBlock code={problemExample(site.domain, first)} label="Example problem document" id="problem-example" />
+        <p><a href="/docs/errors/">Every error type</a>, with what causes it and how to fix it.</p>
+      </section>
+
+      <section class="section" id="rate-limits" aria-labelledby="rate-limits-h">
+        <h2 id="rate-limits-h">Rate limits and API keys</h2>
+        <p>
+          Without a key you can make {ANONYMOUS_RATE_LIMIT.requests} requests every {ANONYMOUS_RATE_LIMIT.periodSeconds}
+          seconds from one IP address. Past that, the API answers <code>429</code> with a
+          <a href="/docs/errors/#rate-limited">rate-limited</a> problem and <code>Retry-After: {RETRY_AFTER_SECONDS}</code>.
+        </p>
+        <p>
+          API keys are coming, with higher limits. Until then everyone is anonymous. For large pulls, download the bulk
+          CSV or Parquet file once instead of requesting thousands of small files, and use ETags so unchanged files cost
+          nothing.
+        </p>
+      </section>
+
+      <section class="section" id="cors" aria-labelledby="cors-h">
+        <h2 id="cors-h">CORS</h2>
+        <p>
+          Any website can call the API from the browser. Responses allow every origin for <code>{CORS.methods}</code>,
+          accept the {CORS.requestHeaders.map((h, i) => <>{i ? ", " : ""}<code>{h}</code></>)} request headers, and expose
+          {" "}{CORS.exposedHeaders.map((h, i) => <>{i ? ", " : ""}<code>{h}</code></>)}.
+        </p>
+      </section>
+
+      <section class="section" id="licenses" aria-labelledby="licenses-h">
+        <h2 id="licenses-h">Licenses and credit</h2>
+        <p>
+          The data keeps its source's license. Each dataset page, and the <a href="/sources/">sources page</a>, gives the
+          license, whether commercial use is allowed and the exact credit line to use. Every JSON file repeats the license
+          and attribution in its <code>meta</code>.
+        </p>
+      </section>
+    </div>
+
+    <nav class="toc" aria-label="On this page">
+      <p class="small muted" style="margin:0 0 6px;font-weight:600">On this page</p>
+      <ul>
+        {toc.map(([id, label]) => <li><a href={`#${id}`}>{label}</a></li>)}
+      </ul>
+      <p class="small" style="margin-top:14px"><a href="/docs/reference/">API reference</a></p>
+      <p class="small"><a href="/docs/errors/">Error types</a></p>
+    </nav>
+  </div>
+</Base>

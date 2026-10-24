@@ -1,0 +1,339 @@
+---
+import type { Dataset } from "@datasites/registry";
+import Base from "../../layouts/Base.astro";
+import Snippets from "../../components/Snippets.astro";
+import SchemaTable from "../../components/SchemaTable.astro";
+import SourceBlock from "../../components/SourceBlock.astro";
+import { apiBase, site, siteDatasets } from "../../lib/site";
+import { levelCounts } from "../../lib/geo";
+import { clientConfigJson, datasetPageModel } from "../../lib/dataset-page";
+import { cadenceLabel, commercialLabel, durationLabel, kindLabel, licenseInfo } from "../../lib/format";
+import { datasetJsonLd } from "../../lib/jsonld";
+import { TABLE_ALL_MAX_ROWS } from "../../lib/api-facts";
+
+export function getStaticPaths() {
+  return siteDatasets.map((dataset) => ({ params: { id: dataset.id }, props: { dataset } }));
+}
+
+interface Props {
+  dataset: Dataset;
+}
+
+const { dataset: ds } = Astro.props;
+const model = datasetPageModel(site, ds, apiBase, levelCounts);
+const license = licenseInfo(ds.source.license);
+const seriesEntries = Object.entries(ds.series);
+const measures = model.client.measures;
+---
+
+<Base title={ds.title} description={ds.description} jsonLd={datasetJsonLd(site, ds)} ogType="article">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/datasets/">Datasets</a></li>
+      <li><span aria-current="page">{ds.title}</span></li>
+    </ol>
+  </nav>
+
+  <header class="hero">
+    <p class="eyebrow">{kindLabel(ds.kind)} · <span class="mono">{ds.id}</span></p>
+    <h1>{ds.title}</h1>
+    <p class="lede">{ds.description}</p>
+    {
+      ds.discontinued && (
+        <p class="notice notice-warn">This dataset is discontinued: it stays available, but it is no longer updated.</p>
+      )
+    }
+  </header>
+
+  <dl class="facts" data-meta>
+    <div><dt>Updates</dt><dd>{cadenceLabel(ds.cadence)}</dd></div>
+    <div><dt>Coverage</dt><dd data-live="coverage">—</dd></div>
+    <div><dt>Current version</dt><dd class="mono" data-live="version">—</dd></div>
+    <div><dt>Last published</dt><dd data-live="published">—</dd></div>
+    <div><dt>Validation</dt><dd data-live="validation">—</dd></div>
+    <div><dt>License</dt><dd>{license.short}</dd></div>
+    <div><dt>Commercial use</dt><dd>{commercialLabel(ds.source.commercial_ok)}</dd></div>
+  </dl>
+  <div data-meta-notice></div>
+
+  <nav aria-label="On this page" class="small">
+    <ul class="chart-legend" style="font-size:14px;gap:4px 18px">
+      {model.sections.map((s) => <li><a href={`#${s.id}`}>{s.label}</a></li>)}
+    </ul>
+  </nav>
+
+  <section class="section" id="explore" aria-labelledby="explore-h">
+    <h2 id="explore-h">{model.exploreTitle}</h2>
+    {
+      ds.kind === "series" && (
+        <div data-explorer="series">
+          <div class="controls">
+            <div class="field">
+              <label for="ex-series">Series</label>
+              <select id="ex-series" disabled>
+                {seriesEntries.map(([id, name]) => (
+                  <option value={id}>{name}</option>
+                ))}
+              </select>
+            </div>
+            <div class="field" data-filter-field hidden>
+              <label for="ex-filter">Find a place</label>
+              <input id="ex-filter" type="search" autocomplete="off" placeholder="Name or id" />
+            </div>
+            <div class="field">
+              <label for="ex-location">Location</label>
+              <select id="ex-location" disabled>
+                <option value="">Loading…</option>
+              </select>
+            </div>
+            {measures.length > 1 && (
+              <div class="field">
+                <label for="ex-measure">Value</label>
+                <select id="ex-measure" disabled>
+                  {measures.map((m) => (
+                    <option value={m.name} selected={m.name === model.client.defaultMeasure}>
+                      {m.unit ? `${m.name} (${m.unit})` : m.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+          <figure class="chart-figure" aria-labelledby="ex-title">
+            <p class="chart-title" id="ex-title">{ds.title}</p>
+            <div class="chart-box" data-chart>
+              <div class="chart-state" role="status">Loading the chart…</div>
+            </div>
+            <figcaption>
+              <span data-chart-summary></span>
+              <span data-chart-links hidden>
+                Data for this chart: <a data-link="json" href="#explore">JSON</a> · <a data-link="csv" href="#explore">CSV</a>.
+              </span>
+              Source: {ds.source.publisher ?? ds.source.name}.
+            </figcaption>
+          </figure>
+          <details class="data-table" data-table-details>
+            <summary>Show the data as a table</summary>
+            <div data-table-slot><p class="muted small">The table appears once the data has loaded.</p></div>
+          </details>
+          <noscript>
+            <p class="notice">The chart needs JavaScript. Every series is also a plain JSON or CSV file: see the endpoints below.</p>
+          </noscript>
+        </div>
+      )
+    }
+    {
+      ds.kind === "table" && (
+        <div data-explorer="table">
+          <div class="controls">
+            <div class="field">
+              <label for="ex-partition">{ds.partition ? `Rows for ${ds.partition}` : "Rows"}</label>
+              <select id="ex-partition" disabled>
+                <option value="">Loading…</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="ex-find">Filter the rows</label>
+              <input id="ex-find" type="search" autocomplete="off" placeholder="Any text in a row" disabled />
+            </div>
+          </div>
+          <div data-table-preview>
+            <div class="chart-state" role="status">Loading the preview…</div>
+          </div>
+          <div class="pager" data-pager hidden>
+            <span class="status" data-pager-status aria-live="polite"></span>
+            <button type="button" class="btn btn-quiet btn-small" data-page="first">First</button>
+            <button type="button" class="btn btn-quiet btn-small" data-page="prev">Previous</button>
+            <button type="button" class="btn btn-quiet btn-small" data-page="next">Next</button>
+            <button type="button" class="btn btn-quiet btn-small" data-page="last">Last</button>
+          </div>
+          <noscript>
+            <p class="notice">The preview needs JavaScript. The table is also a plain CSV or Parquet file: see the downloads below.</p>
+          </noscript>
+        </div>
+      )
+    }
+    {
+      ds.kind === "files" && (
+        <div data-explorer="files">
+          <p class="muted">The files of the current version, served from the API.</p>
+          <ul class="file-list" data-file-list>
+            <li>Loading the file list…</li>
+          </ul>
+          <noscript>
+            <p class="notice">
+              The file list needs JavaScript. <a href={model.endpoints[0]!.example!}>The metadata endpoint</a> lists the same files.
+            </p>
+          </noscript>
+        </div>
+      )
+    }
+  </section>
+
+  <section class="section" id="api" aria-labelledby="api-h">
+    <h2 id="api-h">Use the API</h2>
+    <p class="muted prose">
+      {
+        ds.kind === "series"
+          ? "Each series and location is its own small file. The examples follow the series and location picked above."
+          : ds.kind === "table"
+            ? "The examples follow the rows picked above."
+            : "Fetch the metadata for the list of files, then any file by its path."
+      }
+      {" "}See the <a href="/docs/">docs</a> for versions, caching and errors.
+    </p>
+    <Snippets snippets={model.snippets} id="snippets" label={`Code examples for ${ds.title}`} />
+  </section>
+
+  {
+    ds.kind !== "files" && (
+      <section class="section" id="downloads" aria-labelledby="downloads-h">
+        <h2 id="downloads-h">Downloads</h2>
+        <p class="muted prose">
+          The whole dataset in one file{ds.kind === "series" ? ", with series and location columns" : ""}. Parquet keeps the
+          column types and is much smaller.
+        </p>
+        <ul class="file-list">
+          {model.downloads.map((d) => (
+            <li>
+              <a href={d.url} download>
+                {d.name}
+              </a>
+              <span class="muted small">
+                {d.format} <span data-download-size={d.name} />
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <section class="section" id="schema" aria-labelledby="schema-h">
+    <h2 id="schema-h">{ds.kind === "series" ? "Schema and series" : "Schema"}</h2>
+    {
+      ds.kind === "series" && (
+        <p class="muted prose">
+          Each series file has these columns. The bulk downloads add <code>series</code> and <code>location</code> columns in
+          front.
+        </p>
+      )
+    }
+    {
+      ds.kind === "table" && (
+        <p class="muted prose">
+          Rows are identified by {ds.key.length ? ds.key.map((k, i) => <>{i ? ", " : ""}<code>{k}</code></>) : "their position"}.
+          {ds.partition ? (
+            <>
+              {" "}
+              The rows are also split into one file per value of <code>{ds.partition}</code>.
+            </>
+          ) : null}{" "}
+          Tables up to {TABLE_ALL_MAX_ROWS.toLocaleString("en-US")} rows also have a single <code>table/all</code> file.
+        </p>
+      )
+    }
+    {ds.schema.length ? <SchemaTable dataset={ds} /> : <p>This dataset publishes files without a fixed column schema.</p>}
+
+    {
+      ds.kind === "series" && (
+        <>
+          <h3>Series</h3>
+          <div class="table-wrap" tabindex="0" role="region" aria-label="Series">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Series id</th>
+                  <th scope="col">Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                {seriesEntries.map(([id, name]) => (
+                  <tr>
+                    <th scope="row" class="code-cell">
+                      {id}
+                    </th>
+                    <td>{name}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <h3>Locations</h3>
+          <p class="prose">{model.locations!.text}</p>
+          {model.locations!.explicit.length > 0 && (
+            <div class="table-wrap" tabindex="0" role="region" aria-label="Named locations">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Location id</th>
+                    <th scope="col">Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {model.locations!.explicit.map((loc) => (
+                    <tr>
+                      <th scope="row" class="code-cell">
+                        {loc.id}
+                      </th>
+                      <td>{loc.name}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {model.locations!.levels.length > 0 && (
+            <p class="muted small">
+              Place names come from the shared location registry; see <a href="/sources/#reference-data">Sources</a>.
+            </p>
+          )}
+        </>
+      )
+    }
+  </section>
+
+  <section class="section" id="source" aria-labelledby="source-h">
+    <h2 id="source-h">Source and license</h2>
+    <SourceBlock source={ds.source} id="attribution" />
+    <p class="muted small">
+      Checked every {durationLabel(ds.check_every)}. If the source hasn't changed in {durationLabel(ds.sla)}, the
+      <a href="/status/">status page</a> flags it as stale.
+    </p>
+  </section>
+
+  <section class="section" id="endpoints" aria-labelledby="endpoints-h">
+    <h2 id="endpoints-h">Endpoints</h2>
+    <p class="muted prose">
+      Every URL for this dataset. To pin the current version, put it after the id:
+      <code data-live="pinned">{`/v1/${ds.id}@<version>`}</code>.
+      The <a href={`/docs/reference/#${ds.id}`}>API reference</a> describes each response.
+    </p>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Endpoints">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">What</th>
+            <th scope="col">URL</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            model.endpoints.map((e) => (
+              <tr>
+                <td>{e.label}</td>
+                <td class="code-cell">{e.example ? <a href={e.example}>{e.template}</a> : e.template}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script type="application/json" id="dataset-config" set:html={clientConfigJson(model.client)} />
+</Base>
+
+<script>
+  import "../../client/dataset-page";
+</script>

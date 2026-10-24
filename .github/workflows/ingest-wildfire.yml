@@ -1,0 +1,60 @@
+name: ingest-wildfire
+
+# Every 3 hours, the most often the private repo's Actions minutes allow (docs/PIPELINES.md): FIRMS
+# near-real-time detections arrive ~3 h after each satellite pass, so a faster schedule would mostly
+# re-fetch the same files. Each run is short (~2 min): conditional GETs make the unchanged FIRMS and
+# HMS files and the 15 MB Natural Earth boundaries 304s, and WFIGS is a few paged queries.
+# Stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md).
+
+on:
+  schedule:
+    - cron: "37 */3 * * *" # 00:37, 03:37, ... UTC; odd minutes avoid GitHub's top-of-the-hour queue
+  workflow_dispatch:
+    inputs:
+      dataset:
+        description: "<site> or <site>/<dataset>"
+        default: wildfiredata
+      target:
+        type: choice
+        options: [production, staging]
+        default: production
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ingest-wildfire
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    if: vars.INGEST_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: ${{ inputs.target || 'production' }}
+    defaults:
+      run:
+        working-directory: pipelines
+    env:
+      HC_URL: ${{ secrets.HC_INGEST_WILDFIRE }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.2 # exact tag: setup-uv has no moving major tag
+        with:
+          enable-cache: true
+      - name: Ping healthchecks.io (start)
+        if: env.HC_URL != ''
+        run: curl -fsS -m 10 --retry 3 "$HC_URL/start" || true
+      - name: Run pipelines
+        env:
+          R2_ENDPOINT: ${{ vars.R2_ENDPOINT }}
+          R2_BUCKET: ${{ vars.R2_BUCKET }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: >
+          uv run --frozen datasites run "${{ inputs.dataset || 'wildfiredata' }}"
+          --target "${{ inputs.target || 'production' }}"
+          --summary "$GITHUB_STEP_SUMMARY"
+      - name: Ping healthchecks.io (result)
+        if: always() && env.HC_URL != ''
+        run: curl -fsS -m 10 --retry 3 "$HC_URL/${{ job.status == 'success' && '0' || '1' }}" || true

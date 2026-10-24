@@ -1,0 +1,82 @@
+# Excerpt of https://dataverse.harvard.edu/api/datasets/:persistentId/?persistentId=doi:10.7910/DVN/PEJ5QU
+# Captured 2026-10-24. Only the keys the pipeline reads are kept (the citation metadata blocks are dropped); every value is unchanged.
+{
+ "status": "OK",
+ "data": {
+  "id": 3072248,
+  "identifier": "DVN/PEJ5QU",
+  "persistentUrl": "https://doi.org/10.7910/DVN/PEJ5QU",
+  "protocol": "doi",
+  "authority": "10.7910",
+  "publisher": "Harvard Dataverse",
+  "publicationDate": "2017-11-01",
+  "latestVersion": {
+   "id": 730907,
+   "datasetId": 3072248,
+   "datasetPersistentId": "doi:10.7910/DVN/PEJ5QU",
+   "versionNumber": 8,
+   "versionMinorNumber": 0,
+   "versionState": "RELEASED",
+   "lastUpdateTime": "2026-05-11T16:13:52Z",
+   "releaseTime": "2026-05-11T16:13:52Z",
+   "license": {
+    "name": "CC0 1.0",
+    "uri": "http://creativecommons.org/publicdomain/zero/1.0",
+    "iconUri": "https://licensebuttons.net/p/zero/1.0/88x31.png",
+    "rightsIdentifier": "CC0-1.0",
+    "rightsIdentifierScheme": "SPDX",
+    "schemeUri": "https://spdx.org/licenses/",
+    "languageCode": "en"
+   },
+   "fileAccessRequest": false,
+   "files": [
+    {
+     "label": "1976-2024-senate-state.tab",
+     "restricted": false,
+     "version": 3,
+     "datasetVersionId": 730907,
+     "dataFile": {
+      "id": 13887039,
+      "persistentId": "",
+      "filename": "1976-2024-senate-state.tab",
+      "contentType": "text/tab-separated-values",
+      "filesize": 632787,
+      "originalFileFormat": "text/comma-separated-values",
+      "originalFileName": "1976-2024-senate-state.csv",
+      "md5": "0f8b51cf0f77a2ef0bff992f7a64d1b4"
+     }
+    },
+    {
+     "label": "codebook-us-senate-1976–2024.md",
+     "restricted": false,
+     "version": 2,
+     "datasetVersionId": 730907,
+     "dataFile": {
+      "id": 6708560,
+      "persistentId": "",
+      "filename": "codebook-us-senate-1976–2024.md",
+      "contentType": "text/markdown",
+      "filesize": 3700,
+      "md5": "1cab4bc42b0ca632223b9b9a90c65f30"
+     }
+    },
+    {
+     "label": "sources-senate.tab",
+     "restricted": false,
+     "version": 1,
+     "datasetVersionId": 730907,
+     "dataFile": {
+      "id": 4304792,
+      "persistentId": "",
+      "filename": "sources-senate.tab",
+      "contentType": "text/tab-separated-values",
+      "filesize": 3354,
+      "originalFileFormat": "text/csv",
+      "originalFileName": "sources-senate.csv",
+      "md5": "d92c44441367c4acda59e8779dc62155"
+     }
+    }
+   ]
+  }
+ }
+}

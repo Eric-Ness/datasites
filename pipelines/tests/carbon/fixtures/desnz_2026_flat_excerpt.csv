@@ -1,0 +1,44 @@
+# Source: https://assets.publishing.service.gov.uk/media/6a6c9748862aaf18d9c62ac9/ghg-conversion-factors-2026-flat-format-revised.xlsx
+# Captured: 2026-10-24
+# Excerpt of worksheet 'Factors by Category': the rows above and including the header, a selection of factor rows in file order, and the END row
+# Cells are copied verbatim as text (as the spreadsheet stores them); blank cells are empty.
+UK Government GHG Conversion Factors for Company Reporting,,,,,,,,,
+Factors by Category,,,,,,,,,
+"Freeze panes are active on this sheet. To turn off freeze panes select the 'View' ribbon then 'Freeze Panes' then 'Unfreeze Panes' or use [Alt W, F].",,,,,,,,,
+,,,,,,,,,
+,,Category,,,,,,,
+ID,Scope,Level 1,Level 2,Level 3,Level 4,Column Text,UOM,GHG/Unit,GHG Conversion Factor 2026
+1_100_1000_15_1,Scope 1,Fuels,Gaseous fuels,Butane,,,tonnes,kg CO2e,3033.38067
+1_100_1000_15_2,Scope 1,Fuels,Gaseous fuels,Butane,,,tonnes,kg CO2e of CO2 per unit,3029.26
+1_100_1000_15_3,Scope 1,Fuels,Gaseous fuels,Butane,,,tonnes,kg CO2e of CH4 per unit,2.52
+1_100_1000_15_4,Scope 1,Fuels,Gaseous fuels,Butane,,,tonnes,kg CO2e of N2O per unit,1.60067
+1_100_1004_7_1,Scope 1,Fuels,Gaseous fuels,Natural gas,,,kWh (Net CV),kg CO2e,0.20199
+1_100_1004_6_1,Scope 1,Fuels,Gaseous fuels,Natural gas,,,kWh (Gross CV),kg CO2e,0.18231
+3_200_2075_3_1,Scope 1,Refrigerant & other,Kyoto protocol products,Sulphur hexafluoride (SF6),,Emissions including only Kyoto products,kg,kg CO2e,23500
+3_200_2076_3_1,Scope 1,Refrigerant & other,Kyoto protocol products,Sulphur hexafluoride (SF6),,Emissions including only non-Kyoto products,kg,kg CO2e,
+3_200_2077_3_1,Scope 1,Refrigerant & other,Kyoto protocol products,Sulphur hexafluoride (SF6),,Total emissions including non-Kyoto products,kg,kg CO2e,23500
+3_202_2351_3_1,Scope 1,Refrigerant & other,Montreal protocol products,CFC-11/R11 = trichlorofluoromethane,,Emissions including only Kyoto products,kg,kg CO2e,
+4_300_3004_4_1,Scope 1,Passenger vehicles,Cars (by market segment),Mini,,Battery Electric Vehicle,km,kg CO2e,0
+6_300_3000_4_5,Scope 1,SECR kWh pass & delivery vehs,Cars (by market segment),Mini,,Diesel,km,kWh (Net CV),0.42076
+7_400_4000_5_1,Scope 2,UK electricity,Electricity generated,Electricity: UK,kWh,,kWh,kg CO2e,0.13096
+8_300_3003_4_1,Scope 2,UK electricity for EVs,Cars (by market segment),Mini,,Plug-in Hybrid Electric Vehicle,km,kg CO2e,
+11_100_1000_15_1,Scope 3,WTT- fuels,Gaseous fuels,Butane,,,tonnes,kg CO2e,344.30947
+13_402_4000_5_1,Scope 3,Transmission and distribution,T&D- UK electricity,Electricity: UK,kWh,,kWh,kg CO2e,0.01299
+15_917_4000_5_1,Scope 3,WTT- UK electricity,WTT- UK electricity (generation),Electricity: UK,kWh,,kWh,kg CO2e,0.03682
+17_404_4005_1_1,Scope 3,Water supply,Water supply,Water supply,,,cubic metres,kg CO2e,0.1913
+17_404_4005_10_1,Scope 3,Water supply,Water supply,Water supply,,,million litres,kg CO2e,191.30156
+21_316_3170_11_1,Scope 3,Business travel- air,Flights,"Long-haul, to/from UK",Economy class,With RF,passenger.km,kg CO2e,0.11704
+21_316_3171_11_1,Scope 3,Business travel- air,Flights,"Long-haul, to/from UK",Economy class,Without RF,passenger.km,kg CO2e,0.06926
+25_313_3141_4_1,Scope 3,Business travel- land,Taxis,Regular taxi,,,km,kg CO2e,0.20806
+27_315_3151_14_1,Scope 3,Freighting goods,Rail,Freight train,,,tonne.km,kg CO2e,0.02583
+29_600_4000_13_1,Scope 3,Hotel stay,Hotel stay,UK,,,Room per night,kg CO2e,10.4
+29_600_4001_13_1,Scope 3,Hotel stay,Hotel stay,UK (London),,,Room per night,kg CO2e,11.5
+29_600_4019_13_1,Scope 3,Hotel stay,Hotel stay,"Hong Kong, China",,,Room per night,kg CO2e,51.5
+29_600_4028_13_1,Scope 3,Hotel stay,Hotel stay,Korea,,,Room per night,kg CO2e,55.8
+29_600_4051_13_1,Scope 3,Hotel stay,Hotel stay,Turkey,,,Room per night,kg CO2e,32.1
+29_600_4053_13_1,Scope 3,Hotel stay,Hotel stay,United States,,,Room per night,kg CO2e,16.1
+31_307_3000_4_1,Scope 3,Managed assets- vehicles,Managed cars (by market segment),Mini,,Diesel,km,kg CO2e,0.10998
+32_603_9999_12_1,Scope 3,Homeworking,Homeworking (office equipment + heating),,,,per FTE Working Hour,kg CO2e,0.32393
+99_104_1043_15_2,Outside of Scopes,Outside of scopes,Biomass,Wood logs,,,tonnes,kg CO2e of CO2 per unit,1436.23
+99_400_4001_5_2,Outside of Scopes,Outside of scopes,Electricity generated,Electricity: UK,,,kWh,kg CO2e of CO2 per unit,0.11507
+,END,,,,,,,,

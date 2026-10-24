@@ -1,0 +1,87 @@
+id: active-fires
+version: 1
+kind: table
+title: Active fires (US and Canada)
+description: >-
+  Satellite fire detections from the last 7 days over the United States and Canada, grouped into
+  fire events and linked to the official incident (name, acres, containment, IRWIN id) where one
+  exists. Detections in the same or adjacent 1 km grid cells within 48 hours of each other form one
+  event; repeat views of the same spot by a second satellite on the same overpass are counted once.
+  Built from NASA FIRMS VIIRS near-real-time detections (S-NPP, NOAA-20 and NOAA-21), NIFC
+  WFIGS current incidents and perimeters, and Natural Earth state and province boundaries.
+pipeline: datasites_wildfire.active_fires
+check_every: PT3H                # FIRMS near-real-time data lands ~3 h after each overpass
+cadence: PT1H                    # the FIRMS files change with every satellite pass
+sla: PT12H                       # stale-upstream if no FIRMS file changed in 12 hours
+raw_archive_max_mb: 100          # FIRMS 7-day files are ~1-5 MB each; Natural Earth admin-1 is 15 MB
+source:
+  id: nasa-firms-viirs-nrt
+  name: >-
+    NASA LANCE FIRMS VIIRS 375 m Active Fire NRT (VNP14IMGTDL_NRT, VJ114IMGTDL_NRT, VJ214IMGTDL_NRT);
+    incidents and perimeters from NIFC WFIGS; boundaries from Natural Earth
+  publisher: NASA LANCE FIRMS
+  url: https://www.earthdata.nasa.gov/data/tools/firms/faq
+  # FIRMS FAQ ("Are there any restrictions on using data or imagery from FIRMS?"): NASA promotes full and
+  # open sharing of data; it asks for a citation. NASA data are US Government works. WFIGS is US federal
+  # public domain; Natural Earth is public domain (https://www.naturalearthdata.com/about/terms-of-use/).
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true
+  # The FIRMS FAQ's acknowledgment text, the three product DOIs from the LANCE product pages, then the
+  # incident and boundary sources.
+  attribution: >-
+    We acknowledge the use of imagery from the NASA LANCE FIRMS (https://earthdata.nasa.gov/firms),
+    part of the NASA Earth Science Data and Information System (ESDIS). VIIRS 375 m active fire NRT
+    products: S-NPP doi:10.5067/FIRMS/VIIRS/VNP14IMGT_NRT.002, NOAA-20 doi:10.5067/FIRMS/VIIRS/VJ114IMGT_NRT.002,
+    NOAA-21 doi:10.5067/FIRMS/VIIRS/VJ214IMGT_NRT.002. Incident data: National Interagency Fire Center,
+    Wildland Fire Interagency Geospatial Services (WFIGS). Boundaries: Made with Natural Earth.
+key: [event_id]
+partition: country
+schema:
+  - { name: event_id, type: str, description: "Stable while the event's earliest detection stays in the 7-day window" }
+  - { name: country, type: str, description: "usa or can (ISO 3166-1 alpha-3, lowercase)" }
+  - { name: region, type: str, description: "State (us-ca) or province/territory (ca-bc, ISO 3166-2) of the event centroid" }
+  - { name: region_name, type: str }
+  - { name: first_detection, type: datetime, description: Earliest detection (satellite acquisition time) }
+  - { name: last_detection, type: datetime, description: Latest detection }
+  - { name: detections, type: int, description: "Fire pixels after removing cross-satellite repeats (same 0.5 km cell, same ~75 min overpass sequence)" }
+  - { name: raw_detections, type: int, description: All distinct FIRMS detections in the event }
+  - { name: low_confidence_detections, type: int, description: Detections FIRMS rates low confidence }
+  - { name: satellites, type: str, description: "Satellites with detections, e.g. S-NPP,NOAA-20,NOAA-21" }
+  - { name: latitude, type: float, unit: degrees, description: Centroid of the deduplicated detections }
+  - { name: longitude, type: float, unit: degrees }
+  - { name: min_latitude, type: float, unit: degrees, description: Bounding box of the detection centres }
+  - { name: max_latitude, type: float, unit: degrees }
+  - { name: min_longitude, type: float, unit: degrees, description: "Greater than max_longitude for a fire across the 180th meridian" }
+  - { name: max_longitude, type: float, unit: degrees }
+  - { name: max_frp, type: float, unit: MW, description: Highest fire radiative power of any detection }
+  - { name: days_detected, type: int, description: Distinct UTC dates with detections }
+  - { name: likely_static_source, type: bool, description: "Seen on 5+ days within 4 km and no incident: probably industrial (steel mill, refinery, flare), not a wildfire" }
+  - { name: incident_irwin_id, type: str, nullable: true, description: IRWIN id of the linked WFIGS incident (braces removed) }
+  - { name: incident_name, type: str, nullable: true }
+  - { name: incident_type, type: str, nullable: true, description: "WF wildfire, RX prescribed fire, CX complex" }
+  - { name: incident_acres, type: float, nullable: true, unit: acres, description: Incident size reported to IRWIN }
+  - { name: incident_percent_contained, type: float, nullable: true, unit: percent }
+  - { name: incident_discovered, type: datetime, nullable: true }
+  - { name: incident_link, type: str, nullable: true, description: "perimeter (detections inside a current perimeter), near-perimeter (within 2 km of one), origin (near the reported origin point)" }
+  - { name: incident_distance_km, type: float, nullable: true, unit: km, description: "0 inside a perimeter; else the nearest detection's distance to the perimeter or origin" }
+checks:
+  # No rows_min_ratio: the number of fires rightly swings with weather and season. A 7-day window over
+  # the US and Canada never has fewer than a few hundred events, so under 25 means the FIRMS files broke.
+  min_rows: 25
+  ranges:
+    latitude: [14, 84]
+    longitude: [-180, 180]
+    min_latitude: [14, 84]
+    max_latitude: [14, 84]
+    min_longitude: [-180, 180]
+    max_longitude: [-180, 180]
+    max_frp: [0, 50000]
+    detections: [1, 1000000]
+    raw_detections: [1, 1000000]
+    days_detected: [1, 8]
+    incident_acres: [0, 5000000]
+    incident_percent_contained: [0, 100]
+    incident_distance_km: [0, 25]
+  max_null_fraction:
+    region: 0
+    max_frp: 0

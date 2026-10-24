@@ -1,0 +1,2 @@
+#! Source: https://satepsanone.nesdis.noaa.gov/pub/FIRE/web/HMS/Smoke_Polygons/Shapefile/2026/10/hms_smoke20261019.zip
+#! Captured 2026-10-24 (Tue, 20 Oct 2026 09:55:55 GMT). The whole file, byte for byte (a zip cannot carry a header comment).

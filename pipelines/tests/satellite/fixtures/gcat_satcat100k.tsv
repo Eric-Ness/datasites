@@ -1,0 +1,8 @@
+# Source: https://planet4589.org/space/gcat/tsv/cat/satcat100k.tsv
+# Captured: 2026-10-24. Verbatim excerpt: the column header, the '# Updated' line and selected records, in file order.
+#JCAT	Satcat	Launch_Tag	Piece	Type	Name	PLName	LDate	Parent	SDate	Primary	DDate	Status	Dest	Owner	State	Manufacturer	Bus	Motor	Mass	MassFlag	DryMass	DryFlag	TotMass	TotFlag	Length	LFlag	Diameter	DFlag	Span	SpanFlag	Shape	ODate	Perigee	PF	Apogee	AF	Inc	IF	OpOrbit	OQUAL	AltNames
+# Updated 2026 Oct 24 0114:18
+S100000   	100000	2026-067	2026-067CY	P           	Saramago	Lusiada-3	2026 Mar 30	S68435	2026 Jul	Earth	-	O	-	LUSO	P	LUSO	Cubesat 8U	-	      15 	?	     15 	?	      15 	?	   0.4 	 	  0.2 	 	    0.4 	 	Box	2026 Jul 14	     500	 	     508	 	 97.46 	 	LLEO/S	-	-
+S100001   	100001	2026-160	2026-160A	P      O  M 	Starlink 38128	Starlink Group 15-14-01	2026 Jul 14	A11922	2026 Jul 14 0230:21	Earth	-	O	-	SPXS	US	SPXS	Starlink V2MO	-	     575 	 	    530 	?	     575 	 	   0.3 	?	  4.1 	 	   29.0 	?	Box + pan	2026 Jul 14	     249	 	     262	 	 70.00 	 	LLEO/I	-	-
+S100058   	100058	2026-162	2026-162B	R3          	Soyuz-2-1a No. 081 Blok-I	Blok-I 14S54 374BL02A	2026 Jul 14	R86576	2026 Jul 14 1456:29	Earth	2026 Jul 17	R	-	RVSNR	RU	PROGT	Blok-I	RD-0110	    2350 	 	   2350 	 	    2350 	 	   6.7 	 	  2.7 	 	    6.7 	 	Cyl	2026 Jul 16	     182	 	     202	 	 51.65 	 	LLEO/I	-	-
+S100129   	NNA	2026-168	2026-168A	P       ?   	Dongpo 13	Dongpo-13	2026 Jul 22	S100138	2026 Jul 22 0310?	Earth	-	O	-	HUANTZ	CN	WEINWX	Dongpo	-	     300 	?	    300 	?	     300 	?	   1.5 	?	  1.0 	?	    1.5 	?	Box	2026 Jul 23	     527	 	     551	 	 97.54 	 	LLEO/S	-	-

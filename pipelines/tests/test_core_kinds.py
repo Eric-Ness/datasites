@@ -229,6 +229,24 @@ def test_oversized_raw_is_not_archived_and_is_refetched_when_needed(store):
     assert fetcher.calls[-2][1] is not None and fetcher.calls[-1] == (url, None)  # conditional 304, then unconditional refetch
 
 
+def test_build_gets_a_read_only_context_with_previous_files(store):
+    seen = {}
+
+    def build(raw, ctx):
+        seen["previous"] = ctx.previous_files()
+        prior = seen["previous"].get("keep.txt")
+        seen["prior_body"] = ctx.read_blob(prior["blob"]) if prior else None
+        return {"keep.txt": raw["s"], "README.txt": b"x"}, {"rows": 1}
+
+    install("fake_files_ctx", RESOURCES={"s": "https://example.org/s"}, build=build)
+    c = contract(kind="files", pipeline="fake_files_ctx", checks={"required_files": ["keep.txt"]})
+    publish.run_dataset(c, store, fetcher=static_fetcher({"https://example.org/s": b"v1"}), now=NOW)
+    assert seen["previous"] == {} and seen["prior_body"] is None
+    c2 = contract(kind="files", pipeline="fake_files_ctx", checks={"required_files": ["keep.txt"]}, version=2)
+    publish.run_dataset(c2, store, fetcher=static_fetcher({"https://example.org/s": b"v2"}), now=NOW)
+    assert "keep.txt" in seen["previous"] and seen["prior_body"] == b"v1"
+
+
 def test_manifest_written_once_per_publish(store):
     install("fake_once", RESOURCES={"r": "https://example.org/r"},
             transform=lambda raw: pl.DataFrame({"series": ["t"], "location": ["us-ca"], "date": ["2026-09"], "value": [1.0]}))

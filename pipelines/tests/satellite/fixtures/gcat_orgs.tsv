@@ -1,0 +1,67 @@
+# Source: https://planet4589.org/space/gcat/tsv/tables/orgs.tsv
+# Captured: 2026-10-24. Verbatim excerpt: the column header, the '# Updated' line and the records for the codes the other fixtures use, in file order.
+#Code	UCode	StateCode	Type	Class	TStart	TStop	ShortName	Name	Location	Longitude	Latitude	Error	Parent	ShortEName	EName	UName
+# Updated 2026 Oct 24 0112:47
+CN	CN	CN	CY	C	1949 Oct  1	-	Zhongguo	Zhonghua Renmin Gongheguo	Beijing	    116.3800 	   39.9200 	0.0200 	-	China	China, People's Republic of	中华人民共和国
+GR	GR	GR	CY	C	1821 Mar	-	Ellas	Helliniki Dhimokratia	Athenai	     23.7300 	   37.9800 	0.0200 	-	Greece	Hellenic Republic	Ελληνική Δημοκρατία
+ID	ID	ID	CY	C	1945 Aug 17	-	Indonesia	Republik Indonesia	Jakarta	    106.8200 	   -6.2000 	0.0200 	-	Indonesia	Indonesia, Republic of	Republik Indonesia
+P	P	P	CY	C	1139 Jul 25	-	Portugal	Republica Portuguesa	Lisboa, Portugal	     -9.1400 	   38.7100 	0.0200 	-	Portugal	Portuguese Republic	República Portuguesa
+PK	PK	PK	CY	C	1947 Aug 14	-	Pakistan	Islami Jamhuriya-i-Pakistan	Islamabad, Pakistan	     73.0700 	   33.7200 	0.0200 	-	Pakistan	Pakistan, Islamic Republic of	اسلامی جمہوریۂ پاكستان
+RU	SU	RU	CY	C	1991 Dec 26	-	Rossiya	Rossiyskaya Federatsiya	Moskva, Rossiya	     37.6200 	   55.7500 	0.0200 	-	Russia	Russian Federation	Российская Федерация
+SU	SU	SU	CY	C	1922 Dec 30	1991 Dec 26	SSSR	Soyuz Sovetskikh Sotsialisticheskikh Respublik	Moskva, RSFSR, SSSR	     37.6200 	   55.7500 	0.0200 	-	USSR	Union of Soviet Socialist Republics	Союз Советских Социалистических Республик
+TR	TR	TR	CY	C	1919 May 19	-	Turkiye	Turkiye Cumhuriyeti	Ankara, Turkiye	     32.8700 	   39.9300 	0.0200 	-	Turkey	Turkey, Republic of	Türkiye Cumhuriyeti
+US	US	US	CY	C	1776 Jul  4	-	USA	United States of America	Washington, DC	    -77.0200 	   38.9000 	0.0200 	-	USA	United States of America	United States of America
+UNK	UNK	X	O/LA/LV/PL/E/S	C	-	-	UNK             -	         -            -	:	      0.0200 	    0.0000 	0.0000 	-	UNK	-	         -            -
+ABMA	ABMA	US	O/LA/LV/PL/E	D	1956 Feb	1961 Dec	ABMA	U.S. Army Ballistic Missile Agency	Huntsville, Alabama	    -86.6500 	   34.6800 	0.0200 	USA	-	-	U.S. Army Ballistic Missile Agency
+AFBMD	AFWDD	US	O/LA/PL	D	1957 Jun	1961 Apr	USAF BMD	US Air Force Ballistic Missile Division	El Segundo, California	   -118.4100 	   33.9200 	0.0200 	ARDC	-	-	US Air Force Ballistic Missile Division
+AFSMC	AFWDD	US	O/LA/PL	D	1992 Jul	2019 Dec 20	USAF SMC	US Air Force Space and Missile Center	El Segundo, California	   -118.4100 	   33.9200 	0.0200 	USAF	-	-	US Air Force Space and Missile Center
+AFSSD	AFWDD	US	O	D	1961 Apr  1	1967 Jul	USAF SSD	US Air Force Space Systems Division	El Segundo, California	   -118.4100 	   33.9200 	0.0200 	AFSC	-	-	US Air Force Space Systems Division
+AFSWC	AFSWC	US	O/LA/PL/S	D	1952 Apr  1	1976 Apr  1	AFSWC	US Air Force Special Weapons Center	Kirtland AFB, Albequerque, New Mexico	   -106.6100 	   35.0400 	0.0200 	USAF	-	-	US Air Force Special Weapons Center
+AMCOM	ABMA	US	-	D	1997 Oct	-	USA AMCOM	US Army Aviation and Missile Command	Huntsville, Alabama	    -86.6500 	   34.6800 	0.0200 	USA	-	-	US Army Aviation and Missile Command
+AURFS	AURFS	US	O	B	1989	-	Aurora Flt.Sci.	Aurora Flight Sciences	Manassas, Virginia	    -77.5156 	   38.7214 	0.0010 	BOE	-	-	Aurora Flight Sciences
+CIA	CIA	US	O/PL	D	1947 Jul 26	-	CIA	Central Intelligence Agency, USA	Langley, Virginia	    -77.1600 	   38.9500 	0.0200 	-	-	-	Central Intelligence Agency, USA
+DARPA2	DARPA	US	O/PL	D	1996 Feb 10	-	DARPA	Defense Advanced Research Projects Agency	Washington DC	    -77.0200 	   38.9000 	0.0200 	DOD	-	-	Defense Advanced Research Projects Agency
+DFK	DFK	CN	LV	B	2020 Jun	-	Dongfang Kongjian	Dongfang Kongjian (Shandong) Keji YG	Haiyang zone, Yantai City, Shandong	    121.1900 	   36.7300 	0.0200 	-	-	Orienspace	东方空间（山东）科技有限公司
+FKA	MOM	RU	O/LA/PL	C	2004	2016 Jan  1	Roskosmos	Federal'noe kosmicheskoe agentstvo Rossii (Roskosmos)	Moskva	     37.6200 	   55.7500 	0.0200 	-	-	Roskosmos	Федеральное космическое агентство (Роскосмос)
+GSFC	GSFC	US	O/LA/LV/PL/S	C	1959 May  1	*	GSFC	NASA Goddard Space Flight Center	Greenbelt, Maryland	    -76.8900 	   38.9900 	0.0200 	NASA	-	-	NASA Goddard Space Flight Center
+HGS	HGS	US	O	B	1997 Sep	2004	HGS	Hughes Global Services	Los Angeles:El Segundo, California	   -118.4100 	   33.9200 	0.0200 	-	-	-	Hughes Global Services
+HUANTZ	HUANTZ	CN	O	B	-	-	Meishan Huantian	Meishan Huantian Zhihui Keji YG	Shigao, Meishan, Sichuan	    104.0500 	   30.2500 	0.0200 	-	-	Meishan Huantian Smart Tech Co Ltd	眉山环天智慧科技有限公司
+JSC	JSC	US	O/LA/PL/S	C	1973 Feb 17	-	NASA JSC	NASA Johnson Space Flight Center	Houston:Clear Lake, Texas	    -95.1200 	   29.5600 	0.0200 	NASA	-	-	NASA Johnson Space Flight Center
+KPA	KPA	KP	LA/LV/E/LS	D	1948	-	KPA	Choson inmin'gun	Pyongyang	    125.7400 	   39.0200 	0.0200 	-	-	Korean People's Army	조선인민군
+LARCN	LARC	US	O/LA/LV/PL/S	C	1958 Oct  1	-	NASA LaRC	NASA Langley Research Center	Langley Field, Hampton, Virginia	    -76.3800 	   37.0900 	0.0200 	NASA	-	-	NASA Langley Research Center
+LIBRE	LIBRE	GR	O/PL	A	2018?	-	LSF	Libre Space Foundation	Athenai	     23.7300 	   37.9800 	0.0200 	-	-	-	Libre Space Foundation
+LMA	MARTD	US	O/LA/LV/PL	B	1995 Mar 15	2003 Jan	LMA	Lockheed Martin Astronautics	Denver:Littleton, Colorado	   -105.0100 	   39.6000 	0.0200 	LMMS	-	-	Lockheed Martin Astronautics
+LUSO	LUSO	P	O/PL	B	2002	-	LusoSpace	LusoSpace	Lisboa	     -9.1400 	   38.7400 	0.0200 	-	-	-	LusoSpace
+MDA	SDIO	US	O/LA/LV/PL/LS/S	D	2002	-	MDA	Missile Defense Agency	Washington,DC:Pentagon	    -77.0600 	   38.8700 	0.0200 	DOD	-	-	Missile Defense Agency
+MSC	JSC	US	O/LA/PL/S	C	1962 Mar  1	1973 Feb 17	MSC	NASA Manned Spacecraft Center	Houston:Clear Lake, Texas	    -95.1200 	   29.5600 	0.0200 	NASA	-	-	NASA Manned Spacecraft Center
+MSFC	MSFC	US	O/LA/LV/PL/E/S	C	1960	-	NASA MSFC	NASA Marshall Space Flight Center	Huntsville, Alabama	    -86.6500 	   34.6800 	0.0200 	NASA	-	-	NASA Marshall Space Flight Center
+MVS	MVS	SU	O/LA	D	1946 Mar	1950 Feb	MVS	Ministerstvo Voenniy Sili?	Moskva	     37.6200 	   55.7500 	0.0200 	-	-	Miinistry of the Armed Forces	Министерство Вооруженных Сил СССР
+NGIS	OATK	US	LA	B	2018 Jun  7	-	NGIS	Northrop Grumman Innovation Systems	Washington:Dulles, Virginia	    -77.4300 	   39.0100 	0.0200 	-	NG	-	Orbital ATK
+NII88	NII88	SU	O/LA/LV/PL	D	1946 May	1967	NII-88	NII-88 (Nauchno-Issledovatel'niy Institut 88)	Moskva:Podlipki	     37.8200 	   55.9300 	0.0200 	-	-	-	НИИ-88
+NRL	NRL	US	O/LA/LV/PL/E/LS/S	D	1923	-	NRL	Naval Research Lab	Washington, D.C.	    -77.0200 	   38.9000 	0.0200 	USN	-	-	Naval Research Lab
+NRO	NRO	US	O/LA/LS	D	1960 Aug 25	1994	NRO	National Reconnaissance Office	Washington, D.C.	    -77.0200 	   38.9000 	0.0200 	-	-	-	National Reconnaissance Office
+NROC	NRO	US	O/LA	D	1994	-	NRO	National Reconnaissance Office	Chantilly, Virginia	    -77.4000 	   38.8800 	0.0200 	-	-	-	National Reconnaissance Office
+NUDTC	NUDTC	CN	O/LV/PL/E	B	1970	-	NUDT Changsha	Guofang Keji Daxue Yan	Changsha, Hunan	    112.9400 	   28.2300 	0.0200 	-	-	National University of Defense Technology	国防科技大学研
+OKB1	OKB1	SU	O/LA/LV/PL/E	C	1946	1966 Mar  6	OKB-1	OKB-1 im. S.P. Korolev	Korolev:Podlipki	     37.8200 	   55.9300 	0.0200 	-	-	-	ОКБ-1 им. С.П. Королева
+PARD	PARD	US	O/LA/LV/PL/E/S	C	1945	1959 May	PARD	NACA Pilotless Aircraft Research Division, Langley Aero. Lab.	Wallops Island, Virginia	    -75.4900 	   37.8400 	0.0200 	NACA	-	-	NACA Pilotless Aircraft Research Division, Langley Aero. Lab.
+PSN	PSN	ID	O	B	1992	-	PSN	PT Pasifik Satelit Nusantara	Jakarta:Bekasi, West Java	    106.9900 	   -6.2300 	0.0200 	-	-	-	PT Pasifik Satelit Nusantara
+RKKE	OKB1	RU	O/LA/LV/PL	C	1994	-	RKKE	RKK Energiya	Korolev:Podlipki, Moskva, Rossiya	     37.8200 	   55.9300 	0.0200 	FKA	-	-	ОАО "Ракетно-космическая корпорация "Энергия" имени С.П. Королёва"
+RLABN	RLABN	NZ	O/LA/LV/PL/E/LS/S	B	2009	-	Rocket Lab	Rocket Lab Ltd.	Parnell, Auckland, North Island	    174.7800 	  -36.8700 	0.0200 	RLABU	-	-	Rocket Lab Ltd.
+RVSN	RVSN	SU	O/LA/PL/LS	D	1959 Dec 17	1991 Dec	RVSN	Rakentiye Voiska Strategicheskogo Naznacheniye	Mosvka?	     37.6200 	   55.7500 	0.0200 	MO	-	Strategic Rocket Forces	Ракетные войска стратегического назначения
+RVSNR	RVSN	RU	O/LA/PL	D	1991 Dec	-	RVSN RF	Rakentiye Voiska Strategicheskogo Naznacheniye (Rossisk. Fed.)	Mosvka?	     37.6200 	   55.7500 	0.0200 	MORF	-	Russian Strategic Rocket Forces	Ракетные войска стратегического назначения Российской Федерации
+SAFSP	SAFSP	US	O	D	1961 Sep	1992 Dec 31	SAFSP	Secretary of the Air Force, Office of Special Projects (NRO Program A)	Los Angeles:El Segundo, California	   -118.4100 	   33.9200 	0.0200 	NRO	-	-	Secretary of the Air Force, Office of Special Projects (NRO Program A)
+SAND	SAND	US	O/LA/LV/PL/LS/S	D	1948 Apr  1	1979	Sandia	Sandia Laboratories	Albequerque, New Mexico	   -106.6100 	   35.1100 	0.0200 	DOE	-	-	Sandia Laboratories
+SAST	SBA	CN	O/LA/LV/PL	B	1993	-	SAST	Shanghai hangtian jishu yanjiuyuan	Shanghai:Minghan	    121.3800 	   31.1100 	0.0200 	CASC	-	Shanghai Academy of Space Technology (CASC 8th Acad)	上海航天技术研究院
+SESINTU	INTELD	US	O	B	2024 May	-	Intelsat SA (US)	Intelsat S.A., US headquarters	McLean, Virginia	    -77.0200 	   38.9000 	0.0200 	SES	-	-	Intelsat S.A., US headquarters
+SFSSC	AFWDD	US	O/LA/PL	D	2021 Aug	-	USSF SSC	US Space Force Space Systems Command	El Segundo, California	   -118.4100 	   33.9200 	0.0200 	USSF	-	-	US Space Force Space Systems Command
+SINDO	SINDO	ID	O	B	1993	2003	Satelindo	PT Satellit Palapa Indonesia (Satelindo)	Jakarta	    106.8200 	   -6.2000 	0.0200 	-	-	-	PT Satellit Palapa Indonesia (Satelindo)
+SPX	SPX	US	O/LA/LV/PL/E/LS/S	B	2007 Aug	-	SpaceX	SpaceX	Hawthorne, California	   -118.3500 	   33.9200 	0.0200 	-	-	-	SpaceX
+SPXS	SPXS	US	O/PL	B	2015 Jun	-	SpaceX/Seattle	SpaceX (Seattle)	Seattle:Redmond, Washington	   -122.1200 	   47.6700 	0.0200 	-	-	-	SpaceX (Seattle)
+SUPA	SUPA	PK	O/LA/LV/PL/LS/S	C	1961 Sep	-	SUPARCO	Space and Upper Atmosphere Research Commission	Islamabad	     73.0700 	   33.7200 	0.0200 	-	-	-	خلائی و بالائی فضائی تحقیقاتی مأموریہ
+TSMASHF	NII88	RU	-	C	1992	-	TsNIIMash	TsNIIMash (Tsenral'niy NII Mashinostroeniya)	Moskva:Podlipki	     37.8200 	   55.9300 	0.0200 	FKA	-	-	Центральный научно-исследовательский институт машиностроения (ЦНИИмаш)
+TSUKOS	GUKOS	SU	O/LA	D	1964 Oct	1970 Mar	TsUKOS	Tsentral'noye Upravleniye Kosmicheskhikh Sredstv	Moskva?	     37.6200 	   55.7500 	0.0200 	MO	-	Central Space Forces Directorate	Центральное управление космических средств
+TURKT	TURKP	TR	O	B	1995	2004 Jul	Turk	Turk Telekomunikasyon AS	Ankara	     32.8700 	   39.9300 	0.0200 	-	-	Turk Telecom	Türk Telekomünikasyon A.Ş.
+UNKS	GUKOS	SU	O/LA	D	1986 Apr 24	1991	UNKS	Upravleniye Nachalnika Kosmicheskikh Sredstv	Moskva	     37.6200 	   55.7500 	0.0200 	MO	-	-	Управление начальника космических средств МО СССР
+USAF	USAF	US	O/LA/PL/LS/S	D	1947 Sep 18	-	USAF	United States Air Force	Washington, DC:Pentagon	    -77.0600 	   38.8700 	0.0200 	-	US Air Force	-	United States Air Force
+VVKOV	GUKOS	RU	O/LA	D	2015	-	VVKO VKS	Voisk Vosdushno-Kosmicheskoi Oborona, Vosdushno-Kosmocheskie Sili	Moskva	     37.6200 	   55.7500 	0.0200 	VOKS	-	Aerospace Defence Forces	Войска воздушно-космической обороны
+WEHR	WEHR	DR	O/LA/LV/PL/LS	D	1939	1945	Wehrmacht	Wehrmacht	Berlin	     13.3900 	   52.5200 	0.0200 	-	-	-	Wehrmacht

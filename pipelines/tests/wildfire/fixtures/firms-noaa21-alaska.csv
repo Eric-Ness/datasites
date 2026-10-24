@@ -1,0 +1,5 @@
+#! Source: https://firms.modaps.eosdis.nasa.gov/data/active_fire/noaa-21-viirs-c2/csv/J2_VIIRS_C2_Alaska_7d.csv
+#! Captured 2026-10-24 (Sat, 24 Oct 2026 13:44:02 GMT). whole file, copied verbatim.
+latitude,longitude,bright_ti4,scan,track,acq_date,acq_time,satellite,confidence,version,bright_ti5,frp,daynight
+70.31824,-148.50369,299.83,0.41,0.37,2026-10-17,1323,N21,nominal,2.0NRT,265.39,1.04,N
+70.31913,-148.50345,298.55,0.39,0.37,2026-10-19,1246,N21,nominal,2.0NRT,267.06,0.93,N

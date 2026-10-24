@@ -1,0 +1,9 @@
+#! Source: https://aqs.epa.gov/aqsweb/airdata/daily_aqi_by_county_2025.zip
+#! Captured 2026-10-24. The CSV inside the zip: its header and rows for Los Angeles, Kittitas WA, Catano PR and Fairfield CT (former county), copied verbatim.
+"State Name","county Name","State Code","County Code","Date","AQI","Category","Defining Parameter","Defining Site","Number of Sites Reporting"
+"California","Los Angeles","06","037","2025-07-04",151,"Unhealthy","PM2.5","06-037-1302",14
+"California","Los Angeles","06","037","2025-07-05",170,"Unhealthy","PM2.5","06-037-1103",14
+"California","Los Angeles","06","037","2025-12-15",93,"Moderate","PM2.5","06-037-1602",14
+"Connecticut","Fairfield","09","001","2025-12-15",18,"Good","NO2","09-001-9003",3
+"Puerto Rico","Catano","72","033","2025-12-15",53,"Moderate","PM2.5","72-033-0004",1
+"Washington","Kittitas","53","037","2025-12-15",36,"Good","PM2.5","53-037-0002",1

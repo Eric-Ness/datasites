@@ -1,5 +1,12 @@
 // One API Worker serves every site at api.<domain>; the site is picked from the Host header.
 // Add a site's route only once its zone is Active in Cloudflare, or the deploy fails.
+//
+// Before the first deploy with keys enabled, replace the placeholder ids:
+//   KEYS:  pnpm exec wrangler kv namespace create datasites-api-keys          (and ...-staging for env.staging)
+//   USAGE: Analytics Engine datasets are created on first write; nothing to create.
+//   UsageCounter: the Durable Object class is created by the v1 migration on deploy.
+// Stripe secrets are optional; without them billing stays inert:
+//   pnpm exec wrangler secret put STRIPE_SECRET_KEY / STRIPE_WEBHOOK_SECRET
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "datasites-api",
@@ -11,12 +18,19 @@
   "routes": [
     { "pattern": "api.climatedata.dev", "custom_domain": true }
   ],
-  "triggers": { "crons": ["*/15 * * * *"] },
+  // Every 15 minutes: freshness check. 00:07 UTC: report the previous day's usage to Stripe.
+  "triggers": { "crons": ["*/15 * * * *", "7 0 * * *"] },
   "r2_buckets": [{ "binding": "DATA", "bucket_name": "datasites-data" }],
+  "kv_namespaces": [{ "binding": "KEYS", "id": "REPLACE_WITH_KEYS_NAMESPACE_ID" }],
   "ratelimits": [
-    { "name": "RL_ANON", "namespace_id": "1001", "simple": { "limit": 120, "period": 60 } }
+    { "name": "RL_ANON", "namespace_id": "1001", "simple": { "limit": 120, "period": 60 } },
+    { "name": "RL_FREE", "namespace_id": "1003", "simple": { "limit": 600, "period": 60 } },
+    { "name": "RL_PRO", "namespace_id": "1004", "simple": { "limit": 6000, "period": 60 } }
   ],
-  "vars": { "ENV": "production" },
+  "analytics_engine_datasets": [{ "binding": "USAGE", "dataset": "datasites_api_usage" }],
+  "durable_objects": { "bindings": [{ "name": "USAGE_COUNTER", "class_name": "UsageCounter" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["UsageCounter"] }],
+  "vars": { "ENV": "production", "STRIPE_METER_EVENT": "api_requests" },
   "env": {
     "staging": {
       "name": "datasites-api-staging",
@@ -24,10 +38,15 @@
       "routes": [],
       "triggers": { "crons": [] },
       "r2_buckets": [{ "binding": "DATA", "bucket_name": "datasites-data-staging" }],
+      "kv_namespaces": [{ "binding": "KEYS", "id": "REPLACE_WITH_STAGING_KEYS_NAMESPACE_ID" }],
       "ratelimits": [
-        { "name": "RL_ANON", "namespace_id": "1002", "simple": { "limit": 600, "period": 60 } }
+        { "name": "RL_ANON", "namespace_id": "1002", "simple": { "limit": 600, "period": 60 } },
+        { "name": "RL_FREE", "namespace_id": "1005", "simple": { "limit": 1200, "period": 60 } },
+        { "name": "RL_PRO", "namespace_id": "1006", "simple": { "limit": 6000, "period": 60 } }
       ],
-      "vars": { "ENV": "staging" }
+      "analytics_engine_datasets": [{ "binding": "USAGE", "dataset": "datasites_api_usage_staging" }],
+      "durable_objects": { "bindings": [{ "name": "USAGE_COUNTER", "class_name": "UsageCounter" }] },
+      "vars": { "ENV": "staging", "STRIPE_METER_EVENT": "api_requests" }
     }
   }
 }

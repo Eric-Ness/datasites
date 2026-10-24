@@ -1,5 +1,6 @@
 import type { Context } from "hono";
-import { cacheControl, json, problem, shortCache } from "./http";
+import { blobCacheKey, cacheable, matchBlob, putBlob } from "./cache";
+import { cacheControl, defer, json, problem, shortCache } from "./http";
 import type { AppEnv } from "./middleware";
 import { readJson, TTL } from "./store";
 import { keys, type Catalog, type FileEntry, type Manifest, type VersionDoc } from "./types";
@@ -123,11 +124,30 @@ async function serveFile(c: C, ref: string, path: string): Promise<Response> {
   };
   if (etagMatches(c.req.header("if-none-match"), etag)) return new Response(null, { status: 304, headers });
 
+  const missing = () =>
+    problem(c, 503, "data-unavailable", "Data temporarily unavailable", `The stored file for ${path} is missing.`);
   const wantsRange = c.req.header("range") !== undefined;
-  const obj = await c.env.DATA.get(keys.blob(entry.blob), wantsRange ? { range: c.req.raw.headers } : undefined);
-  if (!obj) {
-    return problem(c, 503, "data-unavailable", "Data temporarily unavailable", `The stored file for ${path} is missing.`);
+  const isHead = c.req.method === "HEAD";
+
+  // Whole-body reads go through the edge cache; Range reads always go to R2.
+  const cacheKey = wantsRange ? null : blobCacheKey(c.req.url, c.get("site").id, entry.blob);
+  if (cacheKey) {
+    const hit = await matchBlob(cacheKey);
+    if (hit) {
+      headers["content-length"] = String(hit.size);
+      if (isHead) await hit.body?.cancel();
+      return new Response(isHead ? null : hit.body, { headers });
+    }
+    if (isHead) {
+      const meta = await c.env.DATA.head(keys.blob(entry.blob));
+      if (!meta) return missing();
+      headers["content-length"] = String(meta.size);
+      return new Response(null, { headers });
+    }
   }
+
+  const obj = await c.env.DATA.get(keys.blob(entry.blob), wantsRange ? { range: c.req.raw.headers } : undefined);
+  if (!obj) return missing();
 
   if (wantsRange && obj.range) {
     const { offset, length } = rangeOf(obj.range, obj.size);
@@ -136,6 +156,11 @@ async function serveFile(c: C, ref: string, path: string): Promise<Response> {
     return new Response(obj.body, { status: 206, headers });
   }
   headers["content-length"] = String(obj.size);
+  if (cacheKey && obj.body && cacheable(obj.size)) {
+    const [client, copy] = obj.body.tee();
+    defer(c, putBlob(cacheKey, copy, obj.size, entry.type));
+    return new Response(client, { headers });
+  }
   return new Response(obj.body, { headers });
 }
 
@@ -147,7 +172,7 @@ export function index(c: C): Response {
       name: site.name,
       tagline: site.tagline,
       api_version: "v1",
-      links: { catalog: "/v1/catalog", status: "/v1/status" },
+      links: { catalog: "/v1/catalog", status: "/v1/status", openapi: "/v1/openapi.json" },
     },
     shortCache(300),
   );

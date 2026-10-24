@@ -1,0 +1,9 @@
+#! Source: https://www.metoffice.gov.uk/hadobs/hadcrut5/data/HadCRUT.5.2.0.0/analysis/diagnostics/HadCRUT.5.2.0.0.analysis.summary_series.global.monthly.csv
+#! Captured 2026-10-24. Header, 1850-01 to 1850-03 and 2026-07 to 2026-09, copied verbatim.
+Time,Anomaly (deg C),Lower confidence limit (2.5%),Upper confidence limit (97.5%)
+1850-01,-0.7339555,-1.0368209,-0.43109012
+1850-02,-0.35966069,-0.7176909,-0.0016304983
+1850-03,-0.6258212,-0.9586515,-0.29299083
+2026-07,1.1085609,1.0515431,1.1655786
+2026-08,1.3014262,1.2360182,1.3668343
+2026-09,1.2804134,1.2158662,1.3449607

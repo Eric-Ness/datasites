@@ -1,0 +1,12 @@
+# Source: https://zenodo.org/api/records/18968658/files/egrid2024_data_metric.xlsx/content
+# Captured: 2026-10-24
+# Excerpt of worksheet 'ST24': the two header rows and rows ['CA', 'DC', 'PR', 'TX', 'VT', 'WV']; columns YEAR, PSTATABB, FIPSST, STCO2RTA, STCH4RTA, STN2ORTA, STC2ERTA
+# Cells are copied verbatim as text (as the spreadsheet stores them); blank cells are empty.
+Data Year,State abbreviation,FIPS State code,State annual CO2 total output emission rate (kg/MWh),State annual CH4 total output emission rate (kg/MWh),State annual N2O total output emission rate (kg/MWh),State annual CO2 equivalent total output emission rate (kg/MWh)
+YEAR,PSTATABB,FIPSST,STCO2RTA,STCH4RTA,STN2ORTA,STC2ERTA
+2024,CA,06,164.6001,0.009072,0.0009072,165.1566672
+2024,DC,11,157.4953632,0.0077112,0.0009072,157.9285512
+2024,PR,72,723.2543136,0.038556,0.0063504,726.0920352
+2024,TX,48,334.96092,0.0185976,0.0027216,336.206052
+2024,VT,50,21.1767696,0.0757512,0.0099792,26.1622872
+2024,WV,54,876.1274928,0.0979776,0.0140616,882.9296784

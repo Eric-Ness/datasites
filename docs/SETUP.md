@@ -97,11 +97,19 @@ The repo is private, so GitHub Actions minutes count against your plan: 2,000 a 
 
 ## 4. Monitoring (healthchecks.io, free plan)
 
-Create two checks:
+Create one check per ingest workflow, plus the API freshness check. Each period matches its workflow's schedule.
 
 | Check | Period | Grace | Where its ping URL goes |
 |---|---|---|---|
 | `ingest-climate` | 1 day | 2 hours | `gh secret set HC_INGEST_CLIMATE --env production` |
+| `ingest-water` | 1 day | 2 hours | `gh secret set HC_INGEST_WATER --env production` |
+| `ingest-election` | 1 day | 2 hours | `gh secret set HC_INGEST_ELECTION --env production` |
+| `ingest-economic` | 1 day | 2 hours | `gh secret set HC_INGEST_ECONOMIC --env production` |
+| `ingest-air` | 1 day | 2 hours | `gh secret set HC_INGEST_AIR --env production` |
+| `ingest-satellite` | 1 day | 2 hours | `gh secret set HC_INGEST_SATELLITE --env production` |
+| `ingest-wildfire` | 3 hours | 1 hour | `gh secret set HC_INGEST_WILDFIRE --env production` |
+| `ingest-carbon` | 7 days | 6 hours | `gh secret set HC_INGEST_CARBON --env production` |
+| `ingest-visualize` | 7 days | 6 hours | `gh secret set HC_INGEST_VISUALIZE --env production` |
 | `api-freshness` | 15 minutes | 30 minutes | `pnpm --filter @datasites/api exec wrangler secret put HEALTHCHECK_URL` (after the first deploy) |
 
 Then add email or phone-push integrations to the project so a failure reaches you.
@@ -145,6 +153,44 @@ It prints `LIVE DNS OK` and `LIVE PROD OK` when everything is up. Otherwise it l
 
 ---
 
+## 6. Credentials and notices for specific datasets
+
+Every dataset works without these except the ones named. Until a dataset's credentials exist, its runs report `needs-credentials`, CI stays green and the status page shows it as pending.
+
+| What | Needed for | How |
+|---|---|---|
+| BEA API key (free) | economicdata `bea-county-income` | Sign up at https://apps.bea.gov/api/signup/, then `gh secret set BEA_API_KEY --env production` |
+| Census API key (free) | economicdata `census-acs-income` | Sign up at https://api.census.gov/data/key_signup.html, then `gh secret set CENSUS_API_KEY --env production` |
+| Space-Track account (free; one per person, never shared) | satellitedata `gp-current` | Register at https://www.space-track.org, then `gh secret set SPACETRACK_USERNAME --env production` and `gh secret set SPACETRACK_PASSWORD --env production` |
+| MIT Election Lab files | electiondata county presidential and House history | Download them in your browser (Dataverse guestbook) into `data/sources/medsl/`; see the README there |
+
+**API keys and billing (Phases 3 and 6):**
+
+1. Create the KV namespaces and paste their ids into `apps/api/wrangler.jsonc`, replacing the `REPLACE_WITH_*` placeholders:
+   ```powershell
+   pnpm --filter @datasites/api exec wrangler kv namespace create KEYS
+   pnpm --filter @datasites/api exec wrangler kv namespace create KEYS --env staging
+   ```
+2. Issue a key: `node apps/api/scripts/keys.mjs issue <account> --plan free --remote`. It prints the key once.
+3. For Stripe:
+   - Create a Billing Meter named `api_requests` (customer key `stripe_customer_id`, value key `value`, sum aggregation).
+   - Create a metered Price and a Pro product.
+   - Set `client_reference_id` to the account id in Checkout.
+   - Register a webhook to `https://api.<domain>/billing/webhook` for `checkout.session.completed`, `customer.subscription.updated` and `customer.subscription.deleted`.
+   - Then run:
+     ```powershell
+     pnpm --filter @datasites/api exec wrangler secret put STRIPE_SECRET_KEY
+     pnpm --filter @datasites/api exec wrangler secret put STRIPE_WEBHOOK_SECRET
+     ```
+   - Without these, billing stays inert.
+
+**Notices the sources ask for.** Send these yourself; nothing here sends email:
+
+- **AirNow** (airdata's preliminary data): their Data Exchange Guidelines ask users to return a signed form to dmc@airnowtech.org, keep contact details current, and tell them about derived products.
+- **NASA POWER** (climatedata `world-capitals`): asks to be told when its data is redistributed: larc-power-project@mail.nasa.gov.
+
+---
+
 ## Reference: where every secret lives
 
 | Secret | Stored in | Used by |
@@ -152,5 +198,7 @@ It prints `LIVE DNS OK` and `LIVE PROD OK` when everything is up. Otherwise it l
 | R2 access key and secret | GitHub environment `production` | Python pipelines |
 | Cloudflare deploy token | GitHub environment `production` | deploy workflow |
 | Turnstile secret key | `wrangler secret put` on `datasites-coming-soon` | signup form |
-| healthchecks ping URLs | GitHub secret, `wrangler secret put` on `datasites-api` | ingest workflow, freshness cron |
+| healthchecks ping URLs (`HC_INGEST_*`, `HEALTHCHECK_URL`) | GitHub environment `production`, `wrangler secret put` on `datasites-api` | ingest workflows, freshness cron |
+| `BEA_API_KEY`, `CENSUS_API_KEY`, `SPACETRACK_USERNAME`, `SPACETRACK_PASSWORD` | GitHub environment `production` | economicdata and satellitedata pipelines |
+| `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | `wrangler secret put` on `datasites-api` | billing webhook and nightly meter report |
 | Local development | `apps/*/.dev.vars` (gitignored; copy from `.dev.vars.example`) | `wrangler dev` |

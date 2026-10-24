@@ -1,0 +1,48 @@
+---
+import type { Dataset } from "@datasites/registry";
+import { commercialLabel, licenseInfo } from "../lib/format";
+
+interface Props {
+  source: Dataset["source"];
+  /** Unique id for the attribution text (the copy button targets it). */
+  id: string;
+}
+const { source, id } = Astro.props;
+const license = licenseInfo(source.license);
+---
+
+<dl class="kv">
+  <dt>Source</dt>
+  <dd><a href={source.url} rel="external">{source.name}</a></dd>
+  {
+    source.publisher && (
+      <>
+        <dt>Publisher</dt>
+        <dd>{source.publisher}</dd>
+      </>
+    )
+  }
+  <dt>License</dt>
+  <dd>
+    {
+      license.parts.map((part, i) => (
+        <>
+          {i ? (/\sOR\s/.test(source.license) ? " or " : " and ") : ""}
+          {part.url ? <a href={part.url} rel="external license">{part.label}</a> : part.label}
+        </>
+      ))
+    }
+    <span class="muted small"> (<code>{source.license}</code>)</span>
+  </dd>
+  <dt>Commercial use</dt>
+  <dd>{commercialLabel(source.commercial_ok)}</dd>
+</dl>
+<p class="small muted" style="margin:16px 0 6px">Credit the source with this exact text:</p>
+<div class="code-block">
+  <blockquote class="attribution" id={id}>{source.attribution}</blockquote>
+  <button type="button" class="copy-btn" data-copy={id} hidden>Copy</button>
+</div>
+
+<script>
+  import "../client/copy";
+</script>

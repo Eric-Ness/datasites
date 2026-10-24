@@ -1,0 +1,4 @@
+Source: https://www2.census.gov/geo/tiger/GENZ2025/shp/cb_2025_us_state_5m.zip
+Captured: 2026-10-24
+Cut: records with GEOID 11, 66 copied unchanged with pyshp into a new shapefile with the
+source's member names; .prj and .cpg copied byte for byte (tests/visualize/visualize_fixture_cut.py).

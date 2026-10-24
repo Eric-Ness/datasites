@@ -1,0 +1,6 @@
+#! Source: https://aqs.epa.gov/aqsweb/airdata/daily_aqi_by_county_1980.zip
+#! Captured 2026-10-24. The CSV inside the zip: its header and rows for the former Valdez-Cordova Census Area, Alaska, and Los Angeles, copied verbatim.
+"State Name","county Name","State Code","County Code","Date","AQI","Category","Defining Parameter","Defining Site","Number of Sites Reporting"
+"Alaska","Valdez-Cordova ","02","261","1980-01-01",37,"Good","Ozone","02-261-0004",1
+"Alaska","Valdez-Cordova ","02","261","1980-01-02",0,"Good","NO2","02-261-0004",1
+"California","Los Angeles","06","037","1980-01-01",159,"Unhealthy","CO","06-037-1301",14

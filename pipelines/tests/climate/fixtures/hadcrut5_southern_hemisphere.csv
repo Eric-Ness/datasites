@@ -1,0 +1,9 @@
+#! Source: https://www.metoffice.gov.uk/hadobs/hadcrut5/data/HadCRUT.5.2.0.0/analysis/diagnostics/HadCRUT.5.2.0.0.analysis.summary_series.southern_hemisphere.monthly.csv
+#! Captured 2026-10-24. Header, 1850-01 to 1850-03 and 2026-07 to 2026-09, copied verbatim.
+Time,Anomaly (deg C),Lower confidence limit (2.5%),Upper confidence limit (97.5%)
+1850-01,-0.44031468,-0.77135056,-0.109278746
+1850-02,-0.50504994,-0.8260046,-0.18409531
+1850-03,-0.6651485,-1.0248094,-0.30548766
+2026-07,0.7617457,0.66374713,0.85974425
+2026-08,1.0167042,0.9100532,1.1233552
+2026-09,0.86244965,0.7590412,0.9658581

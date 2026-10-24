@@ -1,0 +1,25 @@
+---
+import type { Dataset } from "@datasites/registry";
+import { cadenceLabel, kindLabel } from "../lib/format";
+import { datasetPath } from "../lib/routes";
+
+interface Props {
+  dataset: Dataset;
+  headingLevel?: 2 | 3;
+}
+const { dataset, headingLevel = 3 } = Astro.props;
+const Heading = headingLevel === 2 ? "h2" : "h3";
+---
+
+<li class="card" data-dataset-card={dataset.id}>
+  <a class="card-link" href={datasetPath(dataset.id)}>
+    <Heading style="font-size:18px;margin:0">{dataset.title}</Heading>
+  </a>
+  <p>{dataset.description}</p>
+  <p class="meta">
+    <span class="badge badge-accent">{kindLabel(dataset.kind)}</span>
+    <span class="badge">{cadenceLabel(dataset.cadence)}</span>
+    {dataset.discontinued && <span class="badge status-discontinued">Discontinued</span>}
+    <span class="live-coverage" data-coverage></span>
+  </p>
+</li>

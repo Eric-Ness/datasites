@@ -1,0 +1,63 @@
+id: launches
+version: 1                       # bump on any schema change; forces a rebuild
+kind: table
+title: Launch log
+description: >-
+  Every launch in GCAT's launch list, one row per launch since 1942: orbital and deep-space launches with
+  their international designation, plus missiles, sounding rockets and other suborbital flights. Each row
+  has the date and time at the precision GCAT knows it, the vehicle, launch site, agency and outcome.
+pipeline: datasites_satellite.gcat_launches
+check_every: P1D                 # GCAT regenerates its files most days, around 01:15 UTC
+cadence: P1D
+sla: P14D
+# Terms: https://planet4589.org/space/gcat/ ("Citing GCAT"): "GCAT is released under the Creative
+# Commons CC-BY licence. You are free to use the data in GCAT as long as you include a citation to it.
+# A suitable short citation is 'data from GCAT (J. McDowell, planet4589.org/space/gcat)'."
+source:
+  id: gcat
+  name: General Catalog of Artificial Space Objects (GCAT), launch list
+  publisher: Jonathan C. McDowell
+  url: https://planet4589.org/space/gcat/web/launch/index.html
+  license: CC-BY-4.0
+  commercial_ok: true
+  attribution: >-
+    data from GCAT (J. McDowell, planet4589.org/space/gcat)
+key: [launch_tag]
+partition: launch_class          # table/orbital.json, table/missile.json, ...
+schema:
+  - { name: launch_tag, type: str, description: "COSPAR designation for orbital launches (1998-067; Harvard style before 1963, 1957 ALP), GCAT's own yyyy-Xnnn tag for others (1942-A01, 1957-F01 failed orbital)" }
+  - { name: launch_class, type: str, description: "LaunchCode category: orbital, deep-space, missile, lofted-missile, near-orbital, test-rocket, atmospheric, suborbital, high-altitude-sounding, reentry-test, off-earth (from another world), crewed-suborbital, not-a-launch (GCAT placeholder entries)" }
+  - { name: launch_date, type: date, nullable: true, description: "UTC date of first motion; null when GCAT knows it less precisely than a day, or gives a day after its own file date (a typo, e.g. 2026-M02 dated 2027 Jan 3); see launch_date_text" }
+  - { name: launch_time, type: datetime, nullable: true, description: "UTC time at exactly the precision GCAT gives (to the minute, second or millisecond); null when it is less precise or uncertain" }
+  - { name: launch_date_text, type: str, nullable: true, description: "The date exactly as GCAT writes it, in its Vague Date format ('1957 Oct  4 1928:34', '1944 Jan', '1971?')" }
+  - { name: launch_date_precision, type: str, nullable: true, description: "Precision of launch_date_text: millisecond, second, minute, hour, day, month, quarter, year, ...; '(uncertain)' when it ends in ?, which widens it by one unit each way. Null if GCAT's text is not a valid vague date" }
+  - { name: launch_jd, type: float, unit: JD, description: "GCAT's Julian Date (UTC) of launch, for sorting; nominal when the date is vague" }
+  - { name: lv_type, type: str, nullable: true, description: Launch vehicle type }
+  - { name: lv_variant, type: str, nullable: true }
+  - { name: flight_id, type: str, nullable: true, description: "Serial number or mission number of this flight" }
+  - { name: flight, type: str, nullable: true }
+  - { name: mission, type: str, nullable: true }
+  - { name: flight_code, type: str, nullable: true }
+  - { name: platform, type: str, nullable: true, description: "Mobile launch platform (ship, submarine, aircraft), if any" }
+  - { name: launch_site, type: str, nullable: true, description: GCAT launch site code }
+  - { name: launch_pad, type: str, nullable: true }
+  - { name: ascent_site, type: str, nullable: true, description: "Where the rocket actually ignited, when different (air launches: the drop zone)" }
+  - { name: ascent_pad, type: str, nullable: true }
+  - { name: apogee_km, type: float, unit: km, nullable: true, description: "Highest altitude of a suborbital flight, or apogee of the initial orbit" }
+  - { name: apogee_estimated, type: bool, nullable: true, description: "GCAT marks the apogee with ? (a guess from the vehicle's capability)" }
+  - { name: orbital_payload_t, type: float, unit: t, description: "Payload mass delivered to orbit (0 when nothing reached orbit); GCAT generates it from its payload tables and asks users to treat it with caution" }
+  - { name: agency, type: str, description: GCAT org code of the launch service provider }
+  - { name: agency_name, type: str, nullable: true }
+  - { name: launch_code, type: str, description: "GCAT LaunchCode: category letter plus outcome (OS, OF, MS, OS80, ...)" }
+  - { name: outcome, type: str, nullable: true, description: "success (propulsive success; the payload may still have failed), failure, unknown, pad-explosion or pad-abort. Null for not-a-launch entries" }
+  - { name: success_percent, type: int, nullable: true, description: "GCAT's partial-success score for reliability statistics (OS80 -> 80); null for plain S or F" }
+  - { name: category, type: str, nullable: true, description: "For orbital launches GCAT's launch profile code (Sat LEO O); for others the kind of flight (Meteo, Aeron, Test, Weapon)" }
+checks:
+  min_rows: 70000
+  rows_min_ratio: 0.99
+  ranges:
+    launch_jd: [2430000, 2470000]          # 1941 to 2046
+    success_percent: [0, 99]
+    orbital_payload_t: [0, 200]
+  max_null_fraction:
+    launch_date: 0.1                       # most early suborbital launches are known to the day

@@ -1,0 +1,248 @@
+---
+import Base from "../../layouts/Base.astro";
+import { apiBase, site, siteDatasets } from "../../lib/site";
+import { datasetEndpoints, sampleLocation, seriesIds } from "../../lib/datasets";
+import { cadenceLabel, columnTypeLabel, kindLabel } from "../../lib/format";
+import { datasetPath } from "../../lib/routes";
+import { apiUrl, paths } from "../../lib/urls";
+import { TABLE_ALL_MAX_ROWS } from "../../lib/api-facts";
+
+const u = (path: string) => apiUrl(apiBase, site.id, path);
+const first = siteDatasets[0];
+const seriesDs = siteDatasets.find((d) => d.kind === "series" && seriesIds(d).length && sampleLocation(d));
+const tableDs = siteDatasets.find((d) => d.kind === "table");
+const bulkDs = siteDatasets.find((d) => d.kind !== "files");
+
+interface Endpoint {
+  id: string;
+  path: string;
+  summary: string;
+  returns: string[];
+  example: string | null;
+  errors: string[];
+}
+
+const endpoints: Endpoint[] = [
+  {
+    id: "index",
+    path: "/v1",
+    summary: "The API index for this site.",
+    returns: ["site, name, tagline", "api_version: \"v1\"", "links.catalog, links.status"],
+    example: u(paths.root()),
+    errors: [],
+  },
+  {
+    id: "catalog",
+    path: "/v1/catalog",
+    summary: "Every dataset published on this site.",
+    returns: [
+      "site",
+      "datasets[]: id, kind, title, description, current (version), published_at, cadence, check_every, sla, discontinued",
+      "datasets[].source: name, url, license, commercial_ok",
+      "datasets[].coverage: start, end",
+    ],
+    example: u(paths.catalog()),
+    errors: [],
+  },
+  {
+    id: "status",
+    path: "/v1/status",
+    summary: "How fresh each dataset is.",
+    returns: [
+      "site, generated_at, overall (\"ok\" or \"degraded\")",
+      "datasets[]: id, status, version, checked_at, source_updated_at, sla, consecutive_failures, last_error",
+      "status is one of ok, pending, late, stale-upstream, failing, blocked, discontinued",
+    ],
+    example: u(paths.status()),
+    errors: [],
+  },
+  {
+    id: "dataset",
+    path: "/v1/{dataset}",
+    summary: "Metadata for one dataset: the version that answered, its coverage, source, validation and downloads.",
+    returns: [
+      "dataset, kind, title, description, cadence",
+      "version, current_version, pinned, published_at",
+      "source: id, name, publisher, url, license, commercial_ok, attribution, retrieved_at, source_updated_at",
+      "coverage: start, end",
+      "validation: status (pass, warn), warnings[]",
+      "series[]: id, name; for tables also key[] and partition",
+      "downloads[]: name, bytes, url",
+      "links: locations, versions, this_version",
+    ],
+    example: first ? u(paths.dataset(first.id)) : null,
+    errors: ["unknown-dataset", "unknown-version", "data-unavailable"],
+  },
+  {
+    id: "versions",
+    path: "/v1/{dataset}/versions",
+    summary: "The version history.",
+    returns: ["dataset, current, published_at", "previous[]: earlier version ids, newest first", "snapshots: month (YYYY-MM) to version id"],
+    example: first ? u(paths.versions(first.id)) : null,
+    errors: ["unknown-dataset"],
+  },
+  {
+    id: "locations",
+    path: "/v1/{dataset}/locations",
+    summary: "What can be requested: each series with its location ids, or for tables the partitions (under the series id \"table\").",
+    returns: ["dataset, version, kind", "series[]: id, name, locations[] (ids)", "locations[]: id, name"],
+    example: first ? u(paths.locations(first.id)) : null,
+    errors: ["unknown-dataset", "unknown-version"],
+  },
+  {
+    id: "series",
+    path: "/v1/{dataset}/{series}/{location}.json",
+    summary: "One series at one place, ordered by date. Also .csv.",
+    returns: ["meta: dataset, series, series_name, location, location_name, units, source, license, attribution", "data[]: one object per row, with the dataset's columns"],
+    example: seriesDs ? u(paths.series(seriesDs.id, seriesIds(seriesDs)[0]!, sampleLocation(seriesDs)!, "json")) : null,
+    errors: ["unknown-file", "unknown-format"],
+  },
+  {
+    id: "table",
+    path: "/v1/{dataset}/table/{partition}.json",
+    summary: `Rows of a table for one partition value; table/all has every row for tables up to ${TABLE_ALL_MAX_ROWS.toLocaleString("en-US")} rows. Also .csv.`,
+    returns: ["meta: dataset, key, partition (when partitioned), rows (count), units, source, license, attribution", "rows[]: one object per row"],
+    example: tableDs ? u(paths.table(tableDs.id, "all", "json")) : null,
+    errors: ["unknown-file", "unknown-format"],
+  },
+  {
+    id: "download",
+    path: "/v1/{dataset}/download/{dataset}.csv",
+    summary: "The whole dataset in one file. Also .parquet. Series downloads add series and location columns.",
+    returns: ["CSV (text/csv) or Parquet (application/vnd.apache.parquet)", "Supports Range requests (206)"],
+    example: bulkDs ? u(paths.download(bulkDs.id, "csv")) : null,
+    errors: ["unknown-file"],
+  },
+  {
+    id: "file",
+    path: "/v1/{dataset}/{path}",
+    summary: "A file of a files dataset, at its published path.",
+    returns: ["The file, with a content type from its extension"],
+    example: null,
+    errors: ["unknown-file"],
+  },
+];
+
+---
+
+
+<Base title="API reference" description={`Every ${site.name} API endpoint and the exact URLs of each dataset.`}>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/docs/">Docs</a></li>
+      <li><span aria-current="page">API reference</span></li>
+    </ol>
+  </nav>
+  <header class="hero">
+    <p class="eyebrow">Reference</p>
+    <h1>API reference</h1>
+    <p class="lede">Base URL <code>{apiBase}</code>. Every endpoint is a GET and returns JSON unless the path ends in another format.</p>
+    <p class="muted">
+      Generated from the dataset contracts when this site was built. Add <code>@&lbrace;version&rbrace;</code> after any dataset id to
+      pin a version (<a href="/docs/#versions">how</a>). Errors are <a href="/docs/errors/">problem documents</a>.
+    </p>
+  </header>
+
+  <section class="section" aria-labelledby="endpoints-h">
+    <h2 id="endpoints-h">Endpoints</h2>
+    {
+      endpoints.map((e) => (
+        <div class="endpoint" id={`endpoint-${e.id}`}>
+          <h3>
+            <span class="method">GET</span>
+            <code>{e.path}</code>
+          </h3>
+          <p>{e.summary}</p>
+          <ul class="small">
+            {e.returns.map((r) => (
+              <li>{r}</li>
+            ))}
+          </ul>
+          {e.example && (
+            <p class="small">
+              Example: <a class="mono" href={e.example} style="overflow-wrap:anywhere">{e.example}</a>
+            </p>
+          )}
+          {e.errors.length > 0 && (
+            <p class="small muted">
+              Errors:{" "}
+              {e.errors.map((slug, i) => (
+                <>
+                  {i ? ", " : ""}
+                  <a href={`/docs/errors/#${slug}`}>{slug}</a>
+                </>
+              ))}
+              {", "}and <a href="/docs/errors/#rate-limited">rate-limited</a> for any endpoint.
+            </p>
+          )}
+        </div>
+      ))
+    }
+  </section>
+
+  <section class="section" aria-labelledby="datasets-h">
+    <h2 id="datasets-h">Datasets</h2>
+    {siteDatasets.length === 0 && <p>No datasets are published on {site.name} yet. Their endpoints will be listed here.</p>}
+    {
+      siteDatasets.map((ds) => (
+        <div class="endpoint" id={ds.id}>
+          <h3>
+            <a href={datasetPath(ds.id)}>{ds.title}</a>
+            <span class="badge badge-accent">{kindLabel(ds.kind)}</span>
+          </h3>
+          <dl class="kv small">
+            <dt>Id</dt>
+            <dd><code>{ds.id}</code></dd>
+            <dt>Updates</dt>
+            <dd>{cadenceLabel(ds.cadence)}</dd>
+            {ds.kind === "series" && (
+              <>
+                <dt>Series</dt>
+                <dd>{seriesIds(ds).map((s, i) => <>{i ? ", " : ""}<code>{s}</code></>)}</dd>
+              </>
+            )}
+            {ds.kind === "table" && (
+              <>
+                <dt>Key</dt>
+                <dd>{ds.key.length ? ds.key.map((k, i) => <>{i ? ", " : ""}<code>{k}</code></>) : "none"}</dd>
+                <dt>Partition</dt>
+                <dd>{ds.partition ? <code>{ds.partition}</code> : "none (one table/all file)"}</dd>
+              </>
+            )}
+            {ds.schema.length > 0 && (
+              <>
+                <dt>Columns</dt>
+                <dd>
+                  {ds.schema.map((c, i) => (
+                    <>
+                      {i ? ", " : ""}
+                      <code>{c.name}</code> <span class="muted">{columnTypeLabel(c.type)}{c.unit ? `, ${c.unit}` : ""}</span>
+                    </>
+                  ))}
+                </dd>
+              </>
+            )}
+          </dl>
+          <div class="table-wrap" tabindex="0" role="region" aria-label={`Endpoints of ${ds.title}`} style="margin-top:12px">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">What</th>
+                  <th scope="col">Path</th>
+                </tr>
+              </thead>
+              <tbody>
+                {datasetEndpoints(ds, apiBase, site.id).map((e) => (
+                  <tr>
+                    <td>{e.label}</td>
+                    <td class="code-cell">{e.example ? <a href={e.example}>{e.template}</a> : e.template}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ))
+    }
+  </section>
+</Base>

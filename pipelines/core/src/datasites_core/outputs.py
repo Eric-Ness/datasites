@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import io
 import json
+from collections.abc import Iterator
 from dataclasses import dataclass
 
 import polars as pl
@@ -77,12 +78,23 @@ def sort_table(contract: Contract, table: pl.DataFrame) -> pl.DataFrame:
 
 
 def build_series_outputs(contract: Contract, table: pl.DataFrame, location_names: dict[str, str]) -> dict[str, Output]:
+    return dict(iter_series_outputs(contract, table, location_names))
+
+
+def iter_series_outputs(contract: Contract, table: pl.DataFrame, location_names: dict[str, str]) -> Iterator[tuple[str, Output]]:
+    """Yields files one at a time, so a county-scale dataset never holds all its outputs in memory."""
     table = sort_table(contract, table)
     value_columns = [c.name for c in contract.schema]
     units = {c.name: c.unit for c in contract.schema if c.unit}
-    outputs: dict[str, Output] = {}
-    for (series, location), group in table.partition_by(["series", "location"], as_dict=True, maintain_order=True).items():
-        values = group.select(value_columns)
+    # The table is sorted by series and location, so each group is a contiguous zero-copy slice.
+    bounds = (
+        table.select("series", "location")
+        .with_row_index("_row")
+        .group_by(["series", "location"], maintain_order=True)
+        .agg(pl.col("_row").first().alias("start"), pl.len().alias("rows"))
+    )
+    for series, location, start, rows in bounds.iter_rows():
+        values = table.slice(start, rows).select(value_columns)
         meta = {
             **_source_meta(contract),
             "series": series,
@@ -92,11 +104,10 @@ def build_series_outputs(contract: Contract, table: pl.DataFrame, location_names
             "units": units,
         }
         body = '{"meta":' + _dumps(meta) + ',"data":' + _json_rows(values) + "}"
-        outputs[f"{series}/{location}.json"] = Output(body.encode(), JSON_TYPE, len(values))
-        outputs[f"{series}/{location}.csv"] = Output(_csv(values), CSV_TYPE, len(values))
-    outputs[f"download/{contract.id}.csv"] = Output(_csv(table), CSV_TYPE, len(table))
-    outputs[f"download/{contract.id}.parquet"] = Output(_parquet(table), PARQUET_TYPE, len(table))
-    return outputs
+        yield f"{series}/{location}.json", Output(body.encode(), JSON_TYPE, rows)
+        yield f"{series}/{location}.csv", Output(_csv(values), CSV_TYPE, rows)
+    yield f"download/{contract.id}.csv", Output(_csv(table), CSV_TYPE, len(table))
+    yield f"download/{contract.id}.parquet", Output(_parquet(table), PARQUET_TYPE, len(table))
 
 
 def build_table_outputs(contract: Contract, table: pl.DataFrame) -> dict[str, Output]:

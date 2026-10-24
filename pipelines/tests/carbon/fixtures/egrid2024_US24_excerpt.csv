@@ -1,0 +1,7 @@
+# Source: https://zenodo.org/api/records/18968658/files/egrid2024_data_metric.xlsx/content
+# Captured: 2026-10-24
+# Excerpt of worksheet 'US24': the two header rows and rows all; columns YEAR, USCO2RTA, USCH4RTA, USN2ORTA, USC2ERTA
+# Cells are copied verbatim as text (as the spreadsheet stores them); blank cells are empty.
+Data Year,U.S. annual CO2 total output emission rate (kg/MWh),U.S. annual CH4 total output emission rate (kg/MWh),U.S. annual N2O total output emission rate (kg/MWh),U.S. annual CO2 equivalent total output emission rate (kg/MWh)
+YEAR,USCO2RTA,USCH4RTA,USN2ORTA,USC2ERTA
+2024,339.242904,0.0244944,0.0031752,340.8976368

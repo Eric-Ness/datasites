@@ -1,0 +1,43 @@
+---
+import CodeBlock from "./CodeBlock.astro";
+import { SNIPPET_LANGUAGES, type Snippets } from "../lib/snippets";
+
+interface Props {
+  snippets: Snippets;
+  /** Unique prefix for element ids. */
+  id: string;
+  label?: string;
+}
+const { snippets, id, label = "Code examples" } = Astro.props;
+---
+
+<div class="tabs" data-tabs id={id}>
+  <div role="tablist" aria-label={label}>
+    {
+      SNIPPET_LANGUAGES.map((lang, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`${id}-tab-${lang.key}`}
+          aria-controls={`${id}-panel-${lang.key}`}
+          aria-selected={i === 0 ? "true" : "false"}
+          tabindex={i === 0 ? 0 : -1}
+        >
+          {lang.label}
+        </button>
+      ))
+    }
+  </div>
+  {
+    SNIPPET_LANGUAGES.map((lang) => (
+      <div role="tabpanel" id={`${id}-panel-${lang.key}`} aria-labelledby={`${id}-tab-${lang.key}`} data-snippet={lang.key}>
+        <p class="tab-heading">{lang.label}</p>
+        <CodeBlock code={snippets[lang.key]} label={`${lang.label} example`} id={`${id}-code-${lang.key}`} />
+      </div>
+    ))
+  }
+</div>
+
+<script>
+  import "../client/tabs";
+</script>

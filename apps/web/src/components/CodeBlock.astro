@@ -1,0 +1,18 @@
+---
+interface Props {
+  code: string;
+  /** Accessible name of the scrollable code region. */
+  label: string;
+  id?: string;
+}
+const { code, label, id } = Astro.props;
+---
+
+<div class="code-block">
+  <pre tabindex="0" aria-label={label} id={id}><code>{code}</code></pre>
+  <button type="button" class="copy-btn" data-copy={id ?? ""} hidden>Copy</button>
+</div>
+
+<script>
+  import "../client/copy";
+</script>

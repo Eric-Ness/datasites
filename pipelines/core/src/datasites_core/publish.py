@@ -16,11 +16,13 @@ from __future__ import annotations
 
 import hashlib
 import importlib
+import inspect
 import io
 import os
 import subprocess
 import threading
-from concurrent.futures import ThreadPoolExecutor
+from collections.abc import Iterable
+from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from importlib.metadata import packages_distributions, version
@@ -33,7 +35,7 @@ from . import __version__ as core_version
 from .contracts import Contract, site_contracts
 from .fetch import CollectContext, Fetcher, fetch, http_date_to_iso
 from .layout import blob_key, catalog_key, manifest_key, raw_key, state_key, version_key
-from .outputs import Output, build_series_outputs, build_table_outputs, content_type_for, coverage
+from .outputs import Output, build_table_outputs, content_type_for, coverage, iter_series_outputs
 from .store import PreconditionFailed, Store, dumps, get_json, put_json
 from .validate import Report, validate_files, validate_series, validate_table
 
@@ -41,6 +43,7 @@ KEEP_PREVIOUS = 10
 SHARD_THRESHOLD = 2_000  # file maps larger than this are split into one blob per series
 LOCATIONS_INLINE_MAX = 500  # larger location maps go to their own blob
 UPLOAD_WORKERS = 16
+UPLOAD_BATCH = 64  # files in flight at once; bounds memory while uploading big versions
 
 
 @dataclass
@@ -210,7 +213,7 @@ def _collect(module: ModuleType, contract: Contract, store: Store, state: dict[s
     upstream: dict[str, Any] = {}
 
     if hasattr(module, "collect"):
-        ctx = CollectContext(contract, now)
+        ctx = CollectContext(contract, now, store)
         for name, body in module.collect(ctx).items():
             bodies[name] = body
             upstream[name] = {
@@ -220,7 +223,7 @@ def _collect(module: ModuleType, contract: Contract, store: Store, state: dict[s
                 "retrieved_at": iso(now),
             }
     else:
-        resources = module.resources(CollectContext(contract, now)) if hasattr(module, "resources") else module.RESOURCES
+        resources = module.resources(CollectContext(contract, now, store)) if hasattr(module, "resources") else module.RESOURCES
         for name, url in resources.items():
             prior = state["upstream"].get(name, {})
             got = fetcher(url, prior.get("etag"), prior.get("last_modified"))
@@ -271,35 +274,41 @@ class _Uploader:
         self.written = 0
         self._existing: set[str] | None = None
 
-    def existing(self, count: int) -> set[str]:
-        """One listing beats thousands of existence checks for big outputs."""
-        if self._existing is None and count > 50:
+    def _known(self, seen: int) -> set[str] | None:
+        """Past 50 files, one listing of the blob namespace beats thousands of existence checks."""
+        if self._existing is None and seen > 50:
             self._existing = {k.rsplit("/", 1)[-1] for k in self.store.list("blobs/sha256/")}
-        return self._existing or set()
+        return self._existing
 
-    def upload(self, outputs: dict[str, Output]) -> dict[str, dict[str, Any]]:
-        digests = {path: sha256(out.body) for path, out in outputs.items()}
-        known = self.existing(len(outputs))
-        pending: dict[str, Output] = {}
-        for path, out in outputs.items():
-            digest = digests[path]
-            if digest not in known and digest not in pending:
-                pending[digest] = out
+    def _put(self, digest: str, out: Output, check_exists: bool) -> None:
+        if check_exists and self.store.exists(blob_key(digest)):
+            return
+        self.store.put(blob_key(digest), out.body, out.content_type)
+        with self.lock:
+            self.written += 1
 
-        def put(item: tuple[str, Output]) -> None:
-            digest, out = item
-            if len(pending) <= 50 and self.store.exists(blob_key(digest)):
-                return
-            self.store.put(blob_key(digest), out.body, out.content_type)
-            with self.lock:
-                self.written += 1
-
+    def upload(self, outputs: Iterable[tuple[str, Output]]) -> dict[str, dict[str, Any]]:
+        """Uploads a stream of files in bounded batches, keeping only their entries afterwards, so memory
+        holds a few dozen files at a time rather than a whole county-scale version."""
+        files: dict[str, dict[str, Any]] = {}
+        queued: set[str] = set()
+        batch: list[Future] = []
         with ThreadPoolExecutor(max_workers=UPLOAD_WORKERS) as pool:
-            list(pool.map(put, pending.items()))
-        return {
-            path: {"blob": digests[path], "bytes": len(out.body), "rows": out.rows, "type": out.content_type}
-            for path, out in outputs.items()
-        }
+            for seen, (path, out) in enumerate(outputs, start=1):
+                digest = sha256(out.body)
+                files[path] = {"blob": digest, "bytes": len(out.body), "rows": out.rows, "type": out.content_type}
+                known = self._known(seen)
+                if digest in queued or (known is not None and digest in known):
+                    continue
+                queued.add(digest)
+                batch.append(pool.submit(self._put, digest, out, known is None))
+                if len(batch) >= UPLOAD_BATCH:
+                    for future in batch:
+                        future.result()
+                    batch.clear()
+            for future in batch:
+                future.result()
+        return files
 
     def put_json_blob(self, value: Any) -> str:
         body = dumps(value)
@@ -368,9 +377,11 @@ def run_dataset(
         known: dict[str, str] = {}
         locations: dict[str, str] = {}
         stats: dict[str, Any] = {}
+        outputs: Iterable[tuple[str, Output]]
         if contract.kind == "files":
-            built, stats = module.build(raw)
-            outputs = {path: Output(body, content_type_for(path), 0) for path, body in built.items()}
+            takes_ctx = len(inspect.signature(module.build).parameters) >= 2
+            built, stats = module.build(raw, CollectContext(contract, now, store)) if takes_ctx else module.build(raw)
+            outputs = [(path, Output(body, content_type_for(path), 0)) for path, body in built.items()]
         else:
             frame: pl.DataFrame = module.transform(raw)
             if contract.kind == "series":
@@ -382,9 +393,9 @@ def run_dataset(
                     frame = frame.drop("location_name")
                 present = sorted(frame["location"].unique().to_list())
                 locations = {loc: known.get(loc) or dynamic.get(loc) or loc for loc in present}
-                outputs = build_series_outputs(contract, frame, locations)
+                outputs = iter_series_outputs(contract, frame, locations)  # streamed: never all in memory
             else:
-                outputs = build_table_outputs(contract, frame)
+                outputs = build_table_outputs(contract, frame).items()
             table = frame
 
         files = uploader.upload(outputs)

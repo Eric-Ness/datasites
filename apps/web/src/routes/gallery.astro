@@ -1,0 +1,104 @@
+---
+// The visualizedata gallery (injected by astro.config.ts only for sites listed in EXTRA_PAGES).
+import { location } from "@datasites/geo";
+import Base from "../layouts/Base.astro";
+import { apiBaseForSite, datasets, site, sites } from "../lib/site";
+import { galleryItems } from "../lib/gallery";
+import { timeColumn } from "../lib/datasets";
+import { licenseInfo } from "../lib/format";
+import { datasetPath } from "../lib/routes";
+import { siteUrl } from "../lib/urls";
+
+const items = galleryItems(sites, [...datasets], (id) => location(id)?.name).flatMap((item) => {
+  const owner = sites.find((s) => s.id === item.site);
+  const ds = datasets.find((d) => d.site === item.site && d.id === item.dataset);
+  if (!owner || !ds) return [];
+  const time = timeColumn(ds);
+  return [
+    {
+      ...item,
+      siteName: owner.name,
+      domain: owner.domain,
+      base: apiBaseForSite(owner),
+      datasetTitle: ds.title,
+      pageUrl: owner.id === site.id ? datasetPath(ds.id) : siteUrl(owner.domain, datasetPath(ds.id)),
+      timeColumn: time?.name ?? "date",
+      timeType: time?.type ?? "date",
+      measure: item.measure ?? "value",
+      credit: ds.source.publisher ?? ds.source.name,
+      license: licenseInfo(ds.source.license).short,
+    },
+  ];
+});
+const config = JSON.stringify(items).replace(/</g, "\\u003c");
+const familySites = [...new Set(items.map((i) => i.siteName))];
+---
+
+<Base title="Gallery" description="Charts drawn live in your browser from the open APIs of the other sites in the data family.">
+  <header class="hero">
+    <p class="eyebrow">{site.domain}</p>
+    <h1>Gallery</h1>
+    <p class="lede">Charts drawn in your browser from the public APIs of the other sites.</p>
+    <p class="muted">
+      Each chart loads its data straight from the site that publishes it
+      {familySites.length ? ` (${familySites.join(", ")})` : ""}, so it is always the current version. If one of those APIs is
+      down, only its charts are affected.
+    </p>
+  </header>
+
+  {
+    items.length === 0 ? (
+      <div class="notice">
+        <p>The gallery fills up as the other sites publish their datasets. None are published yet.</p>
+      </div>
+    ) : (
+      <ul class="gallery-grid">
+        {items.map((item) => (
+          <li class="card" data-gallery-item={item.id}>
+            <h2 id={`${item.id}-h`} style="font-size:20px;margin:0">
+              {item.title}
+            </h2>
+            <p class="muted">{item.description}</p>
+            <figure class="chart-figure" style="border:0;padding:0;background:none" aria-labelledby={`${item.id}-h`}>
+              <ul class="chart-legend" data-legend hidden />
+              <div class="chart-box" data-chart>
+                <div class="chart-state" role="status">
+                  Loading…
+                </div>
+              </div>
+              <figcaption>
+                Data: <a href={item.pageUrl}>{item.datasetTitle}</a> on {item.domain}. Source: {item.credit} ({item.license}).
+              </figcaption>
+            </figure>
+            <details class="data-table">
+              <summary>Show the data as a table</summary>
+              <div data-table-slot>
+                <p class="muted small">The table appears once the data has loaded.</p>
+              </div>
+            </details>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  <noscript>
+    <p class="notice">The charts need JavaScript. Each one links to the dataset page, which lists the plain data files.</p>
+  </noscript>
+
+  <script type="application/json" id="gallery-config" is:inline set:html={config} />
+</Base>
+
+<style>
+  .gallery-grid {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 480px), 1fr));
+  }
+</style>
+
+<script>
+  import "../client/gallery-page";
+</script>

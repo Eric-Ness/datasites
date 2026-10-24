@@ -1,0 +1,44 @@
+id: boundaries
+version: 1
+kind: files
+title: Map boundaries
+description: >-
+  GeoJSON boundaries for US states, counties and 119th Congress congressional districts (Census 2025
+  cartographic boundary files at 1:20m and 1:5m) and world countries (Natural Earth 1:110m and 1:50m).
+  Every feature's id is the location id the rest of the family uses (us-ca, us-county-06037, usa), so a
+  map joins to any dataset by id. index.json lists every layer with its source, vintage and caveats.
+pipeline: datasites_visualize.boundaries
+check_every: P30D                # both sources are pinned (GENZ2025, Natural Earth v5.1.2): a check is eight 304s
+cadence: P1Y                     # Census posts a new vintage each spring; moving to it is a code change
+sla: P400D                       # stale-upstream about a year after the pinned vintage: time to move to the next one
+source:
+  id: census-cb-natural-earth
+  name: >-
+    U.S. Census Bureau 2025 Cartographic Boundary Files (state, county, 119th Congress congressional
+    district; 1:20,000,000 and 1:5,000,000) and Natural Earth Admin 0 Countries v5.1.2 (1:110m, 1:50m)
+  publisher: U.S. Census Bureau; Natural Earth
+  url: https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html
+  # Census: the Use Constraints in each file's ISO metadata (cb_2025_us_*_20m.shp.iso.xml): "These products
+  # are free to use in a product or publication, however acknowledgement must be given to the U.S. Census
+  # Bureau as the source." US Government work, public domain.
+  # Natural Earth (https://www.naturalearthdata.com/about/terms-of-use/): "All versions of Natural Earth
+  # raster + vector map data found on this website are in the public domain", including commercial use;
+  # credit is optional, and the attribution below is its suggested long text.
+  license: LicenseRef-US-Government-Work AND LicenseRef-Public-Domain
+  commercial_ok: true
+  attribution: >-
+    Source: U.S. Census Bureau, 2025 Cartographic Boundary Files. Made with Natural Earth. Free vector and
+    raster map data @ naturalearthdata.com.
+checks:
+  # The total feature count across all eight layers (52 + 3,222 + 437 + 56 + 3,222 + 441 + 177 + 242).
+  min_rows: 7849
+  required_files:
+    - index.json
+    - us/states-20m.geojson
+    - us/counties-20m.geojson
+    - us/congressional-districts-20m.geojson
+    - us/states-5m.geojson
+    - us/counties-5m.geojson
+    - us/congressional-districts-5m.geojson
+    - world/countries-110m.geojson
+    - world/countries-50m.geojson

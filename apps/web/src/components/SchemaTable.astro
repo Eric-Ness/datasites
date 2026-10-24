@@ -1,0 +1,41 @@
+---
+import type { Dataset } from "@datasites/registry";
+import { columnTypeLabel } from "../lib/format";
+
+interface Props {
+  dataset: Dataset;
+}
+const { dataset } = Astro.props;
+const key = new Set(dataset.key);
+---
+
+<div class="table-wrap" tabindex="0" role="region" aria-label={`Columns of ${dataset.title}`}>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Column</th>
+        <th scope="col">Type</th>
+        <th scope="col">Unit</th>
+        <th scope="col">Can be empty</th>
+        <th scope="col">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        dataset.schema.map((col) => (
+          <tr>
+            <th scope="row" class="code-cell">
+              {col.name}
+              {key.has(col.name) && <span class="badge badge-accent" style="margin-left:6px">key</span>}
+              {dataset.partition === col.name && <span class="badge" style="margin-left:6px">partition</span>}
+            </th>
+            <td>{columnTypeLabel(col.type)}</td>
+            <td>{col.unit ?? "—"}</td>
+            <td>{col.nullable ? "yes" : "no"}</td>
+            <td>{col.description ?? "—"}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>

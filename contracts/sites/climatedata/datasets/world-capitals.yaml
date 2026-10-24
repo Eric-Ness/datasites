@@ -1,0 +1,78 @@
+id: world-capitals
+version: 2                       # bump on any schema change; forces a rebuild
+title: World capitals climate
+description: >-
+  Monthly air temperature at the capital of each country from NASA POWER
+  (MERRA-2 reanalysis, 1981 to present), each with a 1991-2020 normal, the anomaly from that
+  normal and its rank among all years for that calendar month, computed by climatedata.dev.
+pipeline: datasites_climate.nasa_power_capitals
+check_every: P7D                 # ~200 point requests per check, so weekly rather than daily
+cadence: P1M
+sla: P75D
+source:
+  id: nasa-power
+  name: NASA Langley Research Center POWER Project, Monthly and Annual API; capitals from Natural Earth
+  publisher: NASA Langley Research Center
+  url: https://power.larc.nasa.gov/docs/referencing/
+  # NASA data (US Government work); Natural Earth (capital locations) is public domain.
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true
+  # POWER's Reference and Data Reference, as its referencing guide asks, plus Natural Earth's suggested
+  # (optional) credit for the capital coordinates.
+  attribution: >-
+    The data was obtained from National Aeronautics and Space Administration (NASA) Langley
+    Research Center's Prediction Of Worldwide Energy Resources (POWER) project funded through the
+    NASA Earth Science Division. The data was obtained from the POWER Project's Monthly and Annual
+    API v2.10.0 on the retrieved_at date of this dataset version. Capital locations: Made with
+    Natural Earth. Free vector and raster map data @ naturalearthdata.com.
+series:
+  tavg: Air temperature at 2 m, monthly mean (°C)
+# No precipitation series. POWER's PRECTOTCORR (documented as mm/day) has isolated months 10-30x their
+# normal with no documented cause: Singapore 89-148 mm/day in every month of 2026 (normal ~5), Muscat
+# 79 mm/day in Aug 2024 (normal 0.3). The median value/normal ratio across capitals is ~1 in every year,
+# so it is not a unit switch to convert, and the bad months cannot be separated reliably from real
+# extremes. Publishing them would rank artifacts as "wettest on record". Revisit if POWER explains or fixes it.
+locations:
+  registry: country
+schema:
+  - { name: date, type: month }
+  - name: value
+    type: float
+    unit: degC
+    nullable: true
+    description: POWER T2M (2 m air temperature) for the MERRA-2 grid cell containing the capital
+  - name: normal
+    type: float
+    unit: degC
+    nullable: true
+    description: Mean of the 1991-2020 values for this capital and calendar month (needs at least 24 of the 30 years)
+  - name: anomaly
+    type: float
+    unit: degC
+    nullable: true
+    description: value minus normal
+  - name: rank
+    type: int
+    nullable: true
+    description: >-
+      Rank of value among all years since 1981 for this capital, series and calendar month:
+      1 is the warmest; tied years share the smallest rank number
+  - { name: capital, type: str, description: Capital city (Natural Earth NAME) }
+  - { name: latitude, type: float, unit: degrees_north, description: Point sent to POWER (Natural Earth geometry) }
+  - { name: longitude, type: float, unit: degrees_east, description: Point sent to POWER (Natural Earth geometry) }
+checks:
+  min_rows: 100000               # ~194 capitals x ~550 months
+  rows_min_ratio: 0.99
+  # Capitals span about -25 C (Ulaanbaatar, January) to 40 C; Kelvin or Fahrenheit would trip this.
+  ranges:
+    value: [-60, 50]
+    normal: [-60, 45]
+    anomaly: [-25, 25]
+    rank: [1, 200]
+    latitude: [-90, 90]
+    longitude: [-180, 180]
+  max_null_fraction:
+    value: 0.001
+    normal: 0.01
+  newest_not_older: true
+  revisions: { max_changed_fraction: 0.05, tolerance: 0.05 }   # warn only
