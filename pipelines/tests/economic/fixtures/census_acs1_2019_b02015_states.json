@@ -1,0 +1,15 @@
+# "American Community Survey (ACS) Example" in the Census Data API User Guide (July 30, 2024), page 15:
+# https://www.census.gov/content/dam/Census/data/developers/api-user-guide/api-user-guide.pdf
+# First rows of https://api.census.gov/data/2019/acs/acs1?get=NAME,B02015_009E,B02015_009M&for=state:*
+# (transcribed verbatim; the guide shows these ten rows; captured 2026-10-24).
+[["NAME","B02015_009E","B02015_009M","state"],
+["Illinois","655","511","17"],
+["Georgia","3162","1336","13"],
+["Idaho",null,null,"16"],
+["Hawaii","56","92","15"],
+["Indiana","1344","1198","18"],
+["Iowa","685","705","19"],
+["Kansas","2189","1177","20"],
+["Kentucky","530","503","21"],
+["Louisiana","0","224","22"],
+["Maine",null,null,"23"]]

@@ -1,0 +1,168 @@
+# "GetData Example 2 Results" from the BEA API for Data Retrieval User Guide (April 20, 2026), pages 19-21:
+# https://apps.bea.gov/api/_pdf/bea_web_service_api_user_guide.pdf (transcribed verbatim, captured 2026-10-24).
+# The guide elides the rows between Arizona and Rocky Mountain; every row it prints is here.
+# Request: http://apps.bea.gov/api/data?&UserID=Your-36Character-Key&method=GetData&datasetname=Regional&TableName=SAINC1&GeoFIPS=STATE&LineCode=3&Year=2013&ResultFormat=XML
+{
+    "BEAAPI": {
+        "Request": {
+            "RequestParam": [
+                {
+                    "ParameterName": "USERID",
+                    "ParameterValue": "11111111-2222-3333-4444-555555555555"
+                },
+                {
+                    "ParameterName": "METHOD",
+                    "ParameterValue": "GETDATA"
+                },
+                {
+                    "ParameterName": "DATASETNAME",
+                    "ParameterValue": "REGIONAL"
+                },
+                {
+                    "ParameterName": "TABLENAME",
+                    "ParameterValue": "SAINC1"
+                },
+                {
+                    "ParameterName": "GEOFIPS",
+                    "ParameterValue": "STATE"
+                },
+                {
+                    "ParameterName": "LINECODE",
+                    "ParameterValue": "3"
+                },
+                {
+                    "ParameterName": "YEAR",
+                    "ParameterValue": "2013"
+                },
+                {
+                    "ParameterName": "RESULTFORMAT",
+                    "ParameterValue": "JSON"
+                }
+            ]
+        },
+        "Results": {
+            "Statistic": "Per capita personal income",
+            "UnitOfMeasure": "Dollars",
+            "PublicTable": "SAINC1 State annual personal income summary: personal income, population, per capita personal income",
+            "UTCProductionTime": "2026-03-25T19:34:32.627",
+            "NoteRef": "2",
+            "Dimensions": [
+                {
+                    "Name": "Code",
+                    "DataType": "string",
+                    "IsValue": "0"
+                },
+                {
+                    "Name": "GeoFips",
+                    "DataType": "string",
+                    "IsValue": "0"
+                },
+                {
+                    "Name": "GeoName",
+                    "DataType": "string",
+                    "IsValue": "0"
+                },
+                {
+                    "Name": "TimePeriod",
+                    "DataType": "string",
+                    "IsValue": "0"
+                },
+                {
+                    "Name": "DataValue",
+                    "DataType": "numeric",
+                    "IsValue": "1"
+                },
+                {
+                    "Name": "CL_UNIT",
+                    "DataType": "string",
+                    "IsValue": "0"
+                },
+                {
+                    "Name": "UNIT_MULT",
+                    "DataType": "numeric",
+                    "IsValue": "0"
+                }
+            ],
+            "Data": [
+                {
+                    "Code": "SAINC1-3",
+                    "GeoFips": "00000",
+                    "GeoName": "United States",
+                    "TimePeriod": "2013",
+                    "CL_UNIT": "Dollars",
+                    "UNIT_MULT": "0",
+                    "DataValue": "44402",
+                    "NoteRef": "2"
+                },
+                {
+                    "Code": "SAINC1-3",
+                    "GeoFips": "01000",
+                    "GeoName": "Alabama",
+                    "TimePeriod": "2013",
+                    "CL_UNIT": "Dollars",
+                    "UNIT_MULT": "0",
+                    "DataValue": "35706",
+                    "NoteRef": "2"
+                },
+                {
+                    "Code": "SAINC1-3",
+                    "GeoFips": "02000",
+                    "GeoName": "Alaska *",
+                    "TimePeriod": "2013",
+                    "CL_UNIT": "Dollars",
+                    "UNIT_MULT": "0",
+                    "DataValue": "52252",
+                    "NoteRef": "2 *"
+                },
+                {
+                    "Code": "SAINC1-3",
+                    "GeoFips": "04000",
+                    "GeoName": "Arizona",
+                    "TimePeriod": "2013",
+                    "CL_UNIT": "Dollars",
+                    "UNIT_MULT": "0",
+                    "DataValue": "36918",
+                    "NoteRef": "2"
+                },
+                {
+                    "Code": "SAINC1-3",
+                    "GeoFips": "97000",
+                    "GeoName": "Rocky Mountain",
+                    "TimePeriod": "2013",
+                    "CL_UNIT": "Dollars",
+                    "UNIT_MULT": "0",
+                    "DataValue": "42336",
+                    "NoteRef": "2"
+                },
+                {
+                    "Code": "SAINC1-3",
+                    "GeoFips": "98000",
+                    "GeoName": "Far West *",
+                    "TimePeriod": "2013",
+                    "CL_UNIT": "Dollars",
+                    "UNIT_MULT": "0",
+                    "DataValue": "46860",
+                    "NoteRef": "2 *"
+                }
+            ],
+            "Notes": [
+                {
+                    "NoteRef": "2",
+                    "NoteText": "Per capita personal income is total personal income divided by total midyear population."
+                },
+                {
+                    "NoteRef": "*",
+                    "NoteText": "Estimates prior to 1950 are not available for Alaska and Hawaii."
+                },
+                {
+                    "NoteRef": "Note.",
+                    "NoteText": "All dollar estimates are in millions of current dollars (not adjusted for inflation). Calculations are performed on unrounded data."
+                },
+                {
+                    "NoteRef": " ",
+                    "NoteText": "Last updated: September 26, 2025-- revised statistics for 2020-2024."
+                }
+            ]
+        }
+    }
+}

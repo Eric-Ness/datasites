@@ -1,0 +1,28 @@
+# "Example - basic error result structure" from the BEA API for Data Retrieval User Guide (April 20, 2026), page 4:
+# https://apps.bea.gov/api/_pdf/bea_web_service_api_user_guide.pdf (transcribed verbatim, captured 2026-10-24).
+{
+  "BEAAPI": {
+    "Request": {
+      "RequestParam": [
+        {
+          "ParameterName": "USERID",
+          "ParameterValue": "X"
+        },
+        {
+          "ParameterName": "METHOD",
+          "ParameterValue": "GETDATASETLIST"
+        },
+        {
+          "ParameterName": "RESULTFORMAT",
+          "ParameterValue": "JSON"
+        }
+      ]
+    },
+    "Results": {
+      "Error": {
+        "APIErrorCode": "1",
+        "APIErrorDescription": "Invalid Request - Invalid API UserId."
+      }
+    }
+  }
+}

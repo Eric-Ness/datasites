@@ -1,0 +1,10 @@
+# Figure 2.5 of "Using the Census Data API With the American Community Survey: What Data Users Need to Know"
+# (U.S. Census Bureau, 2020), page 11: https://www.census.gov/content/dam/Census/library/publications/2020/acs/acs_api_handbook_2020.pdf
+# Response of https://api.census.gov/data/2016/acs/acs1?get=NAME,B01001_001E&for=county&in=state:06
+# (rows transcribed verbatim; the figure shows the first 16 counties and five are kept here; captured 2026-10-24).
+[["NAME","B01001_001E","state","county"],
+["Alameda County, California","1647704","06","001"],
+["Butte County, California","226864","06","007"],
+["Contra Costa County, California","1135127","06","013"],
+["Los Angeles County, California","10137915","06","037"],
+["Monterey County, California","435232","06","053"]]

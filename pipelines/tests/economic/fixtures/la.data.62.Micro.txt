@@ -1,0 +1,12 @@
+# Excerpt of https://download.bls.gov/pub/time.series/la/la.data.62.Micro
+# (lines copied verbatim, converted to LF line endings: the real files mix CRLF and LF, from the file dated 2026-10-20; captured 2026-10-24).
+# Seaford DE micropolitan area.
+series_id                     	year	period	       value	footnote_codes
+LAUMC104258000000003          	2026	M07	         4.3	
+LAUMC104258000000003          	2026	M08	         4.5	P
+LAUMC104258000000004          	2026	M07	        5393	
+LAUMC104258000000004          	2026	M08	        5523	P
+LAUMC104258000000005          	2026	M07	      118992	
+LAUMC104258000000005          	2026	M08	      118362	P
+LAUMC104258000000006          	2026	M07	      124385	
+LAUMC104258000000006          	2026	M08	      123885	P
