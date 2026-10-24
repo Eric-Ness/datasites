@@ -77,10 +77,10 @@ def get_csv(ctx: Any, collection: str, params: dict[str, Any], *, geometry: bool
 def get(ctx: Any, url: str, params: dict[str, Any]) -> bytes:
     """GET with the engine's User-Agent, one request at a time.
 
-    This does its own retrying instead of using ctx.get, whose wait triples after every Retry-After: the API
-    answers 429 with Retry-After of ten minutes or more, which ctx.get stretches into hours. Here a 429 waits
-    exactly as long as Retry-After asks (no less, so it stays polite), and 5xx answers and dropped connections
-    back off from 5 seconds.
+    This keeps its own retry loop, with more attempts than ctx.get, so a throttled run rides out a long
+    stretch of 429s and every attempt counts toward ctx.requests. Like the engine, a 429 waits exactly as long
+    as Retry-After asks (no less, so it stays polite), and 5xx answers and dropped connections back off from
+    5 seconds.
     """
     backoff = 5.0
     for attempt in range(ATTEMPTS):

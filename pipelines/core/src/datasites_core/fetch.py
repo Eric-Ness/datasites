@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import os
+import sys
 import time
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from typing import Any, Callable
+from urllib.parse import urlsplit
 
 import httpx
 
@@ -36,6 +39,27 @@ class Fetched:
 Fetcher = Callable[[str, "str | None", "str | None"], Fetched]
 
 
+MAX_WAIT = 20 * 60  # seconds; a longer Retry-After is capped (the next answer brings a fresh one)
+BACKOFF_START = 2.0
+BACKOFF_MAX = 300.0
+
+
+def retry_after_seconds(value: str | None, now: datetime | None = None) -> float | None:
+    """Retry-After as seconds to wait: delay-seconds ("120") or an HTTP date. None when absent or unreadable."""
+    value = (value or "").strip()
+    if not value:
+        return None
+    if value.isdigit():
+        return float(value)
+    try:
+        when = parsedate_to_datetime(value)
+    except (TypeError, ValueError):
+        return None
+    if when.tzinfo is None:
+        when = when.replace(tzinfo=timezone.utc)
+    return max(0.0, (when - (now or datetime.now(timezone.utc))).total_seconds())
+
+
 def request(
     url: str,
     *,
@@ -43,27 +67,36 @@ def request(
     headers: dict[str, str] | None = None,
     retries: int = 3,
     timeout: float = 120,
+    max_wait: float = MAX_WAIT,
 ) -> httpx.Response:
-    """GET with retries on transport errors, 429 and 5xx (honoring Retry-After). Raises on other errors."""
+    """GET with retries on transport errors, 429 and 5xx. Raises on other errors.
+
+    A Retry-After answer waits exactly as long as asked (capped at max_wait) and does not feed the backoff,
+    so a ten-minute rate limit stays ten minutes instead of growing into hours. Without one, waits back off
+    from 2 seconds, tripling up to 5 minutes.
+    """
     all_headers = {"User-Agent": user_agent(), **(headers or {})}
-    delay = 2.0
+    backoff = BACKOFF_START
     for attempt in range(retries + 1):
         try:
             res = httpx.get(url, params=params, headers=all_headers, timeout=timeout, follow_redirects=True)
-        except httpx.TransportError:
+        except httpx.TransportError as err:
             if attempt == retries:
                 raise
+            wait, reason = backoff, type(err).__name__
         else:
             if res.status_code == 304:
                 return res
             if res.status_code not in RETRY_STATUSES or attempt == retries:
                 res.raise_for_status()
                 return res
-            retry_after = res.headers.get("retry-after", "")
-            if retry_after.isdigit():
-                delay = max(delay, float(retry_after))
-        time.sleep(delay)
-        delay *= 3
+            asked = retry_after_seconds(res.headers.get("retry-after"))
+            wait = backoff if asked is None else asked
+            reason = f"HTTP {res.status_code}"
+        wait = min(wait, max_wait)
+        print(f"{urlsplit(url).netloc}: {reason}, retrying in {wait:.0f}s", file=sys.stderr, flush=True)
+        time.sleep(wait)
+        backoff = min(backoff * 3, BACKOFF_MAX)
     raise AssertionError("unreachable")
 
 
