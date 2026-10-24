@@ -1,0 +1,71 @@
+id: global-temperature
+version: 1                       # bump on any schema change; forces a rebuild
+title: Global surface temperature
+description: >-
+  Monthly global and hemispheric surface temperature anomalies from NASA GISTEMP v4 (1880 to
+  present, relative to 1951-1980) and the Met Office HadCRUT5 analysis (1850 to present, relative
+  to 1961-1990, with a 95% confidence range). The two series use different baselines.
+pipeline: datasites_climate.global_temperature
+check_every: P1D
+cadence: P1M
+sla: P45D
+source:
+  id: gistemp-hadcrut5
+  name: NASA GISS Surface Temperature Analysis (GISTEMP v4) and Met Office Hadley Centre/CRU HadCRUT5
+  publisher: NASA Goddard Institute for Space Studies; Met Office Hadley Centre
+  url: https://www.metoffice.gov.uk/hadobs/hadcrut5/terms_and_conditions.html
+  # GISTEMP is a US Government work (https://data.giss.nasa.gov/gistemp/); HadCRUT5 is Crown copyright
+  # under the Open Government Licence v3, which allows commercial use with the acknowledgement below.
+  license: LicenseRef-US-Government-Work AND OGL-UK-3.0
+  commercial_ok: true
+  # GISTEMP asks for both its webpage and its latest paper to be cited; the HadCRUT5 acknowledgement is
+  # a licence term. Their [date] placeholders are the retrieved_at date of each dataset version.
+  attribution: >-
+    GISTEMP Team, 2026: GISS Surface Temperature Analysis (GISTEMP), version 4. NASA Goddard
+    Institute for Space Studies. Dataset accessed on the retrieved_at date of this dataset version
+    at https://data.giss.nasa.gov/gistemp/. Lenssen, N., G.A. Schmidt, M. Hendrickson, P. Jacobs,
+    M. Menne, and R. Ruedy, 2024: A GISTEMPv4 observational uncertainty ensemble. J. Geophys. Res.
+    Atmos., 129, no. 17, e2023JD040179, doi:10.1029/2023JD040179. HadCRUT.5.2.0.0 data were
+    obtained from http://www.metoffice.gov.uk/hadobs/hadcrut5 on the retrieved_at date of this
+    dataset version and are © British Crown Copyright, Met Office 2020, provided under an Open
+    Government License, http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+series:
+  gistemp: NASA GISTEMP v4 land-ocean temperature anomaly (°C, relative to 1951-1980)
+  hadcrut5: Met Office HadCRUT5 analysis temperature anomaly (°C, relative to 1961-1990)
+locations:
+  world: World
+  nh: Northern Hemisphere
+  sh: Southern Hemisphere
+schema:
+  - { name: date, type: month }
+  - name: value
+    type: float
+    unit: degC
+    description: >-
+      Surface temperature anomaly. GISTEMP is relative to its 1951-1980 mean, HadCRUT5 to its
+      1961-1990 mean, so subtract a common-period mean before comparing the two
+  - name: lower
+    type: float
+    unit: degC
+    nullable: true
+    description: HadCRUT5 lower 2.5% confidence limit; null for GISTEMP, whose tables give no monthly uncertainty
+  - name: upper
+    type: float
+    unit: degC
+    nullable: true
+    description: HadCRUT5 upper 97.5% confidence limit; null for GISTEMP
+  - name: baseline
+    type: str
+    description: Reference period the anomaly is relative to (1951-1980 or 1961-1990)
+checks:
+  min_rows: 11000                # 3 regions x (GISTEMP 1880- and HadCRUT5 1850-)
+  rows_min_ratio: 0.995
+  ranges:
+    value: [-3, 4]
+    lower: [-4, 4]
+    upper: [-3, 5]
+  max_null_fraction:
+    value: 0
+  newest_not_older: true
+  # GISTEMP recomputes its whole record every month, so small revisions are routine.
+  revisions: { max_changed_fraction: 0.5, tolerance: 0.05 }   # warn only

@@ -1,5 +1,6 @@
 import type { Context } from "hono";
-import { cacheControl, json, problem, shortCache } from "./http";
+import { blobCacheKey, cacheable, matchBlob, putBlob } from "./cache";
+import { cacheControl, defer, json, problem, shortCache } from "./http";
 import type { AppEnv } from "./middleware";
 import { readJson, TTL } from "./store";
 import { keys, type Catalog, type FileEntry, type Manifest, type VersionDoc } from "./types";
@@ -55,6 +56,31 @@ async function resolve(c: C, ref: string): Promise<Resolved | Response> {
   return { dataset, manifest, doc, pinned: version !== null };
 }
 
+/** A file's entry, from the version doc or (for big datasets) from its series shard. */
+async function fileEntry(c: C, doc: VersionDoc, path: string): Promise<FileEntry | undefined> {
+  const direct = doc.files[path];
+  if (direct || !doc.file_shards) return direct;
+  const shard = doc.file_shards[path.split("/", 1)[0]!];
+  if (!shard) return undefined;
+  const map = await readJson<Record<string, FileEntry>>(c.env.DATA, keys.blob(shard), TTL.immutable);
+  return map?.[path];
+}
+
+/** Every file path in a version, loading all shards for big datasets. */
+async function allFiles(c: C, doc: VersionDoc): Promise<Record<string, FileEntry>> {
+  if (!doc.file_shards) return doc.files;
+  const shards = await Promise.all(
+    Object.values(doc.file_shards).map((hash) => readJson<Record<string, FileEntry>>(c.env.DATA, keys.blob(hash), TTL.immutable)),
+  );
+  return Object.assign({}, doc.files, ...shards.map((s) => s ?? {}));
+}
+
+async function locationNames(c: C, doc: VersionDoc): Promise<Record<string, string>> {
+  if (doc.locations) return doc.locations;
+  if (!doc.locations_blob) return {};
+  return (await readJson<Record<string, string>>(c.env.DATA, keys.blob(doc.locations_blob), TTL.immutable)) ?? {};
+}
+
 function versionHeaders(c: C, r: Resolved): Record<string, string> {
   const headers: Record<string, string> = {
     "x-data-version": r.doc.version,
@@ -81,7 +107,7 @@ async function serveFile(c: C, ref: string, path: string): Promise<Response> {
   const r = await resolve(c, ref);
   if (r instanceof Response) return r;
 
-  const entry: FileEntry | undefined = r.doc.files[path];
+  const entry = await fileEntry(c, r.doc, path);
   if (!entry) {
     return problem(c, 404, "unknown-file", "Not found", `${path} is not part of ${r.dataset} version ${r.doc.version}.`, {
       hint: `GET /v1/${r.dataset}/locations`,
@@ -98,11 +124,30 @@ async function serveFile(c: C, ref: string, path: string): Promise<Response> {
   };
   if (etagMatches(c.req.header("if-none-match"), etag)) return new Response(null, { status: 304, headers });
 
+  const missing = () =>
+    problem(c, 503, "data-unavailable", "Data temporarily unavailable", `The stored file for ${path} is missing.`);
   const wantsRange = c.req.header("range") !== undefined;
-  const obj = await c.env.DATA.get(keys.blob(entry.blob), wantsRange ? { range: c.req.raw.headers } : undefined);
-  if (!obj) {
-    return problem(c, 503, "data-unavailable", "Data temporarily unavailable", `The stored file for ${path} is missing.`);
+  const isHead = c.req.method === "HEAD";
+
+  // Whole-body reads go through the edge cache; Range reads always go to R2.
+  const cacheKey = wantsRange ? null : blobCacheKey(c.req.url, c.get("site").id, entry.blob);
+  if (cacheKey) {
+    const hit = await matchBlob(cacheKey);
+    if (hit) {
+      headers["content-length"] = String(hit.size);
+      if (isHead) await hit.body?.cancel();
+      return new Response(isHead ? null : hit.body, { headers });
+    }
+    if (isHead) {
+      const meta = await c.env.DATA.head(keys.blob(entry.blob));
+      if (!meta) return missing();
+      headers["content-length"] = String(meta.size);
+      return new Response(null, { headers });
+    }
   }
+
+  const obj = await c.env.DATA.get(keys.blob(entry.blob), wantsRange ? { range: c.req.raw.headers } : undefined);
+  if (!obj) return missing();
 
   if (wantsRange && obj.range) {
     const { offset, length } = rangeOf(obj.range, obj.size);
@@ -111,6 +156,11 @@ async function serveFile(c: C, ref: string, path: string): Promise<Response> {
     return new Response(obj.body, { status: 206, headers });
   }
   headers["content-length"] = String(obj.size);
+  if (cacheKey && obj.body && cacheable(obj.size)) {
+    const [client, copy] = obj.body.tee();
+    defer(c, putBlob(cacheKey, copy, obj.size, entry.type));
+    return new Response(client, { headers });
+  }
   return new Response(obj.body, { headers });
 }
 
@@ -122,7 +172,7 @@ export function index(c: C): Response {
       name: site.name,
       tagline: site.tagline,
       api_version: "v1",
-      links: { catalog: "/v1/catalog", status: "/v1/status" },
+      links: { catalog: "/v1/catalog", status: "/v1/status", openapi: "/v1/openapi.json" },
     },
     shortCache(300),
   );
@@ -144,6 +194,7 @@ export async function datasetMeta(c: C, ref: string): Promise<Response> {
   return json(
     {
       dataset,
+      kind: doc.kind ?? "series",
       title: doc.title,
       description: doc.description,
       version: doc.version,
@@ -155,6 +206,7 @@ export async function datasetMeta(c: C, ref: string): Promise<Response> {
       coverage: doc.coverage,
       validation: { status: doc.validation.status, warnings: doc.validation.warnings },
       series: Object.entries(doc.series).map(([id, name]) => ({ id, name })),
+      ...(doc.kind === "table" ? { key: doc.key ?? [], partition: doc.partition ?? null } : {}),
       downloads,
       links: {
         locations: `/v1/${dataset}/locations`,
@@ -187,31 +239,40 @@ export async function locations(c: C, ref: string): Promise<Response> {
   const r = await resolve(c, ref);
   if (r instanceof Response) return r;
   const bySeries = new Map<string, string[]>();
-  for (const path of Object.keys(r.doc.files)) {
+  for (const path of Object.keys(await allFiles(c, r.doc))) {
     const m = SERIES_FILE.exec(path);
     if (!m || m[1] === "download") continue;
     const [, series, location] = m as unknown as [string, string, string];
     bySeries.set(series, [...(bySeries.get(series) ?? []), location]);
   }
+  const names = await locationNames(c, r.doc);
   return json(
     {
       dataset: r.dataset,
       version: r.doc.version,
+      kind: r.doc.kind ?? "series",
+      // Table datasets list their partitions under the pseudo-series "table".
       series: [...bySeries.entries()]
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([id, locs]) => ({ id, name: r.doc.series[id] ?? id, locations: locs.sort() })),
-      locations: Object.entries(r.doc.locations).map(([id, name]) => ({ id, name })),
+      locations: Object.entries(names).map(([id, name]) => ({ id, name })),
     },
     cacheControl(r.doc.cadence, r.pinned),
     versionHeaders(c, r),
   );
 }
 
+/** /v1/{dataset}/{series}/{location}.{json|csv}, /v1/{dataset}/table/{partition}.{json|csv}, or a files-dataset path. */
 export function seriesFile(c: C, ref: string, series: string, file: string): Promise<Response> | Response {
-  if (!/\.(json|csv)$/.test(file)) {
-    return problem(c, 404, "unknown-format", "Unknown format", `Use .json or .csv, for example ${series}/<location>.json.`);
+  if (!/\.[a-z0-9]+$/i.test(file)) {
+    return problem(c, 404, "unknown-format", "Unknown format", `Add a format extension, for example ${series}/${file}.json or .csv.`);
   }
   return serveFile(c, ref, `${series}/${file}`);
+}
+
+/** /v1/{dataset}/{file}: a file at the top of a files dataset, such as the boundaries pack's index.json. */
+export function topFile(c: C, ref: string, file: string): Promise<Response> {
+  return serveFile(c, ref, file);
 }
 
 export function download(c: C, ref: string, file: string): Promise<Response> {

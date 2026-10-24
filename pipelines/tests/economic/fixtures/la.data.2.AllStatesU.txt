@@ -1,0 +1,37 @@
+# Excerpt of https://download.bls.gov/pub/time.series/la/la.data.2.AllStatesU
+# (lines copied verbatim, converted to LF line endings: the real files mix CRLF and LF, from the file dated 2026-10-20; captured 2026-10-24).
+# Delaware and Puerto Rico statewide, not seasonally adjusted; measure 07 (employment-population ratio) included to check it is skipped.
+series_id                     	year	period	       value	footnote_codes
+LAUST100000000000003          	2025	M09	         5.0	
+LAUST100000000000003          	2025	M10	           -	X
+LAUST100000000000003          	2025	M11	         5.5	
+LAUST100000000000003          	2026	M08	         4.9	
+LAUST100000000000003          	2026	M09	         4.6	P
+LAUST100000000000004          	2025	M09	       25901	
+LAUST100000000000004          	2025	M10	           -	X
+LAUST100000000000004          	2025	M11	       28138	
+LAUST100000000000004          	2026	M08	       24786	
+LAUST100000000000004          	2026	M09	       23030	P
+LAUST100000000000005          	2025	M09	      488085	
+LAUST100000000000005          	2025	M10	           -	X
+LAUST100000000000005          	2025	M11	      487884	
+LAUST100000000000005          	2026	M08	      480203	
+LAUST100000000000005          	2026	M09	      479206	P
+LAUST100000000000006          	2025	M09	      513986	
+LAUST100000000000006          	2025	M10	           -	X
+LAUST100000000000006          	2025	M11	      516022	
+LAUST100000000000006          	2026	M08	      504989	
+LAUST100000000000006          	2026	M09	      502236	P
+LAUST100000000000007          	2026	M09	        54.9	P
+LAUST720000000000003          	2017	M09	        11.0	W
+LAUST720000000000003          	2020	M04	           -	N
+LAUST720000000000003          	2025	M10	         5.7	
+LAUST720000000000004          	2017	M09	      119480	W
+LAUST720000000000004          	2020	M04	           -	N
+LAUST720000000000004          	2025	M10	       70189	
+LAUST720000000000005          	2017	M09	      963816	W
+LAUST720000000000005          	2020	M04	           -	N
+LAUST720000000000005          	2025	M10	     1154335	
+LAUST720000000000006          	2017	M09	     1083296	W
+LAUST720000000000006          	2020	M04	           -	N
+LAUST720000000000006          	2025	M10	     1224524	

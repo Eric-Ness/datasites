@@ -1,0 +1,72 @@
+id: us-climate
+version: 1                       # bump on any schema change; forces a rebuild
+title: State and national climate
+description: >-
+  Monthly average, maximum and minimum temperature and precipitation for each US state and
+  the contiguous United States (from 1895; Alaska from 1925, Hawaii from 1991), each with its
+  1991-2020 normal, the anomaly from that normal and its rank among all years for that calendar month.
+pipeline: datasites_climate.nclimdiv_state
+check_every: P1D
+cadence: P1M
+sla: P45D
+source:
+  id: noaa-ncei-nclimdiv
+  name: NOAA Monthly U.S. Climate Divisional Database (nClimDiv), statewide and national files
+  publisher: NOAA NCEI
+  url: https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.ncdc:C00005
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true
+  # The landing page's "Cite as" text, with its [indicate subset used] and [access date] filled in.
+  attribution: >-
+    Vose, Russell S.; Applequist, Scott; Squires, Mike; Durre, Imke; Menne, Matthew J.;
+    Williams, Claude N., Jr.; Fenimore, Chris; Gleason, Karin; Arndt, Derek (2014): NOAA
+    Monthly U.S. Climate Divisional Database (NClimDiv). Statewide and national average, maximum
+    and minimum temperature and precipitation (climdiv-tmpcst, -tmaxcst, -tmincst, -pcpnst) and
+    their 1991-2020 normals (climdiv-norm-*st). NOAA National Climatic Data Center.
+    doi:10.7289/V5M32STR. Accessed on the retrieved_at date of this dataset version.
+series:
+  tavg: Average temperature (°F)
+  tmax: Maximum temperature (°F)
+  tmin: Minimum temperature (°F)
+  pcpn: Precipitation (inches)
+locations:
+  registry: us-state             # nClimDiv has the 50 states; no DC or territories
+  explicit:
+    usa: Contiguous United States  # nClimDiv's national series (code 110) covers the 48 contiguous states only
+schema:
+  - { name: date, type: month }
+  - name: value
+    type: float
+    unit: degF (tavg, tmax, tmin); in (pcpn)
+    nullable: true
+    description: Monthly mean temperature in degrees Fahrenheit, or total precipitation in inches, for the area
+  - name: normal
+    type: float
+    unit: degF (tavg, tmax, tmin); in (pcpn)
+    nullable: true
+    description: NCEI's 1991-2020 average for this area and calendar month (climdiv-norm-*st, period 0010)
+  - name: anomaly
+    type: float
+    unit: degF (tavg, tmax, tmin); in (pcpn)
+    nullable: true
+    description: value minus normal
+  - name: rank
+    type: int
+    nullable: true
+    description: >-
+      Rank of value among all years with data for this area, series and calendar month:
+      1 is the warmest (or wettest); tied years share the smallest rank number
+checks:
+  min_rows: 310000               # 51 areas x 4 series x up to 1,581 months
+  rows_min_ratio: 0.995
+  ranges:
+    value: [-60, 120]
+    normal: [-60, 120]
+    anomaly: [-40, 40]
+    rank: [1, 300]
+  max_null_fraction:
+    value: 0.001
+    normal: 0.01
+    anomaly: 0.01
+  newest_not_older: true
+  revisions: { max_changed_fraction: 0.03, tolerance: 0.05 }   # warn only

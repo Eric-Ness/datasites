@@ -1,0 +1,10 @@
+# Source: https://zenodo.org/api/records/17202747/files/SupplyChainGHGEmissionFactorsv1.4.0.xlsx/content
+# Captured: 2026-10-24
+# Excerpt of worksheet 'CO2e': the header row and NAICS 111110, 111120, 327310, 541511, 562212
+# Cells are copied verbatim as text (as the spreadsheet stores them); blank cells are empty.
+2017 NAICS Code,2017 NAICS Title,GHG,Unit,Supply Chain Emission Factors without Margins,Margins of Supply Chain Emission Factors,Supply Chain Emission Factors with Margins,Reference USEEIO Code
+111110,Soybean Farming,All GHGs,"kg CO2e/2024 USD, purchaser price",0.751,0.068,0.82,1111A0
+111120,Oilseed (except Soybean) Farming,All GHGs,"kg CO2e/2024 USD, purchaser price",0.751,0.068,0.82,1111A0
+327310,Cement Manufacturing,All GHGs,"kg CO2e/2024 USD, purchaser price",2.673,0.065,2.739,327310
+541511,Custom Computer Programming Services,All GHGs,"kg CO2e/2024 USD, purchaser price",0.082,0,0.082,541511
+562212,Solid Waste Landfill,All GHGs,"kg CO2e/2024 USD, purchaser price",7.417,0,7.417,562212

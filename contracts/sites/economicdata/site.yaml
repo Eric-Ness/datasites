@@ -1,10 +1,10 @@
 id: economicdata
 domain: economicdata.dev
 name: Economic Data
-tagline: Regional and international economic data in one consistent schema.
+tagline: US regional and international economic data in one consistent schema.
 description: >-
-  Unemployment, jobs, wages, income and GDP for every US county, metro and state
-  in a single panel, with international indicators to follow. Every number keeps
-  its source, release date and revision history.
+  Unemployment for every US state, county and metro area since 1976, county jobs
+  and wages, county income, and GDP, inflation and population for every country.
+  Every number keeps its source, and every version stays citable.
 status: coming-soon
 phase: 3

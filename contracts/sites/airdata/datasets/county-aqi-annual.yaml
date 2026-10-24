@@ -1,0 +1,78 @@
+id: county-aqi-annual
+version: 1
+kind: series
+title: Yearly air quality summary by county
+description: >-
+  EPA's yearly Air Quality Index (AQI) summary for every US county with a monitor, from 1980: how many days
+  fell in each AQI category, the maximum, 90th-percentile and median daily AQI, and how many days each
+  pollutant set the AQI. Validated EPA AirData; the latest year is partial until EPA's next release
+  completes it.
+pipeline: datasites_air.county_aqi_annual
+check_every: P1D                 # conditional GETs: unchanged files cost a 304 each
+cadence: P6M                     # AirData is reissued twice a year (about June and December)
+sla: P8M
+source:
+  id: epa-airdata
+  name: EPA AirData annual AQI by county
+  publisher: US EPA
+  # Terms: https://www.epa.gov/outdoor-air-quality-data/do-i-need-request-permission-use-monitoring-data-and-graphics-airdata
+  # Citation: https://www.epa.gov/outdoor-air-quality-data/how-do-i-cite-data-and-graphics-obtained-airdata-website
+  url: https://aqs.epa.gov/aqsweb/airdata/download_files.html
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true            # "The ambient monitoring data in EPA's Air Quality System (AQS) are public domain."
+  attribution: >-
+    US Environmental Protection Agency. Air Quality System Data Mart [internet database] available via
+    https://www.epa.gov/outdoor-air-quality-data. Accessed on this version's retrieval date.
+series:
+  summary: Yearly AQI summary
+locations:
+  registry: us-county
+  # Same former and island-area counties as county-aqi-daily (see there).
+  explicit:
+    us-county-09001: Fairfield County, CT (former county)
+    us-county-09003: Hartford County, CT (former county)
+    us-county-09005: Litchfield County, CT (former county)
+    us-county-09007: Middlesex County, CT (former county)
+    us-county-09009: New Haven County, CT (former county)
+    us-county-09011: New London County, CT (former county)
+    us-county-09013: Tolland County, CT (former county)
+    us-county-09015: Windham County, CT (former county)
+    us-county-02232: Skagway-Hoonah-Angoon Census Area, AK (until 2007)
+    us-county-02261: Valdez-Cordova Census Area, AK (until 2019)
+    us-county-02280: Wrangell-Petersburg Census Area, AK (until 2008)
+    us-county-66010: Guam
+    us-county-78010: St. Croix Island, VI
+    us-county-78020: St. John Island, VI
+    us-county-78030: St. Thomas Island, VI
+schema:
+  - { name: date, type: year }
+  - { name: days_with_aqi, type: int, unit: days, description: Days with an AQI value }
+  - { name: good_days, type: int, unit: days, description: "Days rated Good (AQI 0-50)" }
+  - { name: moderate_days, type: int, unit: days, description: "Days rated Moderate (51-100)" }
+  - { name: unhealthy_sensitive_days, type: int, unit: days, description: "Days rated Unhealthy for Sensitive Groups (101-150)" }
+  - { name: unhealthy_days, type: int, unit: days, description: "Days rated Unhealthy (151-200)" }
+  - { name: very_unhealthy_days, type: int, unit: days, description: "Days rated Very Unhealthy (201-300)" }
+  - { name: hazardous_days, type: int, unit: days, description: "Days rated Hazardous (301 and above)" }
+  - { name: max_aqi, type: int, unit: AQI, description: Highest daily AQI of the year }
+  - { name: aqi_90th_percentile, type: int, unit: AQI, description: 90th percentile of the daily AQI }
+  - { name: median_aqi, type: int, unit: AQI, description: Median daily AQI }
+  - { name: days_co, type: int, unit: days, description: Days carbon monoxide set the AQI }
+  - { name: days_no2, type: int, unit: days, description: Days nitrogen dioxide set the AQI }
+  - { name: days_ozone, type: int, unit: days, description: Days ozone set the AQI }
+  - { name: days_pm25, type: int, unit: days, description: Days PM2.5 set the AQI }
+  - { name: days_pm10, type: int, unit: days, description: Days PM10 set the AQI }
+checks:
+  min_rows: 40000
+  rows_min_ratio: 0.99
+  ranges:
+    days_with_aqi: [1, 366]
+    good_days: [0, 366]
+    moderate_days: [0, 366]
+    unhealthy_sensitive_days: [0, 366]
+    unhealthy_days: [0, 366]
+    very_unhealthy_days: [0, 366]
+    hazardous_days: [0, 366]
+    max_aqi: [0, 50000]
+    aqi_90th_percentile: [0, 50000]
+    median_aqi: [0, 50000]
+  newest_not_older: true

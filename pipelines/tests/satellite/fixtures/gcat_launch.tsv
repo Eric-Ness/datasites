@@ -1,0 +1,48 @@
+# Source: https://planet4589.org/space/gcat/tsv/launch/launch.tsv
+# Captured: 2026-10-24. Verbatim excerpt: the column header, the '# Updated' line and selected records, in file order.
+#Launch_Tag	Launch_JD	Launch_Date	LV_Type	Variant	Fairing	Flight_ID	Flight	Mission	FlightCode	Platform	Launch_Site	Launch_Pad	Ascent_Site	Ascent_Pad	Perigee	Apogee	Apoflag	Inc	Azimuth	Range	RangeFlag	Dest	OrbMass	OrbPay	Agency	LaunchCode	FailCode	Group	Category	LTCite	Cite	Notes
+# Updated 2026 Oct 24 0113:14
+1942-A01  	2430523.95 	1942 Jun 13 1052	A-4	-	-	2	-	-	-	-	HVP	P7	-	-	      -	      1	 	-	   -	    -	 	-	   0.000 	   0.000 	WEHR	MF  	U	-	Test	TTaylor	-	-
+1948-A01  	2432550.50 	1948	Deacon	-	-	-	E15 Model Test	-	-	-	WI	-	-	-	      -	     10	?	-	   -	    -	 	-	   0.000 	   0.000 	PARD	AS  	-	-	Test	RP-1028	-	-
+1954-A01  	2434742.50 	1954?	HVAR	-	-	-	E14 Model	-	-	-	WI	-	-	-	      -	      5	?	-	   -	    -	 	-	   0.000 	   0.000 	PARD	AS  	-	-	Test	RP-1028	-	-
+1957-A41  	2435980.71 	1957 May 22 0500?	Thor DM-18	-	-	103	R&D Series I (pad ex)	-	-	-	CC	LC17B	-	-	      -	      0	?	-	   -	    -	 	-	   0.000 	   0.000 	AFBMD/6555A	ME  	-	-	Test	Wire	CMBO	-
+1957 ALP  	2436116.31 	1957 Oct  4 1928:34	Sputnik 8K71PS	-	-	M1-PS	PS-1	PS-1	-	-	NIIP-5	LC1	-	-	      -	    938	 	-	   -	    -	 	-	   0.000 	   0.084 	MVS	OS  	-	G	Sat LEO O 1	Energiya	SFLT39-331	-
+1957 BET  	2436145.60 	1957 Nov  3 0230:42	Sputnik 8K71PS	-	-	M1-2PS	PS-2	PS-2	-	-	NIIP-5	LC1	-	-	      -	   1656	 	-	   -	    -	 	-	   0.000 	   8.308 	MVS	OS  	-	G	Sat LEO A 1	Grahn-WWW	Energiya	-
+1957-F01  	2436179.20 	1957 Dec  6 1644:35	Vanguard	-	-	TV-3	Vanguard TV3	Vanguard Test Satellite	-	-	CC	LC18A	-	-	      -	      0	 	-	   -	    -	 	-	   0.000 	   0.002 	NRL	OF  	PE	G	Sat MEO O	Vang-ER9948	-	Fuel injector fire
+1958 BET  	2436280.01 	1958 Mar 17 1215:41	Vanguard	-	-	TV-4	Vanguard I	Vanguard Test Satellite	-	-	CC	LC18A	-	-	      -	   4329	 	-	   -	    -	 	-	   0.000 	   0.002 	NRL	OS  	-	G	Sat MEO O	SP-4202	Vang-ER9960	-
+1959 MU  	2436571.20 	1959 Jan  2 1641:21	Vostok-L 8K72	-	-	B1-6	Luna-1	E-1 No. 4	-	-	NIIP-5	LC1	-	-	      -	 150000	 	-	   -	    -	 	-	   0.000 	   0.205 	MVS	DS  	-	G	Sat EEO E	Energiya	-	-
+1959 NU  	2436630.72 	1959 Mar  3 0510:56	Juno II	-	-	AM-14	Pioneer 4	Pioneer 4	-	-	CC	LC5	-	-	    -26	-393254	 	 29.0 	   -	    -	 	-	   0.000 	   0.007 	ABMA	DS  	-	G	Sat EEO E	JPL32-31-2	-	-
+1959 DEL  	2436788.10 	1959 Aug  7 1424:20	Thor Able III	-	-	134	Explorer 6	NASA S-2	-	-	CC	LC17A	-	-	      -	  42469	 	-	   -	    -	 	-	   0.000 	   0.042 	AFBMD	OS  	-	G	Sat HEO O	RAE/PSC	-	-
+1959 XI  	2436823.78 	1959 Sep 12 0639:42	Vostok-L 8K72	-	-	I1-7B	Luna-2	E-1 No. 7	-	-	NIIP-5	LC1	-	-	      -	 150000	 	-	   -	    -	 	-	   0.000 	   0.205 	MVS	DS  	-	G	Sat EEO E	JBIS51-231	Energiya	-
+1960-S05  	2436934.50 	1960 Q1?	Jaguar	-	-	-	-	-	-	B-57A-SWC	HADC	RW07/25?	WS	LP1	      -	    800	?	-	   -	    -	 	-	   0.000 	   0.000 	AFSWC	HS  	-	AFSWC/	Test/Aeron	RP-1028	-	-
+1960 DEL  	2437040.35 	1960 Apr 15 2030:37	Thor Agena A	-	-	234/1055	Discoverer 11	CORONA C-8	TAG011/RAM HORN	-	V	75-3-5	-	-	      -	    603	 	-	   -	    -	 	-	   0.000 	   0.781 	AFBMD	OS  	-	G	Sat LEO A	NRO3E24	VCR	-
+1960 ETA  	2437107.75 	1960 Jun 22 0554	Thor Ablestar	-	-	281/AB003	Transit 2A/GRAB	Transit 2A	-	-	CC	LC17B	-	-	      -	   1061	 	-	   -	    -	 	-	   0.000 	   0.119 	AFBMD	OS  	-	G	Sat LEO O	SpaceWorld6111-33	-	-
+1960 IOT  	2437158.90 	1960 Aug 12 0939:43	Thor Delta	-	-	270/D002	Echo 1	A-11	-	-	CC	LC17A	-	-	      -	   2147	 	-	   -	    -	 	-	   0.000 	   0.085 	GSFC	OS  	-	G	Sat LEO O	TR-1022	-	-
+1962 KAP  	2437764.13 	1962 Apr  9 1504:48	Atlas Agena B	-	-	110D/1203	Midas 5	Midas ETS-II F3	NIGHT HUNT	-	PA	LC1-2	-	-	      -	   3461	 	-	   -	    -	 	-	   0.000 	   1.626 	AFSSD	OS  	-	G	Sat MEO A 2	VCR	-	-
+1962-S613  	2437854.88 	1962 Jul  9 0903:40?	Nike Apache	-	-	Project 6.13	STARFISH Speedball	-	-	-	JI	Pad 3	-	-	      -	    230	?	-	   -	    -	 	-	   0.000 	   0.000 	SAND	SS  	-	NMSU/	Diagnostic	AD-A955411	-	-
+1962 B GAM  	2437940.42 	1962 Oct  2 2211:30	Thor Delta A	-	-	345/D013	Explorer 14	EPE B	-	-	CC	LC17B	-	-	      -	  98859	 	-	   -	    -	 	-	   0.000 	   0.040 	GSFC	OS  	-	G	Sat HEO O	TR-1022	-	-
+1963-014 	2438159.34 	1963 May  9 2006:16	Atlas Agena B	-	-	119D/1206	Midas 7	Midas ETS-III F2	DAMP CLAY	-	PA	LC1-2	-	-	      -	   7423	 	-	   -	    -	 	-	   0.000 	   1.582 	AFSSD	OS  	-	G	Sat MEO A 2	VCR	-	-
+1963-039 	2438319.61 	1963 Oct 17 0237	Atlas Agena D	-	-	197D/1801	Vela 1A/1B	Vela 1A	-	-	CC	LC13	-	-	      -	 150000	 	-	   -	    -	 	-	   0.000 	   0.426 	AFSSD	OS  	-	G	Sat HEO O	AP	-	-
+1963-042 	2438332.39 	1963 Oct 29 2119:04	Thor SLV-2A Agena D	-	-	386/1601	CORONA 72/9059A	ARGON 6	TAG079/MARK DOWN	-	V	75-3-4	-	-	      -	    585	 	-	   -	    -	 	-	   0.000 	   1.370 	AFSSD	OS  	-	G	Sat LEO A	SAMOS	VCR	-
+1964-070 	2438696.94 	1964 Oct 28 1040	Vostok 8A92	-	-	R 15002- 02	Kosmos-50	Zenit-2 No. 25	-	-	NIIP-5	LC31	-	-	      -	    265	 	-	   -	    -	 	-	   0.000 	   4.700 	RVSN	OS  	-	G	Sat LEO O	AK15	NK96-10-65	-
+1965-027 	2438854.39 	1965 Apr  3 2125	Atlas SLV-3 Agena D	-	-	7401/7001	SNAPSHOT	SNAP-10A FS-4	AIR PUMP	-	VS	PALC2-4	-	-	      -	   1330	 	-	   -	    -	 	-	   0.000 	   2.418 	AFSSD	OS  	-	G	Sat LEO A 2	Wire	-	-
+1965-A245  	2439107.12 	1965 Dec 12 1454:06	Titan II GLV	-	-	GLV-6	Gemini 6	Gemini SC6	Pad abort	-	CC	LC19	-	-	      -	      0	 	-	   -	    -	 	-	   0.000 	   0.000 	AFSSD/MSC	OA  	-	G	Sat LEO O	SP-4203	MM/Titan	Abort, no launch
+1968-118 	2440212.04 	1968 Dec 21 1251:00	Saturn V	-	-	SA-503	Apollo 8	Apollo CM-103	-	LUT1	KSC	LC39A	-	-	    179	    190	 	 32.7 	   -	    -	 	-	   0.000 	  29.968 	MSFC	DS  	-	G	Sat EEO E	Wire	-	-
+1969-059 	2440419.06 	1969 Jul 16 1332:00	Saturn V	-	-	SA-506	Apollo 11	Apollo CM-107	-	LUT1	KSC	LC39A	-	-	    188	    192	 	 32.6 	   -	    -	 	-	   0.000 	  45.060 	MSFC	DS  	-	G	Sat EEO E	KHR-1	-	-
+1970-029 	2440688.30 	1970 Apr 11 1913:03	Saturn V	-	-	SA-508	Apollo 13	Apollo CM-109	-	LUT3	KSC	LC39A	-	-	    184	    198	 	 32.6 	   -	    -	 	-	   0.000 	  47.140 	MSFC	DS  	-	G	Sat EEO E	KHR-1	-	-
+1971-000 	2441076.82 	1971 May  5 0743:01	R-UNK	-	-	23C-2 (3C-20)	Duplicate of 1971-039	See SSN 5310	-	-	CC	LC40	-	-	      -	  35953	 	-	   -	    -	 	-	   0.000 	   0.000 	UNK	!	-	-	Not real	AFT3	MM/Titan	-
+1981-034 	2444707.00 	1981 Apr 12 1200:04	Space Shuttle	-	-	STS-1	OFT-1	OV-102 OFT-1	-	MLP1	KSC	LC39A	-	-	      -	    277	 	-	   -	    -	 	-	   0.000 	  94.535 	JSC/MSFC	OS  	-	G	Sat LEO SR	STSJSC	-	-
+1989-092 	2447855.47 	1989 Nov 24 2322:00	Tsiklon-2	-	-	51086-102	Kosmos-2051	US-PM	-	-	GIK-5	LC90	-	-	      -	    463	 	-	   -	    -	 	-	   0.000 	   3.300 	UNKS	OS80  	S2U	-	Sat LEO P	AK15/RAEX	XPC	Underburn
+1996-006 	2450114.55 	1996 Feb  1 0115:01	Atlas IIAS	-	-	AC-126	Palapa C1	Palapa C1	-	-	CC	LC36B	-	-	      -	  89995	 	-	   -	    -	 	-	   0.000 	   2.989 	LMA	OS  	-	C	Sat STO O	Wire	-	-
+1998-067 	2451137.78 	1998 Nov 20 0640:00	Proton-K	-	-	395-01	Zarya	77KM No. 17501	ISS 1A	-	GIK-5	LC81/23	-	-	      -	    430	 	-	   -	    -	 	-	   0.000 	  20.281 	RVSNR	OS  	-	G	Sat ISS O	NK9901-02	-	-
+2015-049 	2457285.46 	2015 Sep 19 2301:14	Chang Zheng 6	-	-	Y1	Cluster	-	-	-	TYSC	LC16	-	-	      -	    543	 	-	   -	    -	 	-	   0.000 	   0.268 	SAST	OS  	-	G	Sat SSO O	nasaspaceflight.com	-	-
+2016-A109  	2457736.50 	2016 DEc 14	Lance	-	-	SM-6 Target	-	-	-	-	KAU	-	-	-	      -	     10	?	-	   -	    -	 	-	   0.000 	   0.000 	MDA	MS  	-	-	Target	mda.mil	-	-
+2020-011 	2458895.35 	2020 Feb 15 2021:04	Antares 230+	-	-	2TRS2S1.12 (12)	S.S. Robert Lawrence	Cygnus NG-13	70108-401	-	MARS	Pad 0A	-	-	      -	    544	 	-	   -	    -	 	-	   0.000 	  11.721 	NGIS	OS  	-	CX/C	Sat ISS O	Wire	-	-
+2026-067 	2461129.96 	2026 Mar 30 1102:00	Falcon 9	FT5	-	xxx/B1093.12 F622	Transporter-16	Transporter-16	-	-	VSFBS	SLC4E	-	-	      -	      -	 	-	   -	    -	 	-	   0.000 	   5.000 	SPX	OS  	-	C	Sat LEO D	SpaceX	-	-
+2026-160 	2461235.56 	2026 Jul 14 0128:17	Falcon 9	FT5	-	xxx/B1093.15 F665	Starlink-409	Starlink Group 15-14	V2MO 15-14 (27 Ku)	-	VSFBS	SLC4E	-	-	    135	    266	 	 70.0 	   -	    -	 	-	   0.000 	  15.500 	SPX	OS  	-	C M	Sat SSO D	SpaceX	-	-
+2026-162 	2461236.12 	2026 Jul 14 1447:43	Soyuz-2-1A	-	-	F 15000-081	Soyuz MS-29	Soyuz 11F732A48 No. 759	ISS 75S	-	GIK-5	LC31	-	-	    185	    207	 	 51.7 	   -	    -	 	-	   0.000 	   7.500 	FKA	OS  	-	G	Sat ISS O	spaceflightnow.com	-	-
+2026-168 	2461243.62 	2026 Jul 22 0254	Yinli-1	-	-	Y4	Dongpo/ZDG-3	-	-	DFHT	ECS	LP1	-	-	    525	    551	 	 97.5 	   -	    -	 	-	   0.000 	   0.800 	DFK	OS  	-	C	Sat SSO O	nasaspaceflight.com	-	-
+2026-227 	2461315.27 	2026 Oct  1 1832:00	Falcon 9	FT5	-	xxx/B1082.25 F693	Transporter-18	Transporter-18	-	-	VSFBS	SLC4E	-	-	      -	      -	 	-	   -	    -	 	-	   0.000 	   5.000 	SPX	OS  	-	C	Sat LEO D	SpaceX	-	-
+2026-239 	2461336.80 	2026 Oct 23 0711	Electron	-	-	98	We're not Hawking Around	Hawk 16A/B/C	-	-	MAHIA	LC1A	-	-	      -	      -	 	-	   -	    -	 	-	   0.000 	   0.138 	RLABN	OS  	-	C	Sat LEO OO	Wire	-	-
+2026-241 	2461337.31 	2026 Oct 23 1925	Chang Zheng 4B	-	-	Y81	YG53/YG56	YG53/YG56	-	-	JQ	LC43/94	-	-	      -	      -	 	-	   -	    -	 	-	   0.000 	   2.000 	SAST	OS  	-	G	Sat LEO L	nasaspaceflight.com	-	-
+2026-M02  	2461409.46 	2027 Jan  3 2305	Hwasong-11E	?	-	-	-	-	-	-	RYOKPO	-	-	-	      -	     50	 	-	   -	  950	 	-	   0.000 	   0.000 	KPA	MS  	-	-	Test	Wire	-	-

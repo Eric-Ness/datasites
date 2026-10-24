@@ -1,0 +1,62 @@
+id: census-acs-income
+version: 1                       # bump on any schema change; forces a rebuild
+title: Median household income (ACS 5-year)
+description: >-
+  Median household income with its 90 percent margin of error for every county, state and the
+  nation from the Census Bureau's American Community Survey 5-year estimates (table B19013), one
+  row per release from 2005-2009 onward; the date is the release's final year. Each release is in
+  its own final year's inflation-adjusted dollars, so releases are not directly comparable, and
+  overlapping 5-year periods should not be compared year to year. Geography follows each release.
+pipeline: datasites_economic.census_acs_income
+check_every: P7D                 # 3 small requests per release; ACS 5-year comes out once a year
+cadence: P1Y
+sla: P450D
+requires_env: [CENSUS_API_KEY]
+source:
+  id: census-acs5-b19013
+  name: U.S. Census Bureau, American Community Survey 5-Year Estimates, table B19013 (Census Data API)
+  publisher: U.S. Census Bureau
+  url: https://www.census.gov/data/developers/data-sets/acs-5year.html
+  license: LicenseRef-US-Government-Work   # API terms: https://www.census.gov/data/developers/about/terms-of-service.html
+  commercial_ok: true
+  attribution: >-
+    Source: U.S. Census Bureau, American Community Survey 5-Year Estimates, Table B19013: Median
+    Household Income in the Past 12 Months. This product uses the Census Bureau Data API but is not
+    endorsed or certified by the Census Bureau.
+series:
+  median-household-income: Median household income in the past 12 months (B19013_001)
+# Registry counties (2024 Gazetteer), plus county codes earlier releases used.
+locations:
+  registry: [us-state, us-county]
+  explicit:
+    usa: United States
+    us-county-02201: Prince of Wales-Outer Ketchikan Census Area, AK (legacy)
+    us-county-02232: Skagway-Hoonah-Angoon Census Area, AK (legacy)
+    us-county-02261: Valdez-Cordova Census Area, AK (through the 2015-2019 release)
+    us-county-02270: Wade Hampton Census Area, AK (renamed Kusilvak, 02158)
+    us-county-02280: Wrangell-Petersburg Census Area, AK (legacy)
+    us-county-09001: Fairfield County, CT (through the 2017-2021 release)
+    us-county-09003: Hartford County, CT (through the 2017-2021 release)
+    us-county-09005: Litchfield County, CT (through the 2017-2021 release)
+    us-county-09007: Middlesex County, CT (through the 2017-2021 release)
+    us-county-09009: New Haven County, CT (through the 2017-2021 release)
+    us-county-09011: New London County, CT (through the 2017-2021 release)
+    us-county-09013: Tolland County, CT (through the 2017-2021 release)
+    us-county-09015: Windham County, CT (through the 2017-2021 release)
+    us-county-46113: Shannon County, SD (renamed Oglala Lakota, 46102)
+    us-county-51515: Bedford city, VA (merged into Bedford County in 2013)
+schema:
+  - { name: date, type: year, description: Final year of the 5-year period }
+  - { name: median_household_income, type: int, unit: USD, nullable: true, description: Inflation-adjusted to the final year's dollars }
+  - { name: margin_of_error, type: int, unit: USD, nullable: true, description: 90 percent margin of error }
+  - { name: estimate_annotation, type: str, nullable: true, description: "Census annotation for the estimate: - N (X) 250,000+ 2,500-" }
+  - { name: moe_annotation, type: str, nullable: true, description: "Census annotation for the margin of error: ** *** ***** N (X)" }
+checks:
+  min_rows: 40000
+  rows_min_ratio: 0.99
+  ranges:
+    median_household_income: [0, 260000]
+    margin_of_error: [0, 260000]
+  max_null_fraction:
+    median_household_income: 0.02
+  newest_not_older: true

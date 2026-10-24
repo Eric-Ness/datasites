@@ -1,0 +1,19 @@
+// electiondata.dev: an assets-only Worker (no script) serving the static site built into ../dist/electiondata.
+// Build first:  SITE=electiondata pnpm --filter @datasites/web run build
+// Deploy:       pnpm --filter @datasites/web exec wrangler deploy -c wrangler/electiondata.jsonc
+// The apex domain is served by the coming-soon Worker until it is removed there; see apps/web/README.md.
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "web-electiondata",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "preview_urls": true,
+  "assets": {
+    "directory": "../dist/electiondata",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  },
+  "routes": [
+    { "pattern": "electiondata.dev", "custom_domain": true }
+  ]
+}

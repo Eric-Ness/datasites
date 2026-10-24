@@ -1,0 +1,71 @@
+id: fire-incidents
+version: 1
+kind: table
+title: Current wildland fire incidents (US)
+description: >-
+  Every current US wildland fire incident in IRWIN: wildfires, prescribed fires and complexes that are
+  not yet out, with name, location, size, containment, cause and resources. From the NIFC WFIGS current
+  incident locations service, which drops an incident 3 to 14 days after its last update.
+pipeline: datasites_wildfire.wfigs_incidents
+check_every: PT3H
+cadence: PT1H                    # WFIGS refreshes every 5 minutes; some incident changes every hour
+sla: PT12H
+source:
+  id: nifc-wfigs-incidents
+  name: NIFC WFIGS Current Wildland Fire Incident Locations
+  publisher: National Interagency Fire Center (NIFC)
+  url: https://data-nifc.opendata.arcgis.com/datasets/nifc::current-wildland-fire-incident-locations
+  # The item names no licence, only a liability disclaimer; the records come from federal interagency
+  # systems (IRWIN), so they are US Government works.
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true
+  # WFIGS asks for no particular credit; this is the item's own Credits line, verbatim.
+  attribution: >-
+    National Interagency Fire Center, Wildland Fire Interagency Geospatial Services (WFIGS). Credits:
+    US Department of Interior Office of Wildland Fire: IRWIN, USDA Forest Service, National Park Service,
+    Fish and Wildlife Service, Bureau of Indian Affairs, and Bureau of Land Management, National
+    Association of State Foresters, US Fire Administration, National Wildfire Coordinating Group
+key: [irwin_id]
+partition: state
+schema:
+  - { name: irwin_id, type: str, description: IRWIN incident id (braces removed) }
+  - { name: unique_fire_id, type: str, nullable: true, description: "Year-unit-number, e.g. 2026-WAOWF-260406" }
+  - { name: name, type: str, nullable: true }
+  - { name: type, type: str, nullable: true, description: "WF wildfire, RX prescribed fire, CX complex" }
+  - { name: state, type: str, description: "Point of origin state (us-wa); unknown where IRWIN has none" }
+  - { name: county, type: str, nullable: true }
+  - { name: county_fips, type: str, nullable: true }
+  - { name: gacc, type: str, nullable: true, description: Geographic Area Coordination Center }
+  - { name: latitude, type: float, nullable: true, unit: degrees, description: Point of origin (WGS84) }
+  - { name: longitude, type: float, nullable: true, unit: degrees }
+  - { name: discovered, type: datetime, nullable: true }
+  - { name: acres, type: float, nullable: true, unit: acres, description: Current incident size }
+  - { name: discovery_acres, type: float, nullable: true, unit: acres }
+  - { name: percent_contained, type: float, nullable: true, unit: percent }
+  - { name: contained, type: datetime, nullable: true }
+  - { name: controlled, type: datetime, nullable: true }
+  - { name: out, type: datetime, nullable: true }
+  - { name: cause, type: str, nullable: true }
+  - { name: complexity, type: str, nullable: true, description: Incident complexity level (Type 1 to 5) }
+  - { name: personnel, type: int, nullable: true, description: Total incident personnel }
+  - { name: cost_to_date, type: float, nullable: true, unit: USD }
+  - { name: management_organization, type: str, nullable: true }
+  - { name: jurisdictional_agency, type: str, nullable: true }
+  - { name: landowner_kind, type: str, nullable: true }
+  - { name: complex_name, type: str, nullable: true }
+  - { name: complex_irwin_id, type: str, nullable: true }
+  - { name: is_complex_child, type: bool, nullable: true }
+  - { name: modified, type: datetime, nullable: true, description: Last update of the IRWIN record }
+checks:
+  # No rows_min_ratio: incidents fall off by the hundreds as a season ends. Even in winter IRWIN lists
+  # prescribed fires, so an empty layer means the service failed (the engine blocks an empty table).
+  min_rows: 1
+  ranges:
+    latitude: [13, 72]
+    longitude: [-180, 180]
+    acres: [0, 5000000]
+    discovery_acres: [0, 5000000]
+    percent_contained: [0, 100]
+    personnel: [0, 50000]
+  max_null_fraction:
+    discovered: 0.05

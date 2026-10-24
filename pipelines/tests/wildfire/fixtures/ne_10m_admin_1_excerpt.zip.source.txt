@@ -1,0 +1,2 @@
+#! Source: https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_1_states_provinces.zip (Natural Earth v5.1.1)
+#! Captured 2026-10-24. The records ['CA-BC', 'CA-ON', 'US-AK', 'US-CA', 'US-ID', 'US-NV', 'US-NY', 'US-OR', 'US-WA'] with their shapes and attributes copied unchanged into a smaller shapefile with pyshp (a zip cannot carry a header comment).

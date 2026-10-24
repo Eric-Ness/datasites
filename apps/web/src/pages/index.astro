@@ -1,0 +1,91 @@
+---
+import Base from "../layouts/Base.astro";
+import CodeBlock from "../components/CodeBlock.astro";
+import DatasetCard from "../components/DatasetCard.astro";
+import { apiBase, site, siteDatasets } from "../lib/site";
+import { defaultSelection, formatsOffered } from "../lib/datasets";
+import { quickstart } from "../lib/snippets";
+import { apiUrl, paths } from "../lib/urls";
+
+const first = siteDatasets.find((d) => !d.discontinued) ?? siteDatasets[0] ?? null;
+const lines = quickstart({
+  siteId: site.id,
+  base: apiBase,
+  first: first ? { siteId: site.id, base: apiBase, id: first.id, kind: first.kind, ...defaultSelection(first) } : null,
+});
+const kinds = new Set(siteDatasets.map((d) => d.kind));
+---
+
+<Base title="Home" description={`${site.tagline} ${site.description}`}>
+  <section class="hero">
+    <p class="eyebrow">{site.domain}</p>
+    <h1>{site.name}</h1>
+    <p class="lede">{site.tagline}</p>
+    <p class="muted">{site.description}</p>
+    <div class="actions">
+      <a class="btn" href="/datasets/">Browse the datasets</a>
+      <a class="btn btn-quiet" href="/docs/">Read the docs</a>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="offer-h">
+    <h2 id="offer-h">What you get</h2>
+    <ul class="features">
+      <li>
+        <h3>Plain files over HTTPS</h3>
+        <p>
+          {formatsOffered(kinds)} No key or signup.
+        </p>
+      </li>
+      <li>
+        <h3>Versions you can cite</h3>
+        <p>Every update gets a version id, and a pinned URL always returns the same data. The first version of each month is kept for good, so results stay reproducible.</p>
+      </li>
+      <li>
+        <h3>Checked before publishing</h3>
+        <p>Each update is validated against its contract. If a check fails, the last good version stays live.</p>
+      </li>
+      <li>
+        <h3>Licenses up front</h3>
+        <p>Every dataset names its source, its license, the exact credit line and whether commercial use is allowed.</p>
+      </li>
+    </ul>
+  </section>
+
+  <section class="section" aria-labelledby="datasets-h">
+    <div class="section-head">
+      <h2 id="datasets-h">Datasets</h2>
+      {siteDatasets.length > 0 && <a href="/datasets/">All {siteDatasets.length} datasets</a>}
+    </div>
+    {
+      siteDatasets.length ? (
+        <ul class="card-grid">
+          {siteDatasets.map((d) => (
+            <DatasetCard dataset={d} />
+          ))}
+        </ul>
+      ) : (
+        <div class="notice">
+          <p>
+            The first {site.name} datasets are being built now. They will appear here, with charts and downloads, as soon as
+            they are published. The <a href="/status/">status page</a> shows when.
+          </p>
+        </div>
+      )
+    }
+  </section>
+
+  <section class="section" aria-labelledby="quickstart-h">
+    <h2 id="quickstart-h">Quickstart</h2>
+    <p class="muted prose">Three requests: the catalog, {first ? "one dataset's metadata and one data file" : "the status and the API index"}.</p>
+    <CodeBlock code={lines.join("\n")} label="Quickstart commands" id="quickstart" />
+    <p class="small muted">
+      Base URL: <a class="mono" href={apiUrl(apiBase, site.id, paths.root())}>{apiBase}</a>. Next: the
+      <a href="/docs/">docs</a> and the <a href="/docs/reference/">API reference</a>.
+    </p>
+  </section>
+</Base>
+
+<script>
+  import "../client/catalog";
+</script>

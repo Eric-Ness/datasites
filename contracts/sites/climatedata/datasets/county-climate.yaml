@@ -1,0 +1,83 @@
+id: county-climate
+version: 1                       # bump on any schema change; forces a rebuild
+title: County climate report card
+description: >-
+  Monthly average, maximum and minimum temperature and precipitation for every US county
+  (the contiguous US from 1895, Alaska from 1925, Hawaii from 1991), each with its 1991-2020
+  normal, the anomaly from that normal and its rank among all years for that calendar month.
+pipeline: datasites_climate.nclimdiv_county
+check_every: P1D                 # procdate.txt plus conditional GETs: nearly free when nothing changed
+cadence: P1M                     # NCEI reissues the whole record around the 6th-8th of each month
+sla: P45D
+source:
+  id: noaa-ncei-nclimdiv
+  name: NOAA Monthly U.S. Climate Divisional Database (nClimDiv), county files
+  publisher: NOAA NCEI
+  url: https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.ncdc:C00005
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true
+  # The landing page's "Cite as" text, with its [indicate subset used] and [access date] filled in.
+  attribution: >-
+    Vose, Russell S.; Applequist, Scott; Squires, Mike; Durre, Imke; Menne, Matthew J.;
+    Williams, Claude N., Jr.; Fenimore, Chris; Gleason, Karin; Arndt, Derek (2014): NOAA
+    Monthly U.S. Climate Divisional Database (NClimDiv). County average, maximum and minimum
+    temperature and precipitation (climdiv-tmpccy, -tmaxcy, -tmincy, -pcpncy) and the county
+    1991-2020 normals (climdiv-norm-*cy). NOAA National Climatic Data Center.
+    doi:10.7289/V5M32STR. Accessed on the retrieved_at date of this dataset version.
+series:
+  tavg: Average temperature (°F)
+  tmax: Maximum temperature (°F)
+  tmin: Minimum temperature (°F)
+  pcpn: Precipitation (inches)
+locations:
+  registry: us-county
+  # nClimDiv still publishes Connecticut's 8 counties abolished in 2022; the registry (Census 2024)
+  # has the 9 planning regions instead. If NCEI switches to planning regions these simply stop appearing.
+  explicit:
+    us-county-09001: Fairfield County, CT (pre-2022)
+    us-county-09003: Hartford County, CT (pre-2022)
+    us-county-09005: Litchfield County, CT (pre-2022)
+    us-county-09007: Middlesex County, CT (pre-2022)
+    us-county-09009: New Haven County, CT (pre-2022)
+    us-county-09011: New London County, CT (pre-2022)
+    us-county-09013: Tolland County, CT (pre-2022)
+    us-county-09015: Windham County, CT (pre-2022)
+# NCEI files the District of Columbia under Maryland (code 18511); it is published as us-county-11001.
+schema:
+  - { name: date, type: month }
+  - name: value
+    type: float
+    unit: degF (tavg, tmax, tmin); in (pcpn)
+    nullable: true
+    description: Monthly mean temperature in degrees Fahrenheit, or total precipitation in inches, for the county
+  - name: normal
+    type: float
+    unit: degF (tavg, tmax, tmin); in (pcpn)
+    nullable: true
+    description: NCEI's 1991-2020 average for this county and calendar month (climdiv-norm-*cy, period 0010)
+  - name: anomaly
+    type: float
+    unit: degF (tavg, tmax, tmin); in (pcpn)
+    nullable: true
+    description: value minus normal
+  - name: rank
+    type: int
+    nullable: true
+    description: >-
+      Rank of value among all years with data for this county, series and calendar month:
+      1 is the warmest (or wettest); tied years share the smallest rank number
+checks:
+  min_rows: 19500000             # ~3,142 counties x 4 series x 1,581 months
+  rows_min_ratio: 0.995          # e.g. losing Alaska or Hawaii would trip this
+  ranges:
+    value: [-70, 130]
+    normal: [-70, 130]
+    anomaly: [-50, 60]
+    rank: [1, 300]
+  max_null_fraction:
+    value: 0.001
+    normal: 0.01
+    anomaly: 0.01
+  newest_not_older: true
+  # NCEI revises the latest two years every month; a full-record revision means a new nClimDiv version.
+  revisions: { max_changed_fraction: 0.03, tolerance: 0.05 }   # warn only

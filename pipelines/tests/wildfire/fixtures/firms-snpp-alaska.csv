@@ -1,0 +1,5 @@
+#! Source: https://firms.modaps.eosdis.nasa.gov/data/active_fire/suomi-npp-viirs-c2/csv/SUOMI_VIIRS_C2_Alaska_7d.csv
+#! Captured 2026-10-24 (Sat, 24 Oct 2026 13:49:50 GMT). whole file, copied verbatim.
+latitude,longitude,bright_ti4,scan,track,acq_date,acq_time,satellite,confidence,version,bright_ti5,frp,daynight
+70.32005,-148.5018,300.42,0.47,0.4,2026-10-17,1359,N,nominal,2.0NRT,265.03,1.13,N
+70.31813,-148.50308,296.84,0.39,0.36,2026-10-19,1323,N,nominal,2.0NRT,266.19,0.55,N

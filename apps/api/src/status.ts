@@ -6,6 +6,7 @@ import { keys, type Catalog, type CatalogEntry, type PipelineState } from "./typ
 export type DatasetStatusValue =
   | "ok"
   | "pending"
+  | "unpublished"
   | "late"
   | "stale-upstream"
   | "failing"
@@ -39,6 +40,9 @@ function ageMs(iso: string | null, now: number): number {
 
 function classify(entry: CatalogEntry, state: PipelineState | null, now: number): DatasetStatusValue {
   if (entry.discontinued) return "discontinued";
+  // In the catalog but never published: waiting on credentials, or the source has been down since day one.
+  // Repeated failures still page, so a pipeline that never worked doesn't sit quietly as "unpublished".
+  if (!entry.current) return (state?.consecutive_failures ?? 0) >= 3 ? "failing" : "unpublished";
   if (!state?.checked_at) return "pending";
   if (state.consecutive_failures >= 3) return "failing";
   if (state.blocked_version) return "blocked";
@@ -67,7 +71,7 @@ export async function siteStatus(bucket: R2Bucket, siteId: string, now: number):
     entries.map((entry) => readJson<PipelineState>(bucket, keys.state(siteId, entry.id), TTL.state)),
   );
   const datasets = entries.map((entry, i) => datasetStatus(entry, states[i] ?? null, now));
-  const healthy = datasets.every((d) => d.status === "ok" || d.status === "discontinued");
+  const healthy = datasets.every((d) => ["ok", "discontinued", "unpublished"].includes(d.status));
   return { site: siteId, generated_at: new Date(now).toISOString(), overall: healthy ? "ok" : "degraded", datasets };
 }
 

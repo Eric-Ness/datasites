@@ -4,20 +4,20 @@ import json
 import polars as pl
 
 from datasites_climate.noaa_gml_co2 import transform
-from datasites_core.outputs import build_outputs
+from datasites_core.outputs import build_series_outputs
 from datasites_core.validate import validate
 
 
 def test_outputs_are_deterministic(contract, raw):
-    first = build_outputs(contract, transform(raw))
-    second = build_outputs(contract, transform(raw).reverse())  # row order must not matter
+    first = build_series_outputs(contract, transform(raw), contract.locations.names())
+    second = build_series_outputs(contract, transform(raw).reverse(), contract.locations.names())  # row order must not matter
     assert first.keys() == second.keys()
     for path in first:
         assert first[path].body == second[path].body, path
 
 
 def test_output_files(contract, raw):
-    out = build_outputs(contract, transform(raw))
+    out = build_series_outputs(contract, transform(raw), contract.locations.names())
     assert sorted(out) == [
         "average/noaa-mlo.csv",
         "average/noaa-mlo.json",
@@ -81,7 +81,7 @@ def test_unknown_location_and_duplicates_block(contract, raw):
     table = transform(raw)
     stray = table.head(1).with_columns(pl.lit("mars").alias("location"))
     report = validate(contract, pl.concat([table, stray, table.head(1)]), previous=None)
-    assert any("locations not declared" in e for e in report.errors)
+    assert any("locations not allowed" in e for e in report.errors)
     assert any("share a series/location/date key" in e for e in report.errors)
 
 

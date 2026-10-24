@@ -1,0 +1,42 @@
+---
+import Base from "../layouts/Base.astro";
+import { apiBase, site } from "../lib/site";
+
+const apiHost = apiBase.replace(/^https?:\/\//, "");
+---
+
+<Base title="Privacy" description={`What ${site.domain} and its API collect, and why.`}>
+  <header class="hero">
+    <p class="eyebrow">{site.domain}</p>
+    <h1>Privacy</h1>
+    <p class="lede">This site sets no cookies and runs no analytics or advertising scripts.</p>
+  </header>
+  <div class="prose">
+    <h2>This website</h2>
+    <p>
+      The pages are static files. They load no fonts, scripts or images from other companies' servers. Your browser
+      stores nothing for this site.
+    </p>
+    <h2>The API</h2>
+    <p>
+      Charts, previews and the status page ask the API at <code>{apiHost}</code> for data from your browser. Like any web
+      server, the API sees your IP address and the address you requested. It uses the IP address to apply
+      <a href="/docs/#rate-limits">rate limits</a>, and keeps a sample of request logs for a short time to debug problems.
+      It doesn't build profiles or share request data.
+    </p>
+    <h2>Hosting</h2>
+    <p>
+      The website and the API run on Cloudflare, which handles every request to deliver it. See
+      <a href="https://www.cloudflare.com/privacypolicy/" rel="external">Cloudflare's privacy policy</a>.
+    </p>
+    <h2>Launch emails</h2>
+    <p>
+      If you signed up for a launch email before the site opened, we stored your email address, the site you signed up on
+      and when. We use it for that one email, and we never sell or share it.
+    </p>
+    <h2>Contact</h2>
+    <p>
+      To ask about your data or have a signup removed, email <a href={`mailto:hello@${site.domain}`}>hello@{site.domain}</a>.
+    </p>
+  </div>
+</Base>

@@ -1,0 +1,19 @@
+// airdata.dev: an assets-only Worker (no script) serving the static site built into ../dist/airdata.
+// Build first:  SITE=airdata pnpm --filter @datasites/web run build
+// Deploy:       pnpm --filter @datasites/web exec wrangler deploy -c wrangler/airdata.jsonc
+// The apex domain is served by the coming-soon Worker until it is removed there; see apps/web/README.md.
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "web-airdata",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "preview_urls": true,
+  "assets": {
+    "directory": "../dist/airdata",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  },
+  "routes": [
+    { "pattern": "airdata.dev", "custom_domain": true }
+  ]
+}

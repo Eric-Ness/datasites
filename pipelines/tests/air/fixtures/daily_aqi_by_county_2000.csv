@@ -1,0 +1,8 @@
+#! Source: https://aqs.epa.gov/aqsweb/airdata/daily_aqi_by_county_2000.zip
+#! Captured 2026-10-24. The CSV inside the zip: its header and rows for a Canadian province, the Maine "MOBILE MONITORS" pseudo-county and a Mono County PM10 dust day above AQI 500, copied verbatim.
+"State Name","county Name","State Code","County Code","Date","AQI","Category","Defining Parameter","Defining Site","Number of Sites Reporting"
+"California","Mono","06","051","2000-11-29",11464,"Hazardous","PM10","06-051-0011",4
+"Canada","New Brunswick","CC","004","2000-04-01",39,"Good","Ozone","CC-004-0002",1
+"Canada","New Brunswick","CC","004","2000-04-02",50,"Good","Ozone","CC-004-0002",1
+"Maine","MOBILE MONITORS","23","901","2000-05-04",44,"Good","Ozone","23-901-0001",1
+"Maine","MOBILE MONITORS","23","901","2000-05-05",43,"Good","Ozone","23-901-0001",1

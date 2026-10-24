@@ -1,0 +1,16 @@
+[project]
+name = "datasites-air"
+version = "0.1.0"
+description = "Pipelines for airdata.dev"
+requires-python = ">=3.12"
+dependencies = ["datasites-core", "polars>=1.0"]
+
+[tool.uv.sources]
+datasites-core = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/datasites_air"]

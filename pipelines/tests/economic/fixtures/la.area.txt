@@ -1,0 +1,17 @@
+# Excerpt of https://download.bls.gov/pub/time.series/la/la.area
+# (lines copied verbatim, converted to LF line endings: the real files mix CRLF and LF, from the file dated 2026-10-20; captured 2026-10-24).
+# Areas used by the data excerpts.
+area_type_code	area_code	area_text	display_level	selectable	sort_sequence
+A	ST0900000000000	Connecticut	0	T	914
+A	ST1000000000000	Delaware	0	T	1101
+A	ST7200000000000	Puerto Rico	0	T	8247
+B	MT1020100000000	Dover, DE Metropolitan Statistical Area	0	T	1102
+B	MT2619820000000	Detroit-Warren-Dearborn, MI Metropolitan Statistical Area	0	T	3717
+B	MT2941180000000	St. Louis, MO-IL Metropolitan Statistical Area	0	T	4255
+B	MT4810180000000	Abilene, TX Metropolitan Statistical Area	0	T	6711
+D	MC1042580000000	Seaford, DE Micropolitan Statistical Area	0	T	1104
+F	CN0226100000000	Valdez-Cordova Census Area, AK	0	T	189
+F	CN0911000000000	Capitol Planning Region, CT	0	T	923
+F	CN1000100000000	Kent County, DE	0	T	1105
+F	CN2205100000000	Jefferson Parish, LA	0	T	2686
+F	CN7200100000000	Adjuntas Municipio, PR	0	T	8261

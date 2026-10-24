@@ -1,0 +1,68 @@
+---
+import Base from "../../layouts/Base.astro";
+import { site } from "../../lib/site";
+import { PROBLEM_TYPES } from "../../lib/api-facts";
+---
+
+<Base title="Errors" description={`Every error the ${site.name} API returns, what causes it and how to fix it.`}>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/docs/">Docs</a></li>
+      <li><span aria-current="page">Errors</span></li>
+    </ol>
+  </nav>
+  <header class="hero">
+    <p class="eyebrow">Docs</p>
+    <h1>Errors</h1>
+    <p class="lede">
+      Errors are <code>application/problem+json</code> documents. Their <code>type</code> is a link to a section of this
+      page.
+    </p>
+    <p class="muted">
+      Each one has <code>type</code>, <code>title</code>, <code>status</code>, <code>detail</code> and
+      <code>instance</code> (the path you asked for), a <code>request_id</code> to quote if you report a problem, and often
+      a <code>hint</code>. Error responses are never cached.
+    </p>
+  </header>
+
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Error types">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Type</th>
+          <th scope="col">Status</th>
+          <th scope="col">Title</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          PROBLEM_TYPES.map((p) => (
+            <tr>
+              <td class="code-cell"><a href={`#${p.slug}`}>{p.slug}</a></td>
+              <td>{p.status}</td>
+              <td>{p.title}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  {
+    PROBLEM_TYPES.map((p) => (
+      <section class="endpoint" id={p.slug} aria-labelledby={`${p.slug}-h`}>
+        <h2 id={`${p.slug}-h`} style="font-size:20px;margin:0 0 8px">
+          <code>{p.slug}</code> <span class="badge">{p.status}</span>
+        </h2>
+        <dl class="kv">
+          <dt>Title</dt>
+          <dd>{p.title}</dd>
+          <dt>When</dt>
+          <dd>{p.when}</dd>
+          <dt>What to do</dt>
+          <dd>{p.fix}</dd>
+        </dl>
+      </section>
+    ))
+  }
+</Base>

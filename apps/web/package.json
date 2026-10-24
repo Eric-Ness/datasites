@@ -1,0 +1,26 @@
+{
+  "name": "@datasites/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/astro.mjs dev --port 4321",
+    "build": "node scripts/astro.mjs build",
+    "build:all": "node scripts/build-all.mjs",
+    "preview": "node scripts/astro.mjs preview --port 4321",
+    "typecheck": "node scripts/astro.mjs check",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@datasites/geo": "workspace:*",
+    "@datasites/registry": "workspace:*",
+    "astro": "7.4.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@types/node": "^22.20.5",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.5",
+    "wrangler": "^4.152.0"
+  }
+}

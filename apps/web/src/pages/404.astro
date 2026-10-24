@@ -1,0 +1,37 @@
+---
+import Base from "../layouts/Base.astro";
+import { apiBase, site, siteDatasets } from "../lib/site";
+import { datasetPath } from "../lib/routes";
+import { apiUrl, paths } from "../lib/urls";
+---
+
+<Base title="Page not found" description={`This page doesn't exist on ${site.domain}.`} canonicalPath="/" noindex>
+  <section class="hero not-found">
+    <p class="eyebrow">404</p>
+    <h1>Page not found</h1>
+    <p class="lede">There is no page at this address on {site.domain}.</p>
+    <p class="muted">
+      If you were looking for data, the API lives on its own host:
+      <a class="mono" href={apiUrl(apiBase, site.id, paths.root())}>{apiBase.replace(/^https?:\/\//, "")}/v1</a>.
+    </p>
+    <div class="actions">
+      <a class="btn" href="/">Go to the home page</a>
+      <a class="btn btn-quiet" href="/datasets/">Browse the datasets</a>
+      <a class="btn btn-quiet" href="/docs/">Read the docs</a>
+    </div>
+    {
+      siteDatasets.length > 0 && (
+        <>
+          <h2>Datasets on {site.name}</h2>
+          <ul>
+            {siteDatasets.map((d) => (
+              <li>
+                <a href={datasetPath(d.id)}>{d.title}</a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )
+    }
+  </section>
+</Base>

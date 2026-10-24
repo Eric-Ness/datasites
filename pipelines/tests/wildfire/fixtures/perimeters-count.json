@@ -1,0 +1,3 @@
+#! Source: https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/WFIGS_Interagency_Perimeters_Current/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json
+#! Captured 2026-10-24. The whole response, copied verbatim.
+{"count":103}

@@ -1,0 +1,15 @@
+# Source: https://api.waterdata.usgs.gov/ogcapi/v1/collections/time-series-metadata/items?f=csv&limit=50000&skipGeometry=true&parameter_code=00060&statistic_id=00003&properties=id%2Cmonitoring_location_id%2Cunit_of_measure%2Cbegin%2Cend%2Cprimary%2Csublocation_identifier%2Cweb_description&monitoring_location_id=USGS-01646500%2CUSGS-01634500%2CUSGS-01360640%2CUSGS-03294500%2CUSGS-01574500%2CUSGS-05102500%2CUSGS-02290765%2CUSGS-16809600%2CUSGS-02235500%2CUSGS-09419659%2CCA574-09527500
+# Captured: 2026-10-24. Verbatim response body below this header.
+x,y,id,monitoring_location_id,unit_of_measure,begin,end,primary,sublocation_identifier,web_description
+,,0001de6b28634f478d714ed9021f26be,USGS-09419659,ft^3/s,1988-01-26 08:00:00+00:00,2020-06-30 07:00:00+00:00,Primary,,
+,,0a20842f14cd4b4ca2de9356128724de,USGS-01574500,ft^3/s,1929-05-01 04:00:00+00:00,2026-10-22 04:00:00+00:00,Primary,,
+,,0b10e7c675e44faf8c4a1bde8fdb7296,USGS-05102500,ft^3/s,1912-06-01 06:00:00+00:00,2025-12-31 06:00:00+00:00,Primary,,
+,,19434a1f503f4bc2ac8a4f7fb35114ff,CA574-09527500,ft^3/s,1961-10-01 08:00:00+00:00,2026-09-30 07:00:00+00:00,Primary,,
+,,2cf409b0d9694c01828f5d4ff14586a5,USGS-01646500,ft^3/s,1930-03-01 05:00:00+00:00,2026-10-23 04:00:00+00:00,Primary,,
+,,5267aa12f2c24ff198eab0c96113d08e,USGS-01574500,ft^3/s,1965-11-01 05:00:00+00:00,2025-09-30 04:00:00+00:00,Primary,,Daily mean with diversions
+,,6c2da14eba1d441c80a624e54608fd23,USGS-01360640,ft^3/s,1990-10-01 04:00:00+00:00,2026-10-22 04:00:00+00:00,Primary,,
+,,97c5fd34b16b44a4980ab8093a0e6bda,USGS-02235500,ft^3/s,2001-12-08 05:00:00+00:00,2026-10-22 04:00:00+00:00,Primary,,
+,,c3fdc0ecbbf245f3921ebc5244ecc219,USGS-03294500,ft^3/s,1928-01-01 05:00:00+00:00,2026-10-23 04:00:00+00:00,Primary,,
+,,cb13b7a1cd4f49fbb67a59b07f5e78a3,USGS-01634500,ft^3/s,1937-10-01 05:00:00+00:00,2026-10-22 04:00:00+00:00,Primary,,
+,,d9dfef92ee6e4fc4b338e855ed670085,USGS-02290765,ft^3/s,1992-03-01 05:00:00+00:00,2026-10-22 04:00:00+00:00,Primary,,
+,,de28b8a8af8b449aa40f6ec6c801e910,USGS-16809600,ft^3/s,1953-04-29 14:00:00+00:00,2026-10-21 14:00:00+00:00,Primary,,

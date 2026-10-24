@@ -1,0 +1,38 @@
+[
+  {
+    "id": "carbondata",
+    "domain": "carbondata.dev",
+    "name": "Carbon Data",
+    "tagline": "Open, versioned emission factors for carbon accounting.",
+    "description": "Scope 1, 2 and 3 emission factors in consistent units, with permanent versioned URLs that auditors can cite. Facility and company emissions to follow.",
+    "status": "coming-soon",
+    "phase": 3
+  },
+  {
+    "id": "climatedata",
+    "domain": "climatedata.dev",
+    "name": "Climate Data",
+    "tagline": "Clean climate data for every US county and the world, updated monthly.",
+    "description": "Monthly temperature and precipitation for every US county since 1895, with normals, anomalies and rankings, plus the global temperature and greenhouse-gas records. Free JSON, CSV and Parquet downloads and an open API.",
+    "status": "coming-soon",
+    "phase": 1
+  },
+  {
+    "id": "visualizedata",
+    "domain": "visualizedata.dev",
+    "name": "Visualize Data",
+    "tagline": "Charts, maps and embeds built from the whole data family.",
+    "description": "The chart and map layer for climatedata, economicdata, electiondata and the other sites: ready-made visualizations, embeddable charts and shared map boundaries.",
+    "status": "coming-soon",
+    "phase": 5
+  },
+  {
+    "id": "waterdata",
+    "domain": "waterdata.dev",
+    "name": "Water Data",
+    "tagline": "Streamflow and drought conditions for every active US stream gage.",
+    "description": "Daily flow at every active USGS stream gage with percent of normal for the date, flood status and drought category, built on the new USGS Water Data APIs. A stable replacement for scripts that used the legacy WaterServices API.",
+    "status": "coming-soon",
+    "phase": 2
+  }
+]

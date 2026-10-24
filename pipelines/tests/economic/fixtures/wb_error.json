@@ -1,0 +1,2 @@
+# Verbatim response of https://api.worldbank.org/v2/country/all/indicator/NOT.A.CODE?format=json&per_page=32767 (captured 2026-10-24).
+[{"message":[{"id":"120","key":"Invalid value","value":"The provided parameter value is not valid"}]}]

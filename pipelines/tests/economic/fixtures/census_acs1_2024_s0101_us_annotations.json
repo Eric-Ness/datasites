@@ -1,0 +1,6 @@
+# "Example #1: Estimate Annotations" on Notes on ACS Estimate and Annotation Values (page last revised July 20, 2026):
+# https://www.census.gov/data/developers/data-sets/acs-1year/notes-on-acs-estimate-and-annotation-values.html
+# Complete response of api.census.gov/data/2024/acs/acs1/subject?get=NAME,S0101_C02_001E,S0101_C02_001EA,S0101_C02_001M,S0101_C02_001MA&for=us:*&key=ADDKEY
+# (copied verbatim; captured 2026-10-24).
+[["NAME","S0101_C02_001E","S0101_C02_001EA","S0101_C02_001M","S0101_C02_001MA","us"],
+["United States","-888888888","(X)","-888888888","(X)","1"]]

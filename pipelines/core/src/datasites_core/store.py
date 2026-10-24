@@ -5,6 +5,8 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import threading
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -30,6 +32,14 @@ class Store(Protocol):
 
     def list(self, prefix: str) -> list[str]: ...
 
+    def list_dated(self, prefix: str) -> list[tuple[str, datetime]]:
+        """(key, last written, UTC) for every key under prefix."""
+        ...
+
+    def delete(self, key: str) -> None:
+        """Removes the key; a missing key is not an error."""
+        ...
+
 
 def get_json(store: Store, key: str) -> tuple[Any, str | None]:
     found = store.get(key)
@@ -54,6 +64,7 @@ class LocalStore:
     def __init__(self, root: Path):
         self.root = Path(root)
         self.writes = 0
+        self._lock = threading.Lock()
 
     def _path(self, key: str) -> Path:
         if key.startswith("/") or ".." in key.split("/"):
@@ -78,10 +89,11 @@ class LocalStore:
             raise PreconditionFailed(f"{key} changed since it was read")
         path = self._path(key)
         path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = path.with_name(path.name + ".tmp")
+        tmp = path.with_name(f"{path.name}.{threading.get_ident()}.tmp")
         tmp.write_bytes(body)
         os.replace(tmp, path)
-        self.writes += 1
+        with self._lock:
+            self.writes += 1
         return hashlib.md5(body).hexdigest()
 
     def list(self, prefix: str) -> list[str]:
@@ -90,6 +102,12 @@ class LocalStore:
             return []
         keys = (p.relative_to(base).as_posix() for p in base.rglob("*") if p.is_file() and not p.name.endswith(".tmp"))
         return sorted(k for k in keys if k.startswith(prefix))
+
+    def list_dated(self, prefix: str) -> list[tuple[str, datetime]]:
+        return [(k, datetime.fromtimestamp(self._path(k).stat().st_mtime, timezone.utc)) for k in self.list(prefix)]
+
+    def delete(self, key: str) -> None:
+        self._path(key).unlink(missing_ok=True)
 
 
 class R2Store:
@@ -101,6 +119,7 @@ class R2Store:
 
         self.bucket = bucket
         self.writes = 0
+        self._lock = threading.Lock()
         self.client = boto3.client(
             "s3",
             endpoint_url=endpoint,
@@ -143,7 +162,8 @@ class R2Store:
             if err.response.get("Error", {}).get("Code") in ("PreconditionFailed", "412"):
                 raise PreconditionFailed(f"{key}: {err}") from err
             raise
-        self.writes += 1
+        with self._lock:
+            self.writes += 1
         return result["ETag"].strip('"')
 
     def list(self, prefix: str) -> list[str]:
@@ -151,6 +171,15 @@ class R2Store:
         for page in self.client.get_paginator("list_objects_v2").paginate(Bucket=self.bucket, Prefix=prefix):
             keys.extend(obj["Key"] for obj in page.get("Contents", []))
         return keys
+
+    def list_dated(self, prefix: str) -> list[tuple[str, datetime]]:
+        found: list[tuple[str, datetime]] = []
+        for page in self.client.get_paginator("list_objects_v2").paginate(Bucket=self.bucket, Prefix=prefix):
+            found.extend((obj["Key"], obj["LastModified"].astimezone(timezone.utc)) for obj in page.get("Contents", []))
+        return found
+
+    def delete(self, key: str) -> None:
+        self.client.delete_object(Bucket=self.bucket, Key=key)
 
 
 TARGETS = ("local", "staging", "production")

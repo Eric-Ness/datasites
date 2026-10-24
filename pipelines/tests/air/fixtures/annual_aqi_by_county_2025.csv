@@ -1,0 +1,11 @@
+#! Source: https://aqs.epa.gov/aqsweb/airdata/annual_aqi_by_county_2025.zip
+#! Captured 2026-10-24. The CSV inside the zip: its header and rows for Los Angeles, Baltimore city and county, St. Louis city and county, Fairfield CT (former county), Mexico border counties and Catano PR, copied verbatim.
+"State","County","Year","Days with AQI","Good Days","Moderate Days","Unhealthy for Sensitive Groups Days","Unhealthy Days","Very Unhealthy Days","Hazardous Days","Max AQI","90th Percentile AQI","Median AQI","Days CO","Days NO2","Days Ozone","Days PM2.5","Days PM10"
+"California","Los Angeles",2025,365,39,228,66,31,1,0,201,147,74,0,6,193,151,15
+"Connecticut","Fairfield",2025,365,236,108,19,2,0,0,174,74,44,0,26,169,170,0
+"Country Of Mexico","SONORA",2025,365,131,210,19,5,0,0,191,91,55,0,0,136,93,136
+"Maryland","Baltimore",2025,365,236,126,3,0,0,0,129,65,45,0,0,192,173,0
+"Maryland","Baltimore (City)",2025,364,248,114,2,0,0,0,136,64,43,0,11,162,191,0
+"Missouri","Saint Louis",2025,365,268,91,5,1,0,0,151,61,43,0,16,191,158,0
+"Missouri","St. Louis City",2025,365,125,232,6,0,0,2,738,77,55,0,5,75,261,24
+"Puerto Rico","Catano",2025,345,209,136,0,0,0,0,99,62,45,0,0,0,328,17

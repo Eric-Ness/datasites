@@ -1,0 +1,109 @@
+---
+import Base from "../layouts/Base.astro";
+import SourceBlock from "../components/SourceBlock.astro";
+import { site, siteDatasets } from "../lib/site";
+import { geoSources } from "../lib/geo";
+import { groupBySource, usesGeoRegistry } from "../lib/datasets";
+import { commercialLabel, licenseInfo } from "../lib/format";
+import { datasetPath } from "../lib/routes";
+
+const groups = groupBySource(siteDatasets);
+const geo = usesGeoRegistry(siteDatasets);
+const allCommercial = siteDatasets.length > 0 && siteDatasets.every((d) => d.source.commercial_ok === true);
+---
+
+<Base title="Sources and licenses" description={`Where every ${site.name} dataset comes from, its license, the credit it needs and whether commercial use is allowed.`}>
+  <header class="hero">
+    <p class="eyebrow">{site.domain}</p>
+    <h1>Sources and licenses</h1>
+    <p class="lede">The data keeps its source's license. Credit each source with the text given here.</p>
+    {
+      siteDatasets.length > 0 && (
+        <p class="muted">
+          {allCommercial
+            ? "Every dataset on this site may be used commercially."
+            : "Check the commercial-use flag of each source before using its data in a paid product."}
+        </p>
+      )
+    }
+  </header>
+
+  {
+    groups.length > 0 && (
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Sources at a glance">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Source</th>
+              <th scope="col">License</th>
+              <th scope="col">Commercial use</th>
+              <th scope="col">Datasets</th>
+            </tr>
+          </thead>
+          <tbody>
+            {groups.map((g, i) => (
+              <tr>
+                <th scope="row">
+                  <a href={`#source-${i + 1}`}>{g.source.publisher ?? g.source.name}</a>
+                </th>
+                <td>{licenseInfo(g.source.license).short}</td>
+                <td>{commercialLabel(g.source.commercial_ok)}</td>
+                <td>{g.datasets.length}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+
+  {
+    groups.length === 0 && (
+      <div class="notice">
+        <p>
+          No datasets are published on {site.name} yet. When they are, each source appears here with its license, its exact
+          credit line and whether commercial use is allowed.
+        </p>
+      </div>
+    )
+  }
+
+  {
+    groups.map((g, i) => (
+      <section class="section" id={`source-${i + 1}`} aria-labelledby={`source-${i + 1}-h`}>
+        <h2 id={`source-${i + 1}-h`}>{g.source.name}</h2>
+        <SourceBlock source={g.source} id={`attribution-${i + 1}`} />
+        <p class="small" style="margin-top:12px">
+          Used by:{" "}
+          {g.datasets.map((d, j) => (
+            <>
+              {j ? ", " : ""}
+              <a href={datasetPath(d.id)}>{d.title}</a>
+            </>
+          ))}
+        </p>
+      </section>
+    ))
+  }
+
+  {
+    geo && (
+      <section class="section" id="reference-data" aria-labelledby="reference-data-h">
+        <h2 id="reference-data-h">Place names and codes</h2>
+        <p class="prose">
+          Country, state and county ids and names come from a shared location registry built from these sources:
+        </p>
+        <ul class="file-list">
+          {geoSources.map((s) => (
+            <li style="display:block">
+              <a href={s.url} rel="external" style="font-family:inherit;font-size:15px">
+                {s.name}
+              </a>
+              <div class="small muted">{s.license.replace(/\s*\(see [^)]*\)/, "")}</div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</Base>

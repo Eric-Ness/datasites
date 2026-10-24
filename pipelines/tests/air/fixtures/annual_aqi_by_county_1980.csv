@@ -1,0 +1,5 @@
+#! Source: https://aqs.epa.gov/aqsweb/airdata/annual_aqi_by_county_1980.zip
+#! Captured 2026-10-24. The CSV inside the zip: its header and rows for Los Angeles and the former Valdez-Cordova Census Area, Alaska, copied verbatim.
+"State","County","Year","Days with AQI","Good Days","Moderate Days","Unhealthy for Sensitive Groups Days","Unhealthy Days","Very Unhealthy Days","Hazardous Days","Max AQI","90th Percentile AQI","Median AQI","Days CO","Days NO2","Days Ozone","Days PM2.5","Days PM10"
+"Alaska","Valdez-Cordova ",1980,361,359,2,0,0,0,0,54,44,26,0,106,255,0,0
+"California","Los Angeles",1980,366,6,73,81,47,156,3,386,278,168,77,90,199,0,0

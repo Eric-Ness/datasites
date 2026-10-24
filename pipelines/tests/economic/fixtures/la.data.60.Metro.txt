@@ -1,0 +1,32 @@
+# Excerpt of https://download.bls.gov/pub/time.series/la/la.data.60.Metro
+# (lines copied verbatim, converted to LF line endings: the real files mix CRLF and LF, from the file dated 2026-10-20; captured 2026-10-24).
+# Dover DE, Abilene TX and St. Louis MO-IL metro areas (not seasonally adjusted) and Detroit (seasonally adjusted).
+series_id                     	year	period	       value	footnote_codes
+LASMT261982000000003          	2026	M09	         5.5	P
+LASMT261982000000004          	2026	M09	      119094	P
+LASMT261982000000005          	2026	M09	     2056552	P
+LASMT261982000000006          	2026	M09	     2175646	P
+LAUMT102010000000003          	2025	M10	           -	X
+LAUMT102010000000003          	2026	M07	         5.4	
+LAUMT102010000000003          	2026	M08	         5.5	P
+LAUMT102010000000004          	2025	M10	           -	X
+LAUMT102010000000004          	2026	M07	        4509	
+LAUMT102010000000004          	2026	M08	        4505	P
+LAUMT102010000000005          	2025	M10	           -	X
+LAUMT102010000000005          	2026	M07	       78443	
+LAUMT102010000000005          	2026	M08	       78061	P
+LAUMT102010000000006          	2025	M10	           -	X
+LAUMT102010000000006          	2026	M07	       82952	
+LAUMT102010000000006          	2026	M08	       82566	P
+LAUMT294118000000003          	2026	M07	         3.8	
+LAUMT294118000000003          	2026	M08	         3.9	P
+LAUMT294118000000004          	2026	M07	       57154	
+LAUMT294118000000004          	2026	M08	       57474	P
+LAUMT294118000000005          	2026	M07	     1453278	
+LAUMT294118000000005          	2026	M08	     1432905	P
+LAUMT294118000000006          	2026	M07	     1510432	
+LAUMT294118000000006          	2026	M08	     1490379	P
+LAUMT481018000000003          	2026	M08	         3.7	P
+LAUMT481018000000004          	2026	M08	        3327	P
+LAUMT481018000000005          	2026	M08	       86703	P
+LAUMT481018000000006          	2026	M08	       90030	P

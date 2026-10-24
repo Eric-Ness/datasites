@@ -1,0 +1,59 @@
+id: national-fossil-co2
+version: 1                       # bump on any schema change; forces a rebuild
+title: National fossil CO2 emissions
+description: >-
+  Annual fossil CO2 emissions for every country and the world from 1750, in total and by
+  source (coal, oil, gas, cement, flaring, other carbonates), from the Global Carbon
+  Project's fossil CO2 dataset in the Global Carbon Budget.
+pipeline: datasites_carbon.gcb_fossil_co2
+# Each run resolves the newest Zenodo version (the GCB is released each November); Zenodo serves
+# the full file every time, so weekly checks.
+check_every: P7D
+cadence: P1Y
+sla: P400D
+source:
+  id: gcp-fossil-co2
+  name: The Global Carbon Project's fossil CO2 emissions dataset (Global Carbon Budget)
+  publisher: Global Carbon Project (Robbie M. Andrew and Glen P. Peters, CICERO)
+  url: https://doi.org/10.5281/zenodo.5569234
+  license: CC-BY-4.0
+  commercial_ok: true
+  attribution: >-
+    Andrew, R. M., & Peters, G. P. The Global Carbon Project's fossil CO2 emissions dataset
+    [Dataset]. Zenodo. https://doi.org/10.5281/zenodo.5569234 (all releases; each published
+    version names the release file it was built from, e.g. GCB2025v15_MtCO2_flat.csv,
+    https://doi.org/10.5281/zenodo.17417124). Source: Global Carbon Budget, Global Carbon
+    Project; citation: Friedlingstein et al 2020 (DOI: 10.5194/essd-12-3269-2020). Licensed
+    under Creative Commons Attribution 4.0 International. Changes: reshaped to one series per
+    source; locations mapped to ISO 3166 ids; per capita figures and empty cells left out.
+series:
+  total: Total fossil CO2 emissions
+  coal: Fossil CO2 emissions from coal
+  oil: Fossil CO2 emissions from oil
+  gas: Fossil CO2 emissions from gas
+  cement: Fossil CO2 emissions from cement (process emissions)
+  flaring: Fossil CO2 emissions from flaring (includes vented methane)
+  other: Fossil CO2 emissions from other carbonates
+# GCB's "Global" is `world`. Entities that are not ISO 3166 countries are kept as explicit locations,
+# so that all locations other than `world` add up to the world total, as in the source.
+locations:
+  registry: [world, country]
+  explicit:
+    gcb-international-aviation: International aviation (bunker fuels)
+    gcb-international-shipping: International shipping (bunker fuels)
+    gcb-kuwaiti-oil-fires: Kuwaiti oil fires
+    gcb-kosovo: Kosovo
+    gcb-pacific-islands-palau: Pacific Islands (Palau)
+    gcb-ryukyu-islands: Ryukyu Islands
+schema:
+  - { name: date, type: year }
+  - { name: value, type: float, unit: MtCO2, description: Million tonnes of CO2 }
+checks:
+  rows_min_ratio: 0.99           # a new release adds a year; losing rows means something broke
+  min_rows: 100000
+  ranges:
+    value: [0, 100000]           # world total was 38,599 MtCO2 in 2024
+  max_null_fraction:
+    value: 0
+  newest_not_older: true
+  revisions: { max_changed_fraction: 0.25, tolerance: 1.0 }   # warn only: each release revises history

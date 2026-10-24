@@ -1,0 +1,41 @@
+# Source: https://planet4589.org/space/gcat/tsv/derived/currentcat.tsv
+# Captured: 2026-10-24. Verbatim excerpt: the column header, the '# Updated' line and selected records, in file order.
+#JCAT	DeepCat	Satcat	Piece	Active	Type	Name	LDate	Parent	Owner	State	SDate	ExpandedStatus	DDate	ODate	Period	Perigee	PF	Apogee	AF	Inc	IF	OpOrbit
+# Updated 2026 Oct 24 0200:41
+S00001    	-	00001	1957 ALP 1	R	R2          	8K71PS No. M1-10 Stage 2	1957 Oct  4	-	RKKE	SU	1957 Oct  4 1933	Reentered Earth atmosphere	1957 Dec  1 1000?	-	-	-	-	-	-	-	-	-
+S00002    	-	00002	1957 ALP 2	P	P           	1-y ISZ	1957 Oct  4	S00001	RKKE	SU	1957 Oct  4 1933	Reentered Earth atmosphere	1958 Jan  4?	-	-	-	-	-	-	-	-	-
+S00005    	-	00005	1958 BET 2	P	P           	Vanguard I	1958 Mar 17	S00016	NRL	US	1958 Mar 17 1224	In Earth orbit	-	2026 Oct 23 	     132.587 	     651	 	    3818	 	 34.25 	 	MEO
+S00032    	-	00032	1960 DEL	P	P A         	Discoverer 11	1960 Apr 15	A00046	SFSSC/CIA	US	1960 Apr 15 2036	Reentered attached to A00046 Agena A 1055	1960 Apr 26 1730?	-	-	-	-	-	-	-	-	-
+S00046    	-	00046	1960 ETA 2	P	P           	Solar Radiation 1	1960 Jun 22	S00045	NRL	US	1960 Jun 22 0620	In Earth orbit	-	2026 Oct 23 	      98.967 	     569	 	     848	 	 66.69 	 	LEO/I
+S00052    	-	00052	1960 IOT 4	D	D  J        	Mylar piece?	1960 Aug 12	S00051	LARCN	US	1960 Aug 12 1002?	Lost	-	1976 Feb 28 	     118.257 	    1490	 	    1714	 	 47.15 	 	LEO/I
+S00113    	D00003    	00113	1959 NU 1	P	P   D       	Pioneer 4	1959 Mar  3	A00018	AMCOM	US	1959 Mar  3 0515	In solar orbit	-	-	-	-	-	-	-	-	-	-
+S00114    	D00007    	00114	1959 XI 1	P	P   D       	AMS Luna-2	1959 Sep 12	A00033	RKKE	SU	1959 Sep 12 0651?	Impacted Luna	1959 Sep 13 2102	-	-	-	-	-	-	-	-	-
+S00432    	-	00432	1962 B GAM 1	P	P           	Explorer 14	1962 Oct  2	S26558	GSFC	US	1962 Oct  2 2225?	Reentered Earth atmosphere	1965?	-	-	-	-	-	-	-	-	-
+S00589    	-	00589	1963-014D	P	P           	DASH 1	1963 May  9	A00337	SFSSC?	US	1963 May  9 2130?	In Earth orbit	-	2026 Oct 23 	     166.353 	    3592	 	    3690	 	 87.36 	 	MEO
+S00674    	D00620    	00674	1963-039A	P	P   D       	Vela 1A	1963 Oct 17	A00398	USAF	US	1963 Oct 17 0300?	In Earth orbit	-	2026 Aug 12 	    6490.487 	   33706	 	  184056	 	 47.86 	 	DSO
+S00682    	-	00682	1963-042B	P	P           	PUNDIT I	1963 Oct 29	A00408	NROC/NROC	US	1963 Oct 30 0834?	Reentered Earth atmosphere	1965 May 23 0000?	-	-	-	-	-	-	-	-	-
+S00919    	-	00919	1964-070A	P	P           	Kosmos-50	1964 Oct 28	S00920	VVKOV	SU	1964 Oct 28 1050?	Exploded	1964 Nov  5 1030?	-	-	-	-	-	-	-	-	-
+S03626    	D00217    	03626	1968-118A	P	PH HD       	Apollo 8	1968 Dec 21	A01501	JSC	US	1968 Dec 21 1611:59	Landed on Earth	1968 Dec 27 1551:42	-	-	-	-	-	-	-	-	-
+S04039    	D00273    	04039	1969-059A	P	PH HD       	Columbia	1969 Jul 16	A01621	JSC	US	1969 Jul 16 1647:23	Landed on Earth	1969 Jul 24 1650:35	-	-	-	-	-	-	-	-	-
+S12399    	-	12399	1981-034A	P	PH H-S      	Columbia (STS-1)	1981 Apr 12	A03304	JSC	US	1981 Apr 12 1208:56	Landed on Earth	1981 Apr 14 1820:51	-	-	-	-	-	-	-	-	-
+S23779    	-	23779	1996-006A	P	P           	HGS-3	1996 Feb  1	S23780	SESINTU	US	1996 Feb  1 0143	In Earth orbit	-	2026 Oct 22 	    1445.797 	   35935	 	   36017	 	 11.12 	 	GEO/ID
+S25544    	-	25544	1998-067A	P	PPTH-MU     	Zarya	1998 Nov 20	S25545	JSC	US	1998 Nov 20 0649:47	In Earth orbit	-	2026 Oct 22 	      92.963 	     414	 	     424	 	 51.63 	 	LLEO/I
+S40899    	-	NNA	2015-049A	P	P       ?   	Luliang-1	2015 Sep 19	S40913	NUDTC	CN	2015 Sep 19 2316	Reentered Earth atmosphere	2025 Mar 31?	-	-	-	-	-	-	-	-	-
+S45916    	-	45916	1998-067RP	P	P ---D-     	DeMi	2020 Feb 15	A09547	DARPA2/AURFS	US	2020 Jul 13 1340	Reentered Earth atmosphere	2022 Mar 14 0200?	-	-	-	-	-	-	-	-	-
+S100000   	-	100000	2026-067CY	A	P           	Saramago	2026 Mar 30	S68435	LUSO	P	2026 Jul	In Earth orbit	-	2026 Jul 14	      94.699 	     500	 	     508	 	 97.46 	 	LLEO/S
+S100001   	-	100001	2026-160A	A	P      O  M 	Starlink 38128	2026 Jul 14	A11922	SPXS	US	2026 Jul 14 0230:21	In Earth orbit	-	2026 Jul 14	      89.616 	     249	 	     262	 	 70.00 	 	LLEO/I
+S100058   	-	100058	2026-162B	R	R3          	Soyuz-2-1a No. 081 Blok-I	2026 Jul 14	R86576	RVSNR	RU	2026 Jul 14 1456:29	Reentered Earth atmosphere	2026 Jul 17	2026 Jul 16	      88.333 	     182	 	     202	 	 51.65 	 	LLEO/I
+S100129   	-	NNA	2026-168A	A	P       ?   	Dongpo 13	2026 Jul 22	S100138	HUANTZ	CN	2026 Jul 22 0310?	In Earth orbit	-	2026 Jul 23	      95.422 	     527	 	     551	 	 97.54 	 	LLEO/S
+A00001    	-	NNA	1957 ALP 3	C	C  F        	GO	1957 Oct  4	S00001	TSMASHF	SU	1957 Oct  4 1933	Reentered Earth atmosphere	1957 Nov?	-	-	-	-	-	-	-	-	-
+A00002    	-	00003	1957 BET 1	R	R2          	8K71PS No. M1-11 Stage 2	1957 Nov  3	-	TSMASHF	SU	1957 Nov  3 0235	Reentered Earth atmosphere	1958 Apr 14	-	-	-	-	-	-	-	-	-
+A00024    	-	NNA S	1959 DEL	R	R2  S       	Able III	1959 Aug  7	R03068	USAF	US	1959 Aug  7 1427	Targeted suborbital reentry	1959 Aug  7 1502?	-	-	-	-	-	-	-	-	-
+A00046    	-	00032	1960 DEL	R	R2          	Agena A 1055	1960 Apr 15	R03665	SFSSC	US	1960 Apr 15 2036	Reentered Earth atmosphere	1960 Apr 26	-	-	-	-	-	-	-	-	-
+A00047    	-	00032	1960 DEL	P	PXA         	TOD-3	1960 Apr 15	A00046	SFSSC	US	1960 Apr 15 2036	Reentered attached to A00046 Agena A 1055	1960 Apr 26	-	-	-	-	-	-	-	-	-
+A00401    	D00305    	00674	1963-039	C	C AMD       	BE-3 No. 7	1963 Oct 17	S00674	USAF	US	1963 Oct 17 2100?	Attached to S00674    /D00620 Vela 1A	-	-	-	-	-	-	-	-	-	-
+A01498    	D00218    	03626	1968-118	C	CPIHD       	A7L-030	1968 Dec 21	S03626	JSC	US	1968 Dec 21 1611	Landed inside S03626    /D00217 Apollo 8	1968 Dec 27 1551:42	-	-	-	-	-	-	-	-	-
+A01777    	D00326    	NNA	1970-029	P	PP  D       	Aquarius	1970 Apr 11	A01771	JSC	US	1970 Apr 11 2314	Reentered Earth atmosphere	1970 Apr 17 1750	-	-	-	-	-	-	-	-	-
+A01786    	D00327    	NNA A	1970-029	C	C AHD       	LM 7 DS	1970 Apr 11	A01777	JSC	US	1970 Apr 12 1215?	Reentered attached to A01777    /D00326 Aquarius	1970 Apr 17 1750?	-	-	-	-	-	-	-	-	-
+A01787    	D00328    	NNA A	1970-029	P	PXALD--     	Apollo 13 ALSEP	1970 Apr 11	A01786	JSC	US	1970 Apr 17 1643	Reentered attached to A01786    /D00327 LM 7 DS	1970 Apr 17 1750?	-	-	-	-	-	-	-	-	-
+T00001    	-	NNA	2026-227	A	P       ?   	SIDLOC PQ-03	2026 Oct  1	A11994	LIBRE	GR	2026 Oct  1 1940	Attached to A11994 OSSIE dispenser	-	-	-	-	-	-	-	-	-	-
+T00002    	-	NNA	2026-227	A	P       ?   	SIDLOC PQ-04	2026 Oct  1	A11994	LIBRE	GR	2026 Oct  1 1940	Attached to A11994 OSSIE dispenser	-	-	-	-	-	-	-	-	-	-
+S270000   	-	270000	1965-027	D	D  J        	deb SNAPSHOT	1965 Apr  3	S01314	AFSMC	US	1985 Jan?	In Earth orbit	-	2022 Jan 22	     111.181 	    1256	 	    1306	 	 90.29 	 	LEO/P

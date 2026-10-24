@@ -1,0 +1,24 @@
+# Excerpt of https://download.bls.gov/pub/time.series/la/la.data.3.AllStatesS
+# (lines copied verbatim, converted to LF line endings: the real files mix CRLF and LF, from the file dated 2026-10-20; captured 2026-10-24).
+# Delaware and Puerto Rico statewide, seasonally adjusted.
+series_id                     	year	period	       value	footnote_codes
+LASST100000000000003          	2025	M09	         5.2	
+LASST100000000000003          	2025	M10	           -	X
+LASST100000000000003          	2025	M11	         5.3	
+LASST100000000000003          	2026	M09	         4.6	P
+LASST100000000000004          	2025	M09	       26721	
+LASST100000000000004          	2025	M10	           -	X
+LASST100000000000004          	2025	M11	       27606	
+LASST100000000000004          	2026	M09	       23390	P
+LASST100000000000005          	2025	M09	      490077	
+LASST100000000000005          	2025	M10	           -	X
+LASST100000000000005          	2025	M11	      489510	
+LASST100000000000005          	2026	M09	      481359	P
+LASST100000000000006          	2025	M09	      516798	
+LASST100000000000006          	2025	M10	           -	X
+LASST100000000000006          	2025	M11	      517116	
+LASST100000000000006          	2026	M09	      504749	P
+LASST720000000000003          	2017	M09	        10.7	V
+LASST720000000000004          	2017	M09	      115616	V
+LASST720000000000005          	2017	M09	      964344	V
+LASST720000000000006          	2017	M09	     1079960	V

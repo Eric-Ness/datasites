@@ -1,0 +1,6 @@
+# Source: https://planet4589.org/space/gcat/tsv/cat/tmpcat.tsv
+# Captured: 2026-10-24. Verbatim excerpt: the column header, the '# Updated' line and selected records, in file order.
+#JCAT	Satcat	Launch_Tag	Piece	Type	Name	PLName	LDate	Parent	SDate	Primary	DDate	Status	Dest	Owner	State	Manufacturer	Bus	Motor	Mass	MassFlag	DryMass	DryFlag	TotMass	TotFlag	Length	LFlag	Diameter	DFlag	Span	SpanFlag	Shape	ODate	Perigee	PF	Apogee	AF	Inc	IF	OpOrbit	OQUAL	AltNames
+# Updated 2026 Oct 24 0114:15
+T00001    	NNA	2026-227	2026-227	P       ?   	SIDLOC PQ-03	SIDLOC PQ-03	2026 Oct  1	A11994	2026 Oct  1 1940	Earth	-	AO	-	LIBRE	GR	LIBRE	PQ	-	       0.250	 	      0.250	 	       0.250	 	   0.050	 	  0.050	 	    0.050	 	Box	-	       0	 	       0	 	  0.00 	 	-	-	-
+T00002    	NNA	2026-227	2026-227	P       ?   	SIDLOC PQ-04	SIDLOC PQ-04	2026 Oct  1	A11994	2026 Oct  1 1940	Earth	-	AO	-	LIBRE	GR	LIBRE	PQ	-	       0.250	 	      0.250	 	       0.250	 	   0.050	 	  0.050	 	    0.050	 	Box	-	       0	 	       0	 	  0.00 	 	-	-	-

@@ -20,10 +20,14 @@ export interface SourceInfo {
   source_updated_at?: string | null;
 }
 
+export type DatasetKind = "series" | "table" | "files";
+
 export interface VersionDoc {
   version: string;
   site: string;
   dataset: string;
+  /** Absent on versions published before kinds existed; treat as "series". */
+  kind?: DatasetKind;
   title: string;
   description: string;
   cadence: string;
@@ -32,11 +36,20 @@ export interface VersionDoc {
   source: SourceInfo;
   coverage: { start: string | null; end: string | null };
   series: Record<string, string>;
-  locations: Record<string, string>;
+  /** Inline for small series datasets... */
+  locations?: Record<string, string>;
+  /** ...or a blob holding the same {id: name} map for big ones. */
+  locations_blob?: string;
+  /** Table datasets */
+  key?: string[];
+  partition?: string | null;
   validation: { status: "pass" | "warn" | "blocked"; errors: string[]; warnings: string[] };
   run: string | null;
   tree: string;
+  /** Every file for small datasets; only download/* when file_shards is present. */
   files: Record<string, FileEntry>;
+  /** First path segment (series name or "table") -> blob holding that segment's {path: FileEntry} map. */
+  file_shards?: Record<string, string>;
 }
 
 export interface Manifest {
@@ -52,6 +65,7 @@ export interface Manifest {
 
 export interface CatalogEntry {
   id: string;
+  kind?: DatasetKind;
   title: string;
   description: string;
   current: string | null;

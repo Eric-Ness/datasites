@@ -1,0 +1,70 @@
+id: qcew
+version: 1                       # bump on any schema change; forces a rebuild
+title: County employment and wages (QCEW)
+description: >-
+  Quarterly employment, total wages, average weekly wage and establishment counts covered by
+  unemployment insurance, all industries and ownerships combined, for every county, state and the
+  nation from the BLS Quarterly Census of Employment and Wages, 2014 to the latest quarter. Each
+  date is the first month of its quarter (2026-01 is Q1 2026). The national total covers the 50
+  states and DC; Puerto Rico and the Virgin Islands are listed separately. Connecticut appears as
+  its eight legacy counties through 2023 and its nine planning regions from 2024, as BLS
+  publishes it.
+pipeline: datasites_economic.bls_qcew
+check_every: P1D                 # one HEAD for the next quarter plus conditional GETs: cheap when unchanged
+cadence: P3M
+sla: P120D
+source:
+  id: bls-qcew
+  name: BLS Quarterly Census of Employment and Wages (QCEW) open-data CSV slices
+  publisher: U.S. Bureau of Labor Statistics
+  url: https://www.bls.gov/cew/additional-resources/open-data/csv-data-slices.htm
+  license: LicenseRef-US-Government-Work   # https://www.bls.gov/opub/copyright-information.htm
+  commercial_ok: true
+  attribution: >-
+    Source: U.S. Bureau of Labor Statistics, Quarterly Census of Employment and Wages
+    (https://www.bls.gov/cew/).
+series:
+  total-covered: Total covered, all industries (ownership code 0, NAICS 10)
+# Counties come from the registry (2024 Gazetteer). The explicit ids are FIPS codes QCEW used in
+# earlier quarters, plus the US Virgin Islands districts, which the Gazetteer leaves out.
+locations:
+  registry: [us-state, us-county]
+  explicit:
+    usa: United States (50 states and DC)
+    us-county-02261: Valdez-Cordova Census Area, AK (through 2019)
+    us-county-02270: Wade Hampton Census Area, AK (renamed Kusilvak, 02158, in 2015)
+    us-county-09001: Fairfield County, CT (legacy county, through 2023)
+    us-county-09003: Hartford County, CT (legacy county, through 2023)
+    us-county-09005: Litchfield County, CT (legacy county, through 2023)
+    us-county-09007: Middlesex County, CT (legacy county, through 2023)
+    us-county-09009: New Haven County, CT (legacy county, through 2023)
+    us-county-09011: New London County, CT (legacy county, through 2023)
+    us-county-09013: Tolland County, CT (legacy county, through 2023)
+    us-county-09015: Windham County, CT (legacy county, through 2023)
+    us-county-46113: Shannon County, SD (renamed Oglala Lakota, 46102, in 2015)
+    us-county-78010: St. Croix, VI
+    us-county-78020: St. John, VI
+    us-county-78030: St. Thomas, VI
+schema:
+  - { name: date, type: month, description: First month of the quarter }
+  - { name: establishments, type: int, unit: establishments, nullable: true, description: Establishments in the quarter }
+  - { name: month1_employment, type: int, unit: jobs, nullable: true, description: Covered employment in the first month of the quarter }
+  - { name: month2_employment, type: int, unit: jobs, nullable: true, description: Covered employment in the second month }
+  - { name: month3_employment, type: int, unit: jobs, nullable: true, description: Covered employment in the third month }
+  - { name: total_wages, type: int, unit: USD, nullable: true, description: Total wages paid in the quarter, nominal dollars }
+  - { name: avg_weekly_wage, type: int, unit: USD, nullable: true, description: Average weekly wage, nominal dollars }
+  - { name: suppressed, type: bool, description: True where BLS withheld employment and wages for confidentiality }
+checks:
+  min_rows: 150000
+  rows_min_ratio: 0.99
+  ranges:
+    establishments: [0, 20000000]
+    month1_employment: [0, 200000000]
+    month2_employment: [0, 200000000]
+    month3_employment: [0, 200000000]
+    total_wages: [0, 20000000000000]
+    avg_weekly_wage: [0, 50000]
+  max_null_fraction:
+    month3_employment: 0.01
+    avg_weekly_wage: 0.01
+  newest_not_older: true

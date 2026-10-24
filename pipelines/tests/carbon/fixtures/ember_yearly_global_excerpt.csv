@@ -1,0 +1,16 @@
+# Source: https://files.ember-energy.org/public-downloads/generation/outputs/release_generation_yearly_global.csv
+# Captured: 2026-10-24
+# Excerpt: the header line and selected lines, verbatim and in file order.
+Area,ISO 3 code,Year,Area type,Electricity source,Is aggregated source,Generation (TWh),Generation YoY change (TWh),Generation YoY change (%),Share of generation (%),Share of generation YoY change (% points),Capacity (GW),Emissions (MtCO2e),Emissions YoY change (MtCO2e),Emissions YoY change (%),Share of emissions (%),Emissions intensity (gCO2e/kWh),Continent,Ember region,EU member,OECD member,G20 member,G7 member,ASEAN member
+Costa Rica,CRI,2024,Country or economy,Total generation,True,11.0,-0.72,-6.143,100.0,0.0,3.42,0.284,-0.012,-4.054,100.133,25.818,North America,Latin America and Caribbean,False,True,False,False,False
+Costa Rica,CRI,2025,Country or economy,Total generation,True,11.801,0.801,7.282,100.003,0.003,3.46,-0.429,-0.713,-251.056,100.017,-36.353,North America,Latin America and Caribbean,False,True,False,False,False
+EU,,2024,Region,Total generation,True,2771.741,61.551,2.271,100.0,0.0,1131.25,586.587,-53.037,-8.292,100.0,211.631,,,False,False,True,False,False
+Germany,DEU,2024,Country or economy,Total generation,True,491.819,-14.901,-2.941,100.0,0.0,248.18,167.156,-17.081,-9.271,100.0,339.873,Europe,Europe,True,True,True,True,False
+Kosovo,XKX,2024,Country or economy,Total generation,True,6.751,0.411,6.483,100.003,0.003,1.33,6.244,0.633,11.281,100.006,924.9,Europe,Europe,False,False,False,False,False
+Lesotho,LSO,2024,Country or economy,Total generation,True,0.0,0.0,,,,0.11,0.0,0.0,,,,Africa,Africa,False,False,False,False,False
+Türkiye,TUR,2024,Country or economy,Total generation,True,341.23,21.44,6.704,100.0,0.0,,160.647,2.387,1.508,100.0,470.788,Asia,Europe,False,True,True,False,False
+United States,USA,2023,Country or economy,Total generation,True,4253.91,-32.98,-0.769,100.0,0.0,1254.5,1671.363,-87.919,-4.997,100.0,392.9,North America,North America,False,True,True,True,False
+United States,USA,2024,Country or economy,Coal,False,652.16,-22.95,-3.399,14.852,-1.018,192.74,619.596,-21.636,-3.374,36.764,950.067,North America,North America,False,True,True,True,False
+United States,USA,2024,Country or economy,Total generation,True,4391.02,137.11,3.223,100.0,0.0,1293.8000000000002,1685.316,13.953,0.835,100.0,383.81,North America,North America,False,True,True,True,False
+United States,USA,2025,Country or economy,Total generation,True,4519.79,128.77,2.933,100.0,0.0,1333.25,1737.423,52.107,3.092,100.0,384.403,North America,North America,False,True,True,True,False
+World,,2024,Region,Total generation,True,31070.562,1281.832,4.303,100.0,0.0,9379.5,14697.772,232.006,1.604,100.0,473.045,,,False,False,False,False,False

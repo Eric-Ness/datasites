@@ -1,0 +1,70 @@
+id: gp-current
+version: 1                       # bump on any schema change; forces a rebuild
+kind: table
+title: Current orbital elements
+description: >-
+  The newest general perturbations (SGP4) element set for every object in Earth orbit that the US Space
+  Force publishes, as CCSDS Orbit Mean-Elements Message fields, with period, semi-major axis, perigee and
+  apogee derived from them. Catalog numbers are full integers, so objects numbered 100000 and up are
+  included.
+pipeline: datasites_satellite.spacetrack_gp
+requires_env: [SPACETRACK_USERNAME, SPACETRACK_PASSWORD]
+# Space-Track's API guidelines allow GP pulls at most once an hour (at a minute that is not :00 or :30)
+# and fewer than 30 requests a minute and 300 an hour. A run makes three requests (login, one bulk GP
+# query, logout) and is due once a day.
+check_every: P1D
+cadence: PT1H                    # element sets are refreshed continuously
+sla: P2D
+# Terms: https://www.space-track.org/documentation#/odr ("Redistribution of Basic SSA Information"):
+# "USSPACECOM has provided express blanket approval for transfer/redistribution of basic SSA data and
+# services accessed via www.Space-Track.org conditioned on appropriate citation. ... Basic SSA data are
+# Two-Line Elements (TLEs) and Orbital Mean-element Messages (OMMs); SATCAT; and Satellite Decay and
+# Reentry Data." The approval sets no limit on the purpose of redistribution. Space-Track does not
+# prescribe the wording of the citation; the line below names the site and the data provider.
+source:
+  id: space-track
+  name: Space-Track.org GP class (current general perturbations element sets)
+  publisher: USSPACECOM, 18th Space Defense Squadron
+  url: https://www.space-track.org/documentation#/odr
+  license: LicenseRef-SpaceTrack-Basic-SSA-Redistribution
+  commercial_ok: true
+  attribution: >-
+    Orbital data from Space-Track.org, provided by USSPACECOM (18th Space Defense Squadron).
+key: [norad_cat_id]
+partition: norad_block           # table/25000.json holds catalog numbers 25000-25999
+schema:
+  - { name: norad_cat_id, type: int, description: "US Space Force catalog number (up to nine digits)" }
+  - { name: norad_block, type: int, description: "norad_cat_id rounded down to a multiple of 1000: the partition file holding the object" }
+  - { name: object_name, type: str, description: OBJECT_NAME }
+  - { name: object_id, type: str, description: "OBJECT_ID: international designator (2025-001A), or UNKNOWN" }
+  - { name: epoch, type: datetime, description: "EPOCH of the mean elements, UTC" }
+  - { name: mean_motion, type: float, unit: rev/day, description: Kozai mean motion (SGP4) }
+  - { name: eccentricity, type: float }
+  - { name: inclination, type: float, unit: deg }
+  - { name: ra_of_asc_node, type: float, unit: deg, description: Right ascension of the ascending node }
+  - { name: arg_of_pericenter, type: float, unit: deg }
+  - { name: mean_anomaly, type: float, unit: deg }
+  - { name: bstar, type: float, unit: 1/earth_radii, nullable: true, description: SGP4 drag term }
+  - { name: mean_motion_dot, type: float, unit: rev/day^2, nullable: true }
+  - { name: mean_motion_ddot, type: float, unit: rev/day^3, nullable: true }
+  - { name: ephemeris_type, type: int, nullable: true }
+  - { name: classification_type, type: str, nullable: true, description: U for unclassified }
+  - { name: element_set_no, type: int, nullable: true }
+  - { name: rev_at_epoch, type: int, nullable: true }
+  - { name: period_min, type: float, unit: min, description: "1440 / mean_motion" }
+  - { name: semimajor_axis_km, type: float, unit: km, description: "From mean motion by Kepler's third law with SGP4's WGS-72 constants (mu 398600.8 km^3/s^2); approximate" }
+  - { name: perigee_km, type: float, unit: km, description: "semimajor_axis_km * (1 - e) minus the WGS-72 equatorial radius (6378.135 km); approximate" }
+  - { name: apogee_km, type: float, unit: km, description: "semimajor_axis_km * (1 + e) minus 6378.135 km; approximate" }
+  - { name: center_name, type: str, nullable: true, description: CENTER_NAME (EARTH) }
+  - { name: ref_frame, type: str, nullable: true, description: REF_FRAME (TEME) }
+  - { name: time_system, type: str, nullable: true, description: TIME_SYSTEM (UTC) }
+  - { name: mean_element_theory, type: str, nullable: true, description: MEAN_ELEMENT_THEORY (SGP4) }
+  - { name: originator, type: str, nullable: true, description: ORIGINATOR of the message }
+  - { name: creation_date, type: datetime, nullable: true, description: When Space-Track generated the message (UTC) }
+checks:
+  min_rows: 15000
+  rows_min_ratio: 0.95
+  ranges:
+    eccentricity: [0, 1]
+    inclination: [0, 180]
+    mean_motion: [0, 20]

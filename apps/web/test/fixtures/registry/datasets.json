@@ -1,0 +1,186 @@
+[
+  {
+    "site": "carbondata",
+    "id": "factor-table",
+    "kind": "table",
+    "title": "Fixture emission factors",
+    "description": "Test fixture: a partitioned table with a string key, used to exercise the table preview, partition picker and table snippets.",
+    "cadence": "P1Y",
+    "check_every": "P7D",
+    "sla": "P400D",
+    "discontinued": false,
+    "source": {
+      "name": "Example Factor Source (test fixture)",
+      "publisher": "Example Org",
+      "url": "https://example.org/factors",
+      "license": "CC-BY-4.0 AND OGL-UK-3.0",
+      "commercial_ok": true,
+      "attribution": "Example Org, Example Factor Source (test fixture), CC BY 4.0."
+    },
+    "series": {},
+    "locations": {},
+    "schema": [
+      { "name": "factor_id", "type": "str", "unit": null, "nullable": false, "description": "Stable id of the factor" },
+      { "name": "scope", "type": "str", "unit": null, "nullable": false, "description": "1, 2 or 3" },
+      { "name": "activity", "type": "str", "unit": null, "nullable": false, "description": null },
+      { "name": "co2e", "type": "float", "unit": "kg CO2e per unit", "nullable": true, "description": "Factor value" },
+      { "name": "year", "type": "year", "unit": null, "nullable": false, "description": "Edition year" }
+    ],
+    "key": ["factor_id"],
+    "partition": "scope"
+  },
+  {
+    "site": "carbondata",
+    "id": "grid-table",
+    "kind": "table",
+    "title": "Fixture grid intensity",
+    "description": "Test fixture: an unpartitioned table with a composite key and no commercial-use answer.",
+    "cadence": "P1Y",
+    "check_every": "P30D",
+    "sla": "P400D",
+    "discontinued": true,
+    "source": {
+      "name": "Example Grid Source (test fixture)",
+      "publisher": null,
+      "url": "https://example.org/grid",
+      "license": "LicenseRef-Example-Terms",
+      "commercial_ok": null,
+      "attribution": "Example Grid Source (test fixture)."
+    },
+    "series": {},
+    "locations": {},
+    "schema": [
+      { "name": "subregion", "type": "str", "unit": null, "nullable": false, "description": null },
+      { "name": "year", "type": "int", "unit": null, "nullable": false, "description": null },
+      { "name": "rate", "type": "float", "unit": "lb/MWh", "nullable": false, "description": null }
+    ],
+    "key": ["subregion", "year"],
+    "partition": null
+  },
+  {
+    "site": "climatedata",
+    "id": "co2-monthly",
+    "kind": "series",
+    "title": "Monthly atmospheric CO2",
+    "description": "Monthly mean atmospheric carbon dioxide at Mauna Loa Observatory (1958 to present) and the global marine-surface average (1979 to present), with the seasonal-cycle-removed trend.",
+    "cadence": "P1M",
+    "check_every": "P1D",
+    "sla": "P45D",
+    "discontinued": false,
+    "source": {
+      "name": "NOAA Global Monitoring Laboratory, Trends in Atmospheric Carbon Dioxide",
+      "publisher": "NOAA GML",
+      "url": "https://gml.noaa.gov/ccgg/trends/",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Lan, X., Tans, P. and K.W. Thoning: Trends in globally-averaged CO2 determined from NOAA Global Monitoring Laboratory measurements. NOAA GML (https://gml.noaa.gov/ccgg/trends/). Mauna Loa data from March 1958 to April 1974 obtained by C. David Keeling, Scripps Institution of Oceanography."
+    },
+    "series": {
+      "average": "Monthly mean mole fraction",
+      "trend": "Monthly mean with the average seasonal cycle removed"
+    },
+    "locations": {
+      "explicit": {
+        "noaa-mlo": "Mauna Loa Observatory, Hawaii",
+        "world": "Global marine surface average"
+      }
+    },
+    "schema": [
+      { "name": "date", "type": "month", "unit": null, "nullable": false, "description": null },
+      { "name": "value", "type": "float", "unit": "ppm", "nullable": false, "description": null },
+      { "name": "uncertainty", "type": "float", "unit": "ppm", "nullable": true, "description": null },
+      { "name": "interpolated", "type": "bool", "unit": null, "nullable": true, "description": null }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "climatedata",
+    "id": "county-series",
+    "kind": "series",
+    "title": "Fixture county climate",
+    "description": "Test fixture: a series dataset over every US county from the geo registry, with several value columns.",
+    "cadence": "P1M",
+    "check_every": "P1D",
+    "sla": "P45D",
+    "discontinued": false,
+    "source": {
+      "name": "Example County Source (test fixture)",
+      "publisher": "Example Agency",
+      "url": "https://example.org/county",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Example Agency, county series (test fixture)."
+    },
+    "series": {
+      "tavg": "Average temperature",
+      "pcp": "Precipitation"
+    },
+    "locations": {
+      "registry": ["us-county"]
+    },
+    "schema": [
+      { "name": "date", "type": "month", "unit": null, "nullable": false, "description": null },
+      { "name": "value", "type": "float", "unit": "degF", "nullable": false, "description": "Monthly mean" },
+      { "name": "anomaly", "type": "float", "unit": "degF", "nullable": true, "description": "Difference from the 1991-2020 normal" },
+      { "name": "rank", "type": "int", "unit": null, "nullable": true, "description": "Rank among the same month in every year" }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "visualizedata",
+    "id": "boundary-files",
+    "kind": "files",
+    "title": "Fixture boundaries",
+    "description": "Test fixture: a files dataset whose pipeline publishes ready-made files at fixed paths.",
+    "cadence": "P1Y",
+    "check_every": "P30D",
+    "sla": "P400D",
+    "discontinued": false,
+    "source": {
+      "name": "Example Boundary Source (test fixture)",
+      "publisher": "Example Mapping Office",
+      "url": "https://example.org/boundaries",
+      "license": "CC0-1.0",
+      "commercial_ok": true,
+      "attribution": "Example Mapping Office (test fixture), CC0."
+    },
+    "series": {},
+    "locations": {},
+    "schema": [],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "waterdata",
+    "id": "gage-series",
+    "kind": "series",
+    "title": "Fixture daily streamflow",
+    "description": "Test fixture: a daily series dataset whose station ids match a pattern, so no location is known at build time.",
+    "cadence": "P1D",
+    "check_every": "PT6H",
+    "sla": "P3D",
+    "discontinued": false,
+    "source": {
+      "name": "Example Gage Source (test fixture)",
+      "publisher": "Example Survey",
+      "url": "https://example.org/gages",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": false,
+      "attribution": "Example Survey gage data (test fixture)."
+    },
+    "series": {
+      "discharge": "Daily mean discharge"
+    },
+    "locations": {
+      "pattern": "usgs-\\d{8,15}"
+    },
+    "schema": [
+      { "name": "date", "type": "date", "unit": null, "nullable": false, "description": null },
+      { "name": "value", "type": "float", "unit": "ft3/s", "nullable": true, "description": null }
+    ],
+    "key": [],
+    "partition": null
+  }
+]

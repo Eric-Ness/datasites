@@ -1,0 +1,117 @@
+---
+import "../styles/global.css";
+import { isCurrent, navItems } from "../lib/routes";
+import { faviconSvg, themeCss } from "../lib/theme";
+import { apiUrl, siteUrl } from "../lib/urls";
+import { apiBase, siblings, site } from "../lib/site";
+import { jsonLdScript } from "../lib/jsonld";
+
+interface Props {
+  /** The page's own title; the site name is appended. */
+  title: string;
+  description: string;
+  /** Canonical path; defaults to the current path. */
+  canonicalPath?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>;
+  /** Open Graph type. */
+  ogType?: "website" | "article";
+}
+
+const { title, description, canonicalPath, noindex = false, jsonLd, ogType = "website" } = Astro.props;
+const pathname = Astro.url.pathname;
+const canonical = siteUrl(site.domain, canonicalPath ?? pathname);
+const fullTitle = pathname === "/" && !canonicalPath ? `${site.name}: ${site.tagline}` : `${title} | ${site.name}`;
+const nav = navItems(site.id);
+const mark = faviconSvg(site.id).replace("<svg ", '<svg aria-hidden="true" focusable="false" ');
+---
+
+<!doctype html>
+<html lang="en" data-site={site.id}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="datasites:api-base" content={apiBase} />
+    <meta name="datasites:site" content={site.id} />
+    <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap.xml" type="application/xml" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary" />
+    <style is:inline set:html={themeCss(site.id)}></style>
+    {jsonLd && <script type="application/ld+json" is:inline set:html={jsonLdScript(jsonLd)} />}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="/">
+          <Fragment set:html={mark} />
+          <span>{site.name}</span>
+          <span class="domain">{site.domain}</span>
+        </a>
+        <nav class="site-nav" aria-label="Main">
+          <ul>
+            {
+              nav.map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    aria-current={pathname === item.href ? "page" : isCurrent(item.href, pathname) ? "true" : undefined}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main id="main" tabindex="-1">
+      <div class="wrap">
+        <slot />
+      </div>
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <div>
+          <h2>{site.name}</h2>
+          <ul>
+            <li><a href="/datasets/">Datasets</a></li>
+            <li><a href="/docs/">Docs</a></li>
+            <li><a href="/docs/reference/">API reference</a></li>
+            <li><a href="/status/">Status</a></li>
+            <li><a href="/sources/">Sources and licenses</a></li>
+            <li><a href="/privacy/">Privacy</a></li>
+          </ul>
+          <p class="small" style="margin:12px 0 0">
+            API: <a href={apiUrl(apiBase, site.id, "/v1")} class="mono">{apiBase.replace(/^https?:\/\//, "")}</a>
+          </p>
+        </div>
+        <div>
+          <h2>The data family</h2>
+          <ul>
+            {
+              siblings.map((s) => (
+                <li>
+                  <a href={`https://${s.domain}/`}>{s.domain}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

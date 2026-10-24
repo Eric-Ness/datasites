@@ -1,0 +1,11 @@
+# Source: https://zenodo.org/api/records/18968658/files/egrid2024_data_metric.xlsx/content
+# Captured: 2026-10-24
+# Excerpt of worksheet 'SRL24': the two header rows and rows ['AKGD', 'CAMX', 'ERCT', 'NYUP', 'PRMS']; columns YEAR, SUBRGN, SRNAME, SRCO2RTA, SRCH4RTA, SRN2ORTA, SRC2ERTA, SRNBCO2
+# Cells are copied verbatim as text (as the spreadsheet stores them); blank cells are empty.
+Data Year,eGRID subregion acronym,eGRID subregion name,eGRID subregion annual CO2 total output emission rate (kg/MWh),eGRID subregion annual CH4 total output emission rate (kg/MWh),eGRID subregion annual N2O total output emission rate (kg/MWh),eGRID subregion annual CO2 equivalent total output emission rate (kg/MWh),eGRID subregion annual CO2 non-baseload output emission rate (kg/MWh)
+YEAR,SUBRGN,SRNAME,SRCO2RTA,SRCH4RTA,SRN2ORTA,SRC2ERTA,SRNBCO2
+2024,AKGD,ASCC Alaska Grid,414.9160848,0.0417312,0.0058968,417.7197864,523.4820696
+2024,CAMX,WECC California,183.0675168,0.01134,0.0013608,183.7946376,530.6067648
+2024,ERCT,ERCOT All,317.828448,0.018144,0.0027216,319.0558896,685.1301408
+2024,NYUP,NPCC Upstate NY,123.3606024,0.0049896,0.0004536,123.6568032,555.9307992
+2024,PRMS,Puerto Rico Miscellaneous,723.2543136,0.038556,0.0063504,726.0920352,836.3708136

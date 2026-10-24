@@ -1,0 +1,66 @@
+id: bea-county-income
+version: 1                       # bump on any schema change; forces a rebuild
+title: County personal income (BEA CAINC1)
+description: >-
+  Annual personal income, population and per capita personal income for every county, state and
+  the nation from the Bureau of Economic Analysis table CAINC1, 1969 to the latest year, in
+  current (not inflation-adjusted) dollars. BEA combines some Virginia independent cities with
+  their counties and Kalawao with Maui; those combination areas appear under BEA's own codes
+  (bea-*). Connecticut has both its legacy counties and its planning regions where BEA publishes them.
+pipeline: datasites_economic.bea_cainc1
+check_every: P7D                 # six full API requests per check; BEA discourages polling unchanged data
+cadence: P1Y
+sla: P400D
+requires_env: [BEA_API_KEY]
+source:
+  id: bea-regional-cainc1
+  name: BEA Regional Economic Accounts, CAINC1 County and MSA personal income summary
+  publisher: U.S. Bureau of Economic Analysis
+  url: https://www.bea.gov/data/income-saving/personal-income-by-county
+  license: LicenseRef-US-Government-Work   # API terms: https://apps.bea.gov/API/_pdf/bea_api_tos.pdf
+  commercial_ok: true
+  attribution: >-
+    U.S. Bureau of Economic Analysis, "CAINC1 County and MSA personal income summary: personal
+    income, population, per capita personal income" (https://www.bea.gov/data/income-saving/personal-income-by-county).
+    This product uses the Bureau of Economic Analysis (BEA) Data API but is not endorsed or
+    certified by BEA.
+series:
+  annual: Annual estimates
+# Registry counties, plus county codes BEA still reports that the 2024 Gazetteer no longer has.
+# BEA-only combination areas (county part 900-999) are bea-<GeoFips>, named from BEA's GeoName.
+locations:
+  registry: [us-state, us-county]
+  pattern: "bea-\\d{5}"
+  explicit:
+    usa: United States
+    us-county-02010: Aleutian Islands Census Area, AK (through 1987)
+    us-county-02201: Prince of Wales-Outer Ketchikan Census Area, AK (through 2008)
+    us-county-02231: Skagway-Yakutat-Angoon Census Area, AK (through 1992)
+    us-county-02232: Skagway-Hoonah-Angoon Census Area, AK (through 2007)
+    us-county-02261: Valdez-Cordova Census Area, AK (through 2019)
+    us-county-02280: Wrangell-Petersburg Census Area, AK (through 2008)
+    us-county-09001: Fairfield County, CT (legacy county)
+    us-county-09003: Hartford County, CT (legacy county)
+    us-county-09005: Litchfield County, CT (legacy county)
+    us-county-09007: Middlesex County, CT (legacy county)
+    us-county-09009: New Haven County, CT (legacy county)
+    us-county-09011: New London County, CT (legacy county)
+    us-county-09013: Tolland County, CT (legacy county)
+    us-county-09015: Windham County, CT (legacy county)
+schema:
+  - { name: date, type: year }
+  - { name: personal_income, type: int, unit: thousands of USD, nullable: true, description: "Personal income, thousands of current dollars (line 1)" }
+  - { name: population, type: int, unit: persons, nullable: true, description: "Midyear population (line 2)" }
+  - { name: per_capita_personal_income, type: int, unit: USD, nullable: true, description: "Per capita personal income, current dollars (line 3)" }
+checks:
+  min_rows: 150000
+  rows_min_ratio: 0.99
+  ranges:
+    personal_income: [0, 100000000000]
+    population: [0, 400000000]
+    per_capita_personal_income: [0, 2000000]
+  max_null_fraction:             # BEA marks a few areas (NA) for some years; a missing line would be 100%
+    personal_income: 0.05
+    population: 0.05
+    per_capita_personal_income: 0.05
+  newest_not_older: true

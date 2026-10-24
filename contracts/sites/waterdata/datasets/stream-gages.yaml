@@ -1,0 +1,60 @@
+id: stream-gages
+version: 1
+kind: table
+title: USGS stream gages
+description: >-
+  Every USGS stream gage (streams, canals, ditches and tidal streams) that reported a daily mean
+  discharge in the last 400 days: name, state, county, hydrologic unit, coordinates, drainage area
+  and period of daily record. These are the gages in streamflow-daily, under the same ids.
+pipeline: datasites_water.usgs_gages
+check_every: P1D
+cadence: P1D                     # daily_end moves every day
+sla: P3D
+key: [site_id]
+partition: region                # table/us-md.json, ..., table/can.json for the USGS gages in Canada
+# Terms: https://www.usgs.gov/information-policies-and-instructions/copyrights-and-credits
+# ("USGS-authored or produced data and information are considered to be in the U.S. Public Domain"),
+# credit line from https://www.usgs.gov/information-policies-and-instructions/acknowledging-or-crediting-usgs
+source:
+  id: usgs-water-data
+  name: USGS Water Data APIs (OGC API), monitoring-locations and time-series-metadata
+  publisher: U.S. Geological Survey
+  url: https://api.waterdata.usgs.gov/docs/ogcapi/
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true
+  attribution: >-
+    Stream gage information courtesy of the U.S. Geological Survey.
+schema:
+  - { name: site_id, type: str, description: "Location id used across waterdata: usgs- plus the site number" }
+  - { name: site_number, type: str, description: USGS site number (8 to 15 digits) }
+  - { name: name, type: str, description: USGS station name }
+  - { name: site_type_code, type: str, description: "ST stream, ST-CA canal, ST-DCH ditch, ST-TS tidal stream" }
+  - { name: site_type, type: str }
+  - { name: region, type: str, description: "Registry id of the state or territory (us-md); for gages outside the US, of the country (can)" }
+  - { name: country, type: str, description: Registry id of the country (usa or can) }
+  - { name: state, type: str, nullable: true, description: Two-letter USPS code; null outside the US }
+  - { name: county_fips, type: str, nullable: true, description: Five-digit county FIPS code (matches drought-county's us-county-<FIPS>) }
+  - { name: county_name, type: str, nullable: true }
+  - { name: huc, type: str, nullable: true, description: Hydrologic unit code as USGS records it (8 or 12 digits) }
+  - { name: huc8, type: str, nullable: true, description: The 8-digit subbasin containing the gage }
+  - { name: latitude, type: float, unit: degrees, description: WGS 84 }
+  - { name: longitude, type: float, unit: degrees, description: WGS 84 }
+  - { name: drainage_area, type: float, unit: mi^2, nullable: true }
+  - { name: contributing_drainage_area, type: float, unit: mi^2, nullable: true }
+  - { name: altitude, type: float, unit: ft, nullable: true, description: Gage datum altitude above altitude_datum }
+  - { name: altitude_datum, type: str, nullable: true, description: "Vertical datum, e.g. NAVD88 or NGVD29" }
+  - { name: time_zone, type: str, nullable: true, description: Standard time zone abbreviation }
+  - { name: time_series_id, type: str, description: USGS id of the daily mean discharge series used in streamflow-daily }
+  - { name: sublocation, type: str, nullable: true, description: USGS sublocation of that series, if any (e.g. INFLOW) }
+  - { name: daily_begin, type: date, nullable: true, description: First day of the daily discharge record }
+  - { name: daily_end, type: date, description: Latest day of the daily discharge record }
+checks:
+  min_rows: 8000
+  rows_min_ratio: 0.97           # gages are discontinued a few at a time, never by the hundred
+  ranges:
+    latitude: [-15, 72]          # American Samoa to the North Slope
+    longitude: [-180, 180]
+    drainage_area: [0, 1300000]  # the Mississippi at its mouth drains about 1.15 million mi^2
+    contributing_drainage_area: [0, 1300000]
+  max_null_fraction:
+    daily_begin: 0.001

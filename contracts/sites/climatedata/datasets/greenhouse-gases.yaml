@@ -1,0 +1,45 @@
+id: greenhouse-gases
+version: 1                       # bump on any schema change; forces a rebuild
+title: Global methane and nitrous oxide
+description: >-
+  Monthly global mean atmospheric methane (from July 1983) and nitrous oxide (from January 2001)
+  at the marine surface, from NOAA's global air sampling network, with the seasonal-cycle-removed trend.
+pipeline: datasites_climate.noaa_gml_ghg
+check_every: P1D
+cadence: P1M
+sla: P60D                        # GML posts global means about three months after the fact
+source:
+  id: noaa-gml-ghg
+  name: NOAA Global Monitoring Laboratory, Trends in Atmospheric Methane and Nitrous Oxide
+  publisher: NOAA GML
+  url: https://gml.noaa.gov/ccgg/trends_ch4/
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true
+  # "How to reference content from this page" on trends_ch4/ and trends_n2o/; its version is the
+  # month of the release, which is the retrieved_at month of each dataset version.
+  attribution: >-
+    Lan, X., K.W. Thoning, and E.J. Dlugokencky: Trends in globally-averaged CH4, N2O, and SF6
+    determined from NOAA Global Monitoring Laboratory measurements. Version of the retrieved_at
+    month of this dataset version, https://doi.org/10.15138/P8XG-AA10
+series:
+  ch4: Methane (CH4), monthly global mean
+  ch4-trend: Methane (CH4), monthly global mean with the average seasonal cycle removed
+  n2o: Nitrous oxide (N2O), monthly global mean
+  n2o-trend: Nitrous oxide (N2O), monthly global mean with the average seasonal cycle removed
+locations:
+  world: Global marine surface average
+# uncertainty is null where NOAA has not calculated it yet (it writes -9.99 for the latest months).
+schema:
+  - { name: date, type: month }
+  - { name: value, type: float, unit: ppb, description: Dry-air mole fraction in nanomol/mol }
+  - { name: uncertainty, type: float, unit: ppb, nullable: true, description: NOAA's estimated uncertainty of the monthly value }
+checks:
+  min_rows: 1600                 # CH4 ~515 + N2O ~306 months, two series each
+  rows_min_ratio: 0.995
+  ranges:
+    value: [250, 2500]
+    uncertainty: [0, 20]
+  max_null_fraction:
+    value: 0
+  newest_not_older: true
+  revisions: { max_changed_fraction: 0.05, tolerance: 0.5 }   # warn only

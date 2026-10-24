@@ -1,0 +1,59 @@
+#! Source: https://gml.noaa.gov/webdata/ccgg/trends/n2o/n2o_mm_gl.csv
+#! Captured 2026-10-24. Comment header, column header, the blank line after it, the first three and last seven months, copied verbatim.
+# --------------------------------------------------------------------
+# USE OF NOAA GML DATA
+#
+# These data are made freely available to the public and the scientific
+# community in the belief that their wide dissemination will lead to
+# greater understanding and new scientific insights. To ensure that GML
+# receives fair credit for their work please include relevant citation
+# text in publications. We encourage users to contact the data providers,
+# who can provide detailed information about the measurements and
+# scientific insight.  In cases where the data are central to a
+# publication, coauthorship for data providers may be appropriate.
+#
+#
+#
+# Contact:  Xin Lan (xin.lan@noaa.gov)
+#
+# File Creation: Fri Oct  9 13:12:36 2026
+#
+#
+# --------------------------------------------------------------------
+#
+#
+# See gml.noaa.gov/ccgg/trends/ for additional details.
+#
+#
+# Uncertainties in the global monthly means are estimated using two
+# terms: The first is a bootstrap (resampling) method that varies the
+# sites in our network. Each pseudo-network contains the same number of
+# sites as our actual NOAA ESRL cooperative global air sampling network,
+# but some are repeated and some are excluded. The second term is a
+# Monte Carlo method that randomly modifies the data to account for
+# measurement uncertainty. In both cases, 100 globally-averaged time
+# series are created. Standard deviations of the monthly means are
+# calculated, and the two terms (network and analytical) are taken in
+# quadrature to give the  reported uncertainties. A default value (-9.9)
+# indicates the uncertainty has not yet been calculated for that month.
+# Please see Dlugokencky et al., 1994, JGR, vol. 99, 17021-17043, for a
+# complete discussion.
+#
+# N2O expressed as a mole fraction in dry air, nanomol/mol, abbreviated as ppb
+#
+# NOTE: In general, the data presented for the last year are subject to change,
+# depending on recalibration of the reference gas mixtures used, and other quality
+# control procedures. Occasionally, earlier years may also change for the same
+# reasons.  Usually these changes are minor.
+year,month,decimal,average,average_unc,trend,trend_unc
+
+2001,1,2001.042,316.30,0.14,316.03,0.13
+2001,2,2001.125,316.31,0.15,316.09,0.13
+2001,3,2001.208,316.21,0.14,316.15,0.13
+2025,12,2025.958,339.65,0.03,339.43,0.02
+2026,1,2026.042,339.74,0.04,339.53,0.02
+2026,2,2026.125,339.76,-9.99,339.62,-9.99
+2026,3,2026.208,339.77,-9.99,339.71,-9.99
+2026,4,2026.292,339.79,-9.99,339.80,-9.99
+2026,5,2026.375,339.83,-9.99,339.90,-9.99
+2026,6,2026.458,339.86,-9.99,339.99,-9.99

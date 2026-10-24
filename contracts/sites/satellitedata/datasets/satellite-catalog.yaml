@@ -1,0 +1,90 @@
+id: satellite-catalog
+version: 1                       # bump on any schema change; forces a rebuild
+kind: table
+title: Satellite catalog
+description: >-
+  Every artificial object GCAT catalogs, one record per object since Sputnik in 1957: payloads, rocket
+  stages, components and debris, including those that reentered, left for deep space or failed to reach
+  orbit. Each record has the GCAT id, the US catalog number (six digits and up since the 2026 rollover),
+  the international designator, owner, state, launch and decay dates, mass, status and the latest orbit
+  with its class.
+pipeline: datasites_satellite.gcat_catalog
+check_every: P1D                 # GCAT regenerates its files most days, around 01:15 UTC
+cadence: P1D
+sla: P14D                        # one person's project: allow for travel and release work
+# Terms: https://planet4589.org/space/gcat/ ("Citing GCAT"): "GCAT is released under the Creative
+# Commons CC-BY licence. You are free to use the data in GCAT as long as you include a citation to it.
+# A suitable short citation is 'data from GCAT (J. McDowell, planet4589.org/space/gcat)'."
+# The files' own notice: "Licence: CC-BY-4.0 Creative Commons/Attribution".
+source:
+  id: gcat
+  name: General Catalog of Artificial Space Objects (GCAT), object catalogs and currentcat
+  publisher: Jonathan C. McDowell
+  url: https://planet4589.org/space/gcat/
+  license: CC-BY-4.0
+  commercial_ok: true
+  attribution: >-
+    data from GCAT (J. McDowell, planet4589.org/space/gcat)
+key: [jcat]
+partition: status_group          # table/in-orbit.json, table/reentered.json, ...
+# How the record is built (see datasites_satellite/gcat_catalog.py):
+# - objects: GCAT's primary catalogs satcat (S, numbers 1-69999), satcat100k (S, 100000 up), satcat270k
+#   (S, Space Force analyst objects from 270000), auxcat (A, never in the US catalog), tmpcat (T, awaiting
+#   an S number) and ftocat (F, failed to orbit). Deleted entries (all fields '-') are skipped. The
+#   frequently reassigned analyst ranges (satcat070k, satcat700M) and the observation-only catalogs
+#   (csocat, vimcat) are not objects with stable identities and are left out, as GCAT's currentcat does.
+# - one US catalog number can belong to several GCAT objects that were attached to each other (S00032,
+#   A00046 and A00047 all carry 00032), so norad_cat_id is not unique; jcat is.
+# - an object's later phases (dockings, releases, renamings, sales) are in ecat; status and owner come
+#   from its latest phase. Name, status text, decay date and the latest orbit come from GCAT's currentcat,
+#   which also follows objects through the deep-space catalogs.
+# - vague dates are kept as GCAT's text in *_text columns; the date column is filled only when that
+#   interval is a single confirmed UTC day ('1957 Dec  1 1000?' is still Dec 1; '2025 Mar 31?' is not).
+schema:
+  - { name: jcat, type: str, description: "GCAT's object id: catalog letter (S, A, T, F) and sequence number, e.g. S25544" }
+  - { name: norad_cat_id, type: int, nullable: true, description: "US Space Force (NORAD) catalog number. Not unique: objects that stayed attached share their parent's number, and the S-catalog row (jcat S plus the number) is the one the US catalog lists. Null when GCAT does not tie the object to a number (see satcat_note), including S entries it cannot match to a specific satellite of the launch" }
+  - { name: satcat_note, type: str, nullable: true, description: "GCAT's reason for a missing catalog number: NNA (not assigned or not identified), NNA A/C/E/I/P/R/S/T/X (attached, component, spacesuit, internal, partial orbit, ...), NSO (suborbital)" }
+  - { name: piece, type: str, nullable: true, description: "International (COSPAR) designator as GCAT records it, e.g. 1998-067A. Launches before 1963 keep their original Harvard designations (1957 ALP 2), which Space-Track shows renumbered (1957-001B)" }
+  - { name: launch_tag, type: str, nullable: true, description: Launch the object belongs to; joins launches.launch_tag }
+  - { name: catalog, type: str, description: "GCAT catalog holding the object: satcat, satcat100k, satcat270k, auxcat, tmpcat or ftocat" }
+  - { name: name, type: str, description: "GCAT's recommended current name (after any renaming)" }
+  - { name: original_name, type: str, description: Name in the object's first phase, at launch }
+  - { name: object_type, type: str, description: "payload, rocket-stage, component, debris, suborbital-payload or spurious (GCAT SatType byte 1)" }
+  - { name: gcat_type, type: str, description: "GCAT's 12-byte SatType string (byte 1 coarse type, byte 2 modifier, byte 3 attachment, byte 4 subtype, ...)" }
+  - { name: identity_uncertain, type: bool, description: "SatType byte 9 is '?': GCAT knows the objects of the launch but not which catalog number is which" }
+  - { name: status_group, type: str, description: "in-orbit, lost (in orbit but untracked), reentered (decayed, deorbited or landed), suborbital, deep-space, failed-to-orbit, broken-up (exploded or destroyed in a collision) or spurious (no real object)" }
+  - { name: status_code, type: str, description: "GCAT phase status code of the latest phase: O in orbit, AO attached in orbit, OX lost, R reentered, D deorbited, L landed, AR reentered attached, DSO deep space, E exploded, ERR not a real object, ... A trailing ? marks it unconfirmed" }
+  - { name: status, type: str, nullable: true, description: "GCAT's plain-language current status (currentcat ExpandedStatus), e.g. 'Attached to S25544 Zarya'. Null for objects currentcat does not cover (ftocat and a few others)" }
+  - { name: active, type: bool, nullable: true, description: "GCAT counts the object as an active satellite (currentcat Ac = A). Null where currentcat does not cover it" }
+  - { name: owner, type: str, nullable: true, description: "GCAT org code of the owner/operator in the latest phase (e.g. SPXS, JSC). A trailing ? marks an uncertain attribution; joint owners are slash-separated" }
+  - { name: owner_name, type: str, nullable: true, description: Owner's name from GCAT's organizations table }
+  - { name: state, type: str, nullable: true, description: "GCAT code of the country or intergovernmental body responsible (US, CN, SU, F for France, I-ESA, ...); not ISO codes" }
+  - { name: state_name, type: str, nullable: true }
+  - { name: launch_date, type: date, nullable: true, description: "UTC launch date; null when GCAT gives it only roughly, or gives a day after its own file date (a typo); see launch_date_text" }
+  - { name: launch_date_text, type: str, nullable: true, description: "Launch date exactly as GCAT writes it, in its Vague Date format ('1957 Oct  4', '1971?')" }
+  - { name: decay_date, type: date, nullable: true, description: "UTC date the object reentered, landed, crashed or impacted another body; null while in orbit or flying, and when GCAT gives the date only roughly" }
+  - { name: decay_date_text, type: str, nullable: true, description: "That date exactly as GCAT writes it ('1958 Jan  4?', '1960 Apr 26 1730?')" }
+  - { name: mass_kg, type: float, unit: kg, nullable: true, description: "Mass at orbital insertion, not counting attached objects. Null when GCAT gives none (0 or '-'), as for most debris" }
+  - { name: mass_estimated, type: bool, nullable: true, description: "GCAT flags the mass as an estimate (good to about 20%)" }
+  - { name: orbit_source, type: str, nullable: true, description: "latest: currentcat's most recent orbit (objects still in space); canonical: the representative early-operations orbit GCAT lists for the latest phase" }
+  - { name: orbit_epoch, type: date, nullable: true, description: Epoch of that orbit when GCAT pins it to a day }
+  - { name: orbit_epoch_text, type: str, nullable: true }
+  - { name: period_min, type: float, unit: min, nullable: true, description: Orbital period (latest orbits only) }
+  - { name: perigee_km, type: float, unit: km, nullable: true, description: "Perigee height above the central body's equatorial radius. Negative for trajectories that intersect the Earth or are hyperbolic" }
+  - { name: apogee_km, type: float, unit: km, nullable: true, description: "Apogee height. Negative for hyperbolic (escape) trajectories; null where GCAT writes Inf" }
+  - { name: inclination_deg, type: float, unit: deg, nullable: true, description: "Inclination to the equator of date (Earth orbits)" }
+  - { name: orbit_estimated, type: bool, nullable: true, description: GCAT flags a perigee/apogee/inclination value as a guess }
+  - { name: orbit_category, type: str, nullable: true, description: "GCAT OpOrbit category: LLEO/I, LEO/S, MEO, HEO/M, GTO, GEO/S, GEO/ID, VHEO, CLO, EEO, ..." }
+  - { name: orbit_class, type: str, nullable: true, description: "LEO (below 2000 km), MEO, GEO (geosynchronous, incl. inclined and drifting), HEO (highly elliptical incl. Molniya and GTO), VHEO, cislunar, escape or suborbital, mapped from orbit_category" }
+checks:
+  min_rows: 80000
+  rows_min_ratio: 0.99           # GCAT deletes entries a handful at a time
+  ranges:
+    inclination_deg: [0, 180]
+    mass_kg: [0, 500000]
+    perigee_km: [-7000, 1000000000]
+    apogee_km: [-1000000000, 1000000000]
+    period_min: [0, 100000000]
+  max_null_fraction:
+    launch_date: 0.01
+    owner: 0.01

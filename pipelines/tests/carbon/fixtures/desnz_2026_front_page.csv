@@ -1,0 +1,28 @@
+# Source: https://assets.publishing.service.gov.uk/media/6a6c9748862aaf18d9c62ac9/ghg-conversion-factors-2026-flat-format-revised.xlsx
+# Captured: 2026-10-24
+# Excerpt of worksheet 'Front page': the whole sheet
+# Cells are copied verbatim as text (as the spreadsheet stores them); blank cells are empty.
+UK Government GHG Conversion Factors for Company Reporting,,,,
+Front page,,,,
+,,,,
+,Next publication date: ,June 2027,Factor set:,Flat file
+,Version:,1.2,Year:,2026
+,,,,
+,,,,
+,UK Government GHG Conversion Factors for Company Reporting,,,
+,,,,
+,Flat File Data Format,,,
+,,,,
+,Status:,Final,,
+,Version: ,1.2,,
+,Updated:,2026-07-10 00:00:00,"An error was identified whereby some factors for which no data were available were reported as 0 rather than left blank. This affected well-to-tank emissions factors for certain hybrid, CNG and LPG cars, and hotel stay factors for certain countries. These values have been corrected in this version.",
+,,,,
+,,,,
+,,,,
+,Year:,2026,,
+,Description:,2026 update,,
+,Next publication date:,2027-06-01 00:00:00,,
+,,,,
+,,,,
+,"For technical queries, please contact Greenhouse Gas Statistics at GreenhouseGas.Statistics@energysecurity.gov.uk",,,
+,"NOTE: The scope of the factors is defined to be relevant to emissions reporting, although the factors may also be used for other purposes.  Regardless of this, their usage is at the users’ own risk.",,,

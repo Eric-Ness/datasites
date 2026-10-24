@@ -1,0 +1,84 @@
+# Excerpt of https://dataverse.harvard.edu/api/datasets/:persistentId/?persistentId=doi:10.7910/DVN/VOQCHQ
+# Captured 2026-10-24. Only the keys the pipeline reads are kept (the citation metadata blocks are dropped); every value is unchanged.
+{
+ "status": "OK",
+ "data": {
+  "id": 3239428,
+  "identifier": "DVN/VOQCHQ",
+  "persistentUrl": "https://doi.org/10.7910/DVN/VOQCHQ",
+  "protocol": "doi",
+  "authority": "10.7910",
+  "publisher": "Harvard Dataverse",
+  "publicationDate": "2018-10-11",
+  "guestbookId": 458,
+  "latestVersion": {
+   "id": 719532,
+   "datasetId": 3239428,
+   "datasetPersistentId": "doi:10.7910/DVN/VOQCHQ",
+   "versionNumber": 20,
+   "versionMinorNumber": 0,
+   "versionState": "RELEASED",
+   "lastUpdateTime": "2026-02-25T19:00:32Z",
+   "releaseTime": "2026-02-25T19:00:32Z",
+   "license": {
+    "name": "CC0 1.0",
+    "uri": "http://creativecommons.org/publicdomain/zero/1.0",
+    "iconUri": "https://licensebuttons.net/p/zero/1.0/88x31.png",
+    "rightsIdentifier": "CC0-1.0",
+    "rightsIdentifierScheme": "SPDX",
+    "schemeUri": "https://spdx.org/licenses/",
+    "languageCode": "en"
+   },
+   "guestbookId": 458,
+   "fileAccessRequest": false,
+   "files": [
+    {
+     "label": "countypres_2000-2024.tab",
+     "restricted": false,
+     "version": 3,
+     "datasetVersionId": 719532,
+     "dataFile": {
+      "id": 13573089,
+      "persistentId": "",
+      "filename": "countypres_2000-2024.tab",
+      "contentType": "text/tab-separated-values",
+      "filesize": 9845506,
+      "originalFileFormat": "text/comma-separated-values",
+      "originalFileName": "countypres_2000-2024.csv",
+      "md5": "bd6661282936006b4ef4f5ee71418f3e"
+     }
+    },
+    {
+     "label": "County Presidential Returns 2000-2024.md",
+     "restricted": false,
+     "version": 1,
+     "datasetVersionId": 719532,
+     "dataFile": {
+      "id": 11723285,
+      "persistentId": "",
+      "filename": "County Presidential Returns 2000-2024.md",
+      "contentType": "text/markdown",
+      "filesize": 2604,
+      "md5": "bb49e28faf9b18266665ab01dccf295f"
+     }
+    },
+    {
+     "label": "sources-president.tab",
+     "restricted": false,
+     "version": 1,
+     "datasetVersionId": 719532,
+     "dataFile": {
+      "id": 10493708,
+      "persistentId": "",
+      "filename": "sources-president.tab",
+      "contentType": "text/tab-separated-values",
+      "filesize": 5038,
+      "originalFileFormat": "text/csv",
+      "originalFileName": "sources-president.csv",
+      "md5": "ee979c4c5ea7a6df903db86dab3f869e"
+     }
+    }
+   ]
+  }
+ }
+}

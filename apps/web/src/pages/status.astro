@@ -1,0 +1,67 @@
+---
+import Base from "../layouts/Base.astro";
+import { apiBase, site, siteDatasets } from "../lib/site";
+import { STATUS_INFO } from "../lib/status";
+import { apiUrl, paths } from "../lib/urls";
+
+const statusUrl = apiUrl(apiBase, site.id, paths.status());
+const known = JSON.stringify({ datasets: siteDatasets.map((d) => ({ id: d.id, title: d.title })) }).replace(/</g, "\\u003c");
+---
+
+<Base title="Status" description={`Live freshness of every ${site.name} dataset.`}>
+  <header class="hero">
+    <p class="eyebrow">{site.domain}</p>
+    <h1>Status</h1>
+    <p class="lede">Whether each dataset is current, read live from the API.</p>
+    <p class="muted small">Machine-readable: <a class="mono" href={statusUrl}>/v1/status</a></p>
+  </header>
+
+  <div data-status-root>
+    <div class="notice" data-status-overall role="status">
+      <p>Loading the current status…</p>
+    </div>
+    <div class="actions" style="margin:0 0 16px">
+      <button type="button" class="btn btn-quiet btn-small" data-status-refresh hidden>Refresh</button>
+    </div>
+    <div data-status-table></div>
+    <noscript>
+      <p class="notice">This page needs JavaScript to read the API. The same information is at <a href={statusUrl}>/v1/status</a>.</p>
+    </noscript>
+  </div>
+
+  <section class="section" aria-labelledby="legend-h">
+    <h2 id="legend-h">What the statuses mean</h2>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Status meanings">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Status</th>
+            <th scope="col">Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            Object.entries(STATUS_INFO).map(([key, info]) => (
+              <tr>
+                <th scope="row">
+                  <span class={`badge status-${key}`}>{info.label}</span>
+                </th>
+                <td>{info.meaning}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="muted small">
+      A dataset that is late, failing or blocked alerts the maintainers. Stale upstream does not, because the delay is at
+      the source.
+    </p>
+  </section>
+
+  <script type="application/json" id="status-config" is:inline set:html={known} />
+</Base>
+
+<script>
+  import "../client/status-page";
+</script>

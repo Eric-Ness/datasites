@@ -1,0 +1,76 @@
+id: emission-factors
+version: 1                       # bump on any schema change; forces a rebuild
+kind: table
+title: Emission factors
+description: >-
+  Scope 1, 2 and 3 emission factors in one table: the GHG Emission Factors Hub 2026 and
+  eGRID2024 (Cornerstone releases of EPA methods), UK DESNZ 2026 conversion factors,
+  Ember national grid intensity (1985 onward) and USEEIO v1.4 spend-based supply chain
+  factors. Every row states its unit, gas, scope and GWP set.
+pipeline: datasites_carbon.emission_factors
+# Zenodo answers every request with the full file (no conditional GETs), so look weekly, not daily.
+check_every: P7D
+cadence: P1M                     # Ember revises its yearly file twice a month; the other sources yearly
+sla: P90D                        # "stale-upstream" if nothing (in practice Ember) has changed for 90 days
+source:
+  id: carbondata-emission-factors
+  name: >-
+    EPA GHG Emission Factors Hub 2026 and eGRID2024 (Cornerstone releases), Supply Chain GHG
+    Emission Factors v1.4.0 (USEEIO, Cornerstone release), UK Government GHG Conversion Factors
+    2026 (DESNZ) and Ember Yearly Electricity Data
+  publisher: Cornerstone Sustainability Data Initiative; UK Department for Energy Security and Net Zero; Ember
+  url: https://doi.org/10.5281/zenodo.20403776
+  license: CC-BY-4.0 AND OGL-UK-3.0
+  commercial_ok: true
+  attribution: >-
+    EPA methodology, Cornerstone release (not EPA-official): Cornerstone Sustainability Data
+    Initiative. (2026). Emission Factors Hub 2026 (Version 2026.01) [Dataset]. Cornerstone
+    Sustainability Data Initiative. https://doi.org/10.5281/zenodo.20403776. CC BY 4.0.
+    EPA methodology, Cornerstone release (not EPA-official): Cornerstone Sustainability Data
+    Initiative. (2026). eGRID2024 (Version 1.0.0) [Dataset]. Cornerstone Sustainability Data
+    Initiative. https://doi.org/10.5281/zenodo.18968658. CC BY 4.0.
+    EPA methodology, Cornerstone release (not EPA-official): Ingwersen, W., & Young, B. (2025).
+    Supply Chain Greenhouse Gas Emission Factors for U.S. Commodities (Version v1.4.0) [Dataset].
+    Cornerstone Sustainability Data Initiative. https://doi.org/10.5281/zenodo.17202747. CC BY 4.0.
+    UK conversion factors: Contains public sector information licensed under the Open Government
+    Licence v3.0. Department for Energy Security and Net Zero, Greenhouse gas reporting:
+    conversion factors 2026,
+    https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2026.
+    Grid intensity: Ember, Yearly Electricity Data,
+    https://ember-energy.org/data/yearly-electricity-data/, CC BY 4.0.
+    Changes: reshaped into one table with harmonized scope, category, region, unit and GWP-set
+    labels; Ember intensities converted from g to kg CO2e per kWh. Factor values are otherwise
+    as published.
+key: [factor_id]
+partition: source
+# factor_id is <source>:<edition>:<category>:<activity>:<region>:<gas>:<activity unit>, lowercase.
+# Rows that must not be added together: a CO2e total and the per-gas rows of the same activity (DESNZ
+# publishes both); a USEEIO factor with margins and the same commodity without margins; the Hub's
+# electricity rows and egrid's, which are the same eGRID2024 rates published twice.
+# Left out on purpose (see the source modules for details): eGRID and Hub non-baseload and grid-loss
+# figures, DESNZ blank cells and SECR kWh energy conversions, USEEIO per-gas detail, and Ember's
+# regional aggregates other than the world, Kosovo (no ISO 3166 code), blank and negative intensities.
+schema:
+  - { name: factor_id, type: str, description: "Stable, readable id: source, edition, category, activity, region, gas and activity unit" }
+  - { name: source, type: str, description: "epa-hub, egrid, uk-desnz, ember or useeio" }
+  - { name: source_version, type: str, description: "The publisher's release, e.g. 2026.01, eGRID2024 1.0.0, 2026 v1.2, v1.4.0" }
+  - { name: source_ref, type: str, nullable: true, description: "Where the number is in the source: Hub sheet, eGRID sheet.field, DESNZ factor ID or NAICS code" }
+  - { name: scope, type: str, description: "1, 2, 3, or outside (biogenic CO2 reported outside the scopes)" }
+  - { name: category, type: str, description: "e.g. stationary-combustion, electricity, well-to-tank, business-travel, purchased-goods-and-services" }
+  - { name: activity, type: str, description: "The activity in the publisher's own words" }
+  - { name: region, type: str, description: "world, lowercase ISO 3166-1 alpha-3 (usa), US state (us-ca) or eGRID subregion code (CAMX)" }
+  - { name: region_type, type: str, description: "world, country, us-state or egrid-subregion" }
+  - { name: activity_unit, type: str, description: "The unit of activity the factor multiplies, e.g. mmBtu (the Hub uses higher heating values), kWh (gross CV), passenger-km, USD (2024, purchaser price)" }
+  - { name: gas, type: str, description: "CO2, CH4, N2O, or CO2e for all gases the factor covers. A named gas with a CO2e unit is that gas's share of the CO2e total" }
+  - { name: value, type: float, description: "Kilograms of the gas (or of CO2e) per one activity unit" }
+  - { name: unit, type: str, description: "The value's unit, e.g. kg CO2/mmBtu, kg CO2e/kWh" }
+  - { name: gwp_set, type: str, description: "IPCC report whose 100-year GWPs weight a CO2e value (AR4, AR5, AR6, mixed), or none for per-gas mass factors" }
+  - { name: valid_year, type: year, description: "Year the factor applies to: the edition year (Hub, DESNZ), data year (eGRID, Ember) or dollar year (USEEIO)" }
+  - { name: notes, type: str, nullable: true, description: "Caveats from the publisher or about the scope label" }
+checks:
+  rows_min_ratio: 0.98           # block if rows drop below 98% of the previous version
+  min_rows: 12000
+  ranges:
+    value: [0, 50000]            # largest today: DESNZ NiMH batteries, 28,380 kg CO2e per tonne
+  max_null_fraction:
+    value: 0

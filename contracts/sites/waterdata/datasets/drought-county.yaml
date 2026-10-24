@@ -1,0 +1,49 @@
+id: drought-county
+version: 1
+title: County drought categories
+description: >-
+  Weekly percent of each US county's area in each US Drought Monitor category over the last 400
+  days: none, D0 abnormally dry, D1 moderate, D2 severe, D3 extreme and D4 exceptional drought.
+  The categories don't overlap and add up to 100.
+pipeline: datasites_water.usdm_county
+check_every: P1D                 # maps are released on Thursdays; checking daily picks one up within a day
+cadence: P7D
+sla: P15D
+# Terms: https://droughtmonitor.unl.edu/About/Permission.aspx asks that reproductions carry the wording below
+# and sets no other condition (no restriction on commercial use).
+source:
+  id: usdm
+  name: U.S. Drought Monitor county statistics (categorical percent of area)
+  publisher: National Drought Mitigation Center, University of Nebraska-Lincoln
+  url: https://droughtmonitor.unl.edu/DmData/DataDownload/WebServiceInfo.aspx
+  license: LicenseRef-USDM-Credit-Required
+  commercial_ok: true
+  attribution: >-
+    The U.S. Drought Monitor is jointly produced by the National Drought Mitigation Center at the
+    University of Nebraska-Lincoln, the United States Department of Agriculture, the National Oceanic
+    and Atmospheric Administration and the National Aeronautics and Space Administration. Map courtesy
+    of NDMC.
+series:
+  area: Percent of county area by drought category
+locations:
+  registry: us-county
+schema:
+  - { name: date, type: date, description: The map's valid date (a Tuesday); USDM releases it two days later }
+  - { name: none, type: float, unit: percent, description: Not in any category }
+  - { name: d0, type: float, unit: percent, description: D0 abnormally dry (only) }
+  - { name: d1, type: float, unit: percent, description: D1 moderate drought (only) }
+  - { name: d2, type: float, unit: percent, description: D2 severe drought (only) }
+  - { name: d3, type: float, unit: percent, description: D3 extreme drought (only) }
+  - { name: d4, type: float, unit: percent, description: D4 exceptional drought }
+checks:
+  min_rows: 150000               # ~3,200 counties x 57 weeks
+  rows_min_ratio: 0.97           # the window holds 57 or 58 weekly maps
+  ranges:
+    none: [0, 100]
+    d0: [0, 100]
+    d1: [0, 100]
+    d2: [0, 100]
+    d3: [0, 100]
+    d4: [0, 100]
+  max_null_fraction: { none: 0, d0: 0, d1: 0, d2: 0, d3: 0, d4: 0 }
+  newest_not_older: true

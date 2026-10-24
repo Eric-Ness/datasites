@@ -1,0 +1,20 @@
+# Excerpt of https://download.bls.gov/pub/time.series/la/la.series
+# (lines copied verbatim, converted to LF line endings: the real files mix CRLF and LF, from the file dated 2026-10-20; captured 2026-10-24).
+# St. Louis MSA (series-level footnote A), Kent County DE and Detroit.
+series_id                     	area_type_code	area_code	measure_code	seasonal	srd_code	series_title	footnote_codes	begin_year	begin_period	end_year	end_period
+LASMT261982000000003          	B	MT2619820000000	03	S	26	Unemployment Rate: Detroit-Warren-Dearborn, MI Metropolitan Statistical Area (S)		1990	M01	2026	M09
+LASMT261982000000004          	B	MT2619820000000	04	S	26	Unemployment: Detroit-Warren-Dearborn, MI Metropolitan Statistical Area (S)		1990	M01	2026	M09
+LASMT261982000000005          	B	MT2619820000000	05	S	26	Employment: Detroit-Warren-Dearborn, MI Metropolitan Statistical Area (S)		1990	M01	2026	M09
+LASMT261982000000006          	B	MT2619820000000	06	S	26	Labor Force: Detroit-Warren-Dearborn, MI Metropolitan Statistical Area (S)		1990	M01	2026	M09
+LAUCN100010000000003          	F	CN1000100000000	03	U	10	Unemployment Rate: Kent County, DE (U)		1990	M01	2026	M08
+LAUCN100010000000004          	F	CN1000100000000	04	U	10	Unemployment: Kent County, DE (U)		1990	M01	2026	M08
+LAUCN100010000000005          	F	CN1000100000000	05	U	10	Employment: Kent County, DE (U)		1990	M01	2026	M08
+LAUCN100010000000006          	F	CN1000100000000	06	U	10	Labor Force: Kent County, DE (U)		1990	M01	2026	M08
+LAUMT261982000000003          	B	MT2619820000000	03	U	26	Unemployment Rate: Detroit-Warren-Dearborn, MI Metropolitan Statistical Area (U)		1990	M01	2026	M09
+LAUMT261982000000004          	B	MT2619820000000	04	U	26	Unemployment: Detroit-Warren-Dearborn, MI Metropolitan Statistical Area (U)		1990	M01	2026	M09
+LAUMT261982000000005          	B	MT2619820000000	05	U	26	Employment: Detroit-Warren-Dearborn, MI Metropolitan Statistical Area (U)		1990	M01	2026	M09
+LAUMT261982000000006          	B	MT2619820000000	06	U	26	Labor Force: Detroit-Warren-Dearborn, MI Metropolitan Statistical Area (U)		1990	M01	2026	M09
+LAUMT294118000000003          	B	MT2941180000000	03	U	29	Unemployment Rate: St. Louis, MO-IL Metropolitan Statistical Area (U)	A	1990	M01	2026	M08
+LAUMT294118000000004          	B	MT2941180000000	04	U	29	Unemployment: St. Louis, MO-IL Metropolitan Statistical Area (U)	A	1990	M01	2026	M08
+LAUMT294118000000005          	B	MT2941180000000	05	U	29	Employment: St. Louis, MO-IL Metropolitan Statistical Area (U)	A	1990	M01	2026	M08
+LAUMT294118000000006          	B	MT2941180000000	06	U	29	Labor Force: St. Louis, MO-IL Metropolitan Statistical Area (U)	A	1990	M01	2026	M08

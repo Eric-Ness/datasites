@@ -1,0 +1,83 @@
+---
+import Base from "../../layouts/Base.astro";
+import DatasetCard from "../../components/DatasetCard.astro";
+import { apiBase, site, siteDatasets } from "../../lib/site";
+import { cadenceLabel, commercialLabel, kindLabel, licenseInfo } from "../../lib/format";
+import { datasetPath } from "../../lib/routes";
+import { apiUrl, paths } from "../../lib/urls";
+
+const catalogUrl = apiUrl(apiBase, site.id, paths.catalog());
+---
+
+<Base title="Datasets" description={`Every ${site.name} dataset, with its source, license, update schedule and API.`}>
+  <header class="hero">
+    <p class="eyebrow">{site.domain}</p>
+    <h1>Datasets</h1>
+    <p class="lede">
+      {
+        siteDatasets.length
+          ? `${siteDatasets.length} ${siteDatasets.length === 1 ? "dataset" : "datasets"}, each with a chart or preview, downloads and an API.`
+          : "No datasets are published here yet."
+      }
+    </p>
+    <p class="muted small">
+      Machine-readable: <a class="mono" href={catalogUrl}>/v1/catalog</a>
+    </p>
+  </header>
+
+  {
+    siteDatasets.length ? (
+      <>
+        <ul class="card-grid">
+          {siteDatasets.map((d) => (
+            <DatasetCard dataset={d} headingLevel={2} />
+          ))}
+        </ul>
+
+        <section class="section" aria-labelledby="compare-h">
+          <h2 id="compare-h">At a glance</h2>
+          <div class="table-wrap" tabindex="0" role="region" aria-label="Datasets at a glance">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Dataset</th>
+                  <th scope="col">Kind</th>
+                  <th scope="col">Updates</th>
+                  <th scope="col">Source</th>
+                  <th scope="col">License</th>
+                  <th scope="col">Commercial use</th>
+                </tr>
+              </thead>
+              <tbody>
+                {siteDatasets.map((d) => (
+                  <tr>
+                    <th scope="row">
+                      <a href={datasetPath(d.id)}>{d.title}</a>
+                    </th>
+                    <td>{kindLabel(d.kind)}</td>
+                    <td>{cadenceLabel(d.cadence)}</td>
+                    <td>{d.source.publisher ?? d.source.name}</td>
+                    <td>{licenseInfo(d.source.license).short}</td>
+                    <td>{commercialLabel(d.source.commercial_ok)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </>
+    ) : (
+      <div class="notice">
+        <p>{site.description}</p>
+        <p>
+          The first datasets are being built now. Each will get its own page here with a chart or preview, downloads and
+          the exact API URLs. Meanwhile, the <a href="/docs/">docs</a> describe how every {site.name} dataset will work.
+        </p>
+      </div>
+    )
+  }
+</Base>
+
+<script>
+  import "../../client/catalog";
+</script>

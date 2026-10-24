@@ -1,0 +1,8 @@
+# Figure 2.4 of "Using the Census Data API With the American Community Survey: What Data Users Need to Know"
+# (U.S. Census Bureau, 2020), page 11: https://www.census.gov/content/dam/Census/library/publications/2020/acs/acs_api_handbook_2020.pdf
+# Complete response of https://api.census.gov/data/2016/acs/acs1?get=NAME,B01001_001E&for=state:01,06,44
+# (transcribed verbatim; captured 2026-10-24).
+[["NAME","B01001_001E","state"],
+["Alabama","4863300","01"],
+["California","39250017","06"],
+["Rhode Island","1056426","44"]]

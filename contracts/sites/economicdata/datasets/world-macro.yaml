@@ -1,0 +1,59 @@
+id: world-macro
+version: 1                       # bump on any schema change; forces a rebuild
+title: World macro core indicators
+description: >-
+  Annual GDP (current US dollars), real GDP growth, GDP per capita, consumer price inflation,
+  unemployment (ILO modeled estimate) and population for every economy and the world from the
+  World Bank's World Development Indicators, 1960 to the latest year. Regional and income-group
+  aggregates are left out; Kosovo and the Channel Islands, which have no ISO country code, are
+  included as wb-xkx and wb-chi.
+pipeline: datasites_economic.worldbank_wdi
+check_every: P1D                 # seven conditional GETs; the API sends Last-Modified
+cadence: P3M                     # WDI is refreshed several times a year
+sla: P200D
+source:
+  id: worldbank-wdi
+  name: World Bank World Development Indicators (Indicators API v2)
+  publisher: The World Bank
+  url: https://datacatalog.worldbank.org/search/dataset/0037712/World-Development-Indicators
+  license: CC-BY-4.0               # https://www.worldbank.org/ext/en/legal/terms-conditions/datasets
+  commercial_ok: true
+  attribution: >-
+    The World Bank: World Development Indicators: GDP, GDP growth and GDP per capita from country
+    official statistics, National Statistical Organizations and/or Central Banks; National Accounts
+    data files, Organisation for Economic Co-operation and Development (OECD); Staff estimates,
+    World Bank (WB). Inflation from the International Financial Statistics database, International
+    Monetary Fund (IMF). Unemployment from the ILO Modelled Estimates database (ILOEST),
+    International Labour Organization (ILO). Population from World Population Prospects, United
+    Nations (UN); national statistical offices; Eurostat; and the UN Population and Vital
+    Statistics Report. Licensed under CC BY 4.0
+    (https://www.worldbank.org/ext/en/legal/terms-conditions/datasets).
+series:
+  annual: Annual values
+locations:
+  registry: country
+  explicit:
+    world: World
+    wb-xkx: Kosovo (World Bank code XKX; no ISO 3166-1 code)
+    wb-chi: Channel Islands (World Bank code CHI; Jersey and Guernsey combined)
+schema:
+  - { name: date, type: year }
+  - { name: gdp_usd, type: float, unit: USD, nullable: true, description: "GDP, current US dollars (NY.GDP.MKTP.CD)" }
+  - { name: gdp_growth_pct, type: float, unit: percent, nullable: true, description: "Real GDP growth, annual (NY.GDP.MKTP.KD.ZG)" }
+  - { name: gdp_per_capita_usd, type: float, unit: USD, nullable: true, description: "GDP per capita, current US dollars (NY.GDP.PCAP.CD)" }
+  - { name: inflation_cpi_pct, type: float, unit: percent, nullable: true, description: "Inflation, consumer prices, annual (FP.CPI.TOTL.ZG)" }
+  - { name: unemployment_pct, type: float, unit: percent, nullable: true, description: "Unemployment, percent of total labor force, modeled ILO estimate (SL.UEM.TOTL.ZS)" }
+  - { name: population, type: int, unit: persons, nullable: true, description: "Population, total (SP.POP.TOTL)" }
+checks:
+  min_rows: 12000
+  rows_min_ratio: 0.98
+  ranges:
+    gdp_usd: [0, 1000000000000000]
+    gdp_growth_pct: [-100, 500]
+    gdp_per_capita_usd: [0, 1000000]
+    inflation_cpi_pct: [-100, 10000000]
+    unemployment_pct: [0, 100]
+    population: [0, 15000000000]
+  max_null_fraction:
+    population: 0.05
+  newest_not_older: true

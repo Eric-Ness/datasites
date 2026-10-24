@@ -1,0 +1,77 @@
+id: county-aqi-daily
+version: 1
+kind: series
+title: Daily air quality index by county
+description: >-
+  The daily Air Quality Index (AQI) for every US county with an EPA monitor, from 1980 to yesterday. Rows
+  up to EPA's latest AirData release are validated (validated: true). Later days are preliminary
+  (validated: false): EPA AirNow data from federal, state, local and tribal agencies, not yet verified and
+  subject to change. For those days the county AQI is a derived value calculated by airdata.dev as the
+  highest site AQI reported to AirNow in the county that day, the way EPA summarizes a county; the site
+  AQI values themselves are as received. Preliminary days cover ozone, PM2.5, PM10 and CO only. A
+  preliminary row never replaces a validated one.
+pipeline: datasites_air.county_aqi_daily
+check_every: P1D                 # a few hundred conditional GETs; the day's new AirNow file always changes the output
+cadence: P1D                     # AirNow adds a day every day; AirData is reissued twice a year (about June and December)
+sla: P4D
+source:
+  id: epa-airdata-airnow
+  name: EPA AirData daily AQI by county (validated) and EPA AirNow daily data files (preliminary)
+  publisher: US EPA (AirData, AirNow) and the AirNow partner agencies
+  # AirData terms: https://www.epa.gov/outdoor-air-quality-data/do-i-need-request-permission-use-monitoring-data-and-graphics-airdata
+  #   and the citation EPA asks for: https://www.epa.gov/outdoor-air-quality-data/how-do-i-cite-data-and-graphics-obtained-airdata-website
+  # AirNow terms: https://docs.airnowapi.org/docs/DataUseGuidelines.pdf (AirNow Data Exchange Guidelines)
+  url: https://aqs.epa.gov/aqsweb/airdata/download_files.html
+  license: LicenseRef-US-Government-Work AND LicenseRef-AirNow-Data-Exchange-Guidelines
+  commercial_ok: true            # AQS data are public domain; the AirNow guidelines set conditions (credit, label preliminary, don't alter) but restrict no use
+  attribution: >-
+    Validated data: US Environmental Protection Agency. Air Quality System Data Mart [internet database]
+    available via https://www.epa.gov/outdoor-air-quality-data. Accessed on this version's retrieval date.
+    Preliminary data (validated: false): courtesy of the federal, state, local and tribal air quality
+    agencies that own the data (https://www.airnow.gov/partners/) and the EPA AirNow program. These data
+    are preliminary: not fully verified or validated, and subject to change. Preliminary county AQI values
+    are derived by airdata.dev as the highest site AQI in the county; site values are as received from
+    AirNow.
+series:
+  aqi: Daily AQI
+locations:
+  registry: us-county
+  # AQS reports Connecticut by its eight former counties (not the 2022 planning regions), keeps three
+  # retired Alaska census areas for old records, and covers island areas the Census gazetteer omits.
+  # These are their real FIPS codes; nothing is remapped.
+  explicit:
+    us-county-09001: Fairfield County, CT (former county)
+    us-county-09003: Hartford County, CT (former county)
+    us-county-09005: Litchfield County, CT (former county)
+    us-county-09007: Middlesex County, CT (former county)
+    us-county-09009: New Haven County, CT (former county)
+    us-county-09011: New London County, CT (former county)
+    us-county-09013: Tolland County, CT (former county)
+    us-county-09015: Windham County, CT (former county)
+    us-county-02232: Skagway-Hoonah-Angoon Census Area, AK (until 2007)
+    us-county-02261: Valdez-Cordova Census Area, AK (until 2019)
+    us-county-02280: Wrangell-Petersburg Census Area, AK (until 2008)
+    us-county-66010: Guam
+    us-county-78010: St. Croix Island, VI
+    us-county-78020: St. John Island, VI
+    us-county-78030: St. Thomas Island, VI
+schema:
+  - { name: date, type: date, description: Local calendar day (midnight to midnight local standard time) }
+  - { name: aqi, type: int, unit: AQI, description: "The county's AQI: the highest daily AQI among its monitors. AirData values above 500 (extreme dust events) are kept as published" }
+  - { name: category, type: str, description: "EPA AQI category: Good, Moderate, Unhealthy for Sensitive Groups, Unhealthy, Very Unhealthy or Hazardous" }
+  - { name: defining_parameter, type: str, description: "Pollutant behind the county AQI: Ozone, PM2.5, PM10, CO, NO2 or SO2" }
+  - { name: defining_site, type: str, description: "Monitoring site behind the county AQI, as an AQS id (SS-CCC-NNNN) or, for tribal AirNow sites, the AirNow id" }
+  - { name: sites_reporting, type: int, description: Number of monitoring sites in the county with an AQI that day }
+  - { name: validated, type: bool, description: "true for EPA AirData (validated AQS data); false for preliminary AirNow data" }
+checks:
+  min_rows: 11000000
+  rows_min_ratio: 0.99           # a truncated AirData year (300k+ rows) blocks
+  ranges:
+    aqi: [0, 50000]              # AirData keeps extrapolated values past 500 (Inyo County PM10 reached 22,897)
+    sites_reporting: [1, 200]
+  max_null_fraction:
+    aqi: 0
+  # Off on purpose: preliminary rows are retired once EPA completes a year in AirData, and rows older than
+  # the one-year AirNow window drop out, so a county whose only recent data was preliminary can legitimately
+  # end earlier than before. Row counts (above) still catch a truncated source file.
+  newest_not_older: false

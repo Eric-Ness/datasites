@@ -1,0 +1,63 @@
+id: laus
+version: 1                       # bump on any schema change; forces a rebuild
+title: Local area unemployment (LAUS)
+description: >-
+  Monthly labor force, employment, unemployment and unemployment rate from the BLS Local Area
+  Unemployment Statistics program for every state (from 1976), metropolitan and micropolitan
+  area and county (from 1990), not seasonally adjusted, plus BLS's seasonally adjusted series for
+  states and three metros. October 2025 is missing for the 50 states, DC and their substate areas
+  because the household survey was not collected during the federal shutdown; those months are
+  null with footnote X and are never interpolated. The latest month is preliminary.
+pipeline: datasites_economic.bls_laus
+check_every: P1D                 # BLS regenerates the files at each state and metro release
+cadence: P1M
+sla: P45D
+raw_archive_max_mb: 64           # the 337 MB county file is refetched rather than archived
+source:
+  id: bls-laus
+  name: BLS Local Area Unemployment Statistics (LAUS)
+  publisher: U.S. Bureau of Labor Statistics
+  url: https://www.bls.gov/lau/
+  license: LicenseRef-US-Government-Work   # https://www.bls.gov/opub/copyright-information.htm
+  commercial_ok: true
+  attribution: >-
+    Source: U.S. Bureau of Labor Statistics, Local Area Unemployment Statistics
+    (https://www.bls.gov/lau/).
+series:
+  nsa: Not seasonally adjusted (every state, CBSA and county)
+  sa: Seasonally adjusted (states, Detroit, Cleveland and Seattle metros)
+# Counties come from the registry (2024 Gazetteer: Connecticut's nine planning regions, which BLS has
+# rebuilt back to 1990). The Alaska areas below were split or redrawn; BLS keeps their history.
+# CBSAs (OMB 2023 metropolitan and micropolitan areas) are us-cbsa-<CBSA code>, named from la.area.
+locations:
+  registry: [us-state, us-county]
+  pattern: "us-cbsa-\\d{5}"
+  explicit:
+    us-county-02201: Prince of Wales-Outer Ketchikan Census Area, AK (through 2009)
+    us-county-02232: Skagway-Hoonah-Angoon Census Area, AK (through 2009)
+    us-county-02261: Valdez-Cordova Census Area, AK (through 2019)
+    us-county-02280: Wrangell-Petersburg Census Area, AK (through 2009)
+# footnotes holds the BLS footnote codes (la.footnote), comma-separated:
+#   A area boundaries differ from OMB's (St. Louis MSA)   G/U annual-average notes (not published here)
+#   N not available   P preliminary   V/W survey not conducted (weather), interpolated by BLS
+#   X not collected: 2025 lapse in appropriations   Y controlled to interpolated statewide totals
+schema:
+  - { name: date, type: month }
+  - { name: labor_force, type: int, unit: persons, nullable: true, description: Civilian labor force by place of residence }
+  - { name: employed, type: int, unit: persons, nullable: true, description: Employed persons (BLS measure "employment") }
+  - { name: unemployed, type: int, unit: persons, nullable: true, description: Unemployed persons (BLS measure "unemployment") }
+  - { name: unemployment_rate, type: float, unit: percent, nullable: true, description: Unemployed as a percent of the labor force, one decimal }
+  - { name: preliminary, type: bool, description: True where BLS marks the estimate preliminary (footnote P) }
+  - { name: footnotes, type: str, nullable: true, description: BLS footnote codes for the month, comma-separated }
+checks:
+  min_rows: 1500000
+  rows_min_ratio: 0.99
+  ranges:
+    labor_force: [0, 25000000]
+    employed: [0, 25000000]
+    unemployed: [0, 5000000]
+    unemployment_rate: [0, 100]
+  max_null_fraction:
+    labor_force: 0.01
+    unemployment_rate: 0.01
+  newest_not_older: true

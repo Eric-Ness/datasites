@@ -1,0 +1,69 @@
+id: senate-results
+version: 1                       # bump on any schema change; forces a rebuild
+kind: table
+title: US Senate election results, 1976-2024
+description: >-
+  Statewide returns for every US Senate election from 1976 to 2024, including special elections and
+  runoffs: one row per candidate per ballot line, from the MIT Election Data + Science Lab.
+pipeline: datasites_election.medsl_senate
+check_every: P7D                 # MEDSL publishes a new version a few times per election cycle
+cadence: P2Y                     # new rows after each federal election
+sla: P3Y                         # MEDSL has taken 6-18 months to add an election
+source:
+  id: medsl-senate
+  name: MIT Election Data and Science Lab, U.S. Senate statewide 1976-2024
+  publisher: MIT Election Data and Science Lab (MEDSL)
+  url: https://doi.org/10.7910/DVN/PEJ5QU
+  license: CC0-1.0
+  commercial_ok: true
+  # The Dataverse citation for the version the pipeline downloads. When MEDSL publishes a new
+  # version the run stops with an error until this is updated (and the contract version bumped).
+  attribution: >-
+    MIT Election Data and Science Lab, 2017, "U.S. Senate statewide 1976–2024",
+    https://doi.org/10.7910/DVN/PEJ5QU, Harvard Dataverse, V8, UNF:6:jRgjMTzXKaB+psjQ9tTqMQ== [fileUNF]
+key: [year, state_po, special, stage, race_row]
+partition: year
+# Notes on MEDSL's data, kept as published:
+# - totalvotes is MEDSL's race total. In some states and years it includes blank, void, over- or
+#   under-votes, which then appear as their own rows (candidate "BLANK VOTE", "UNDERVOTES", "VOID", ...).
+# - Unnamed write-in rows have a null candidate and party; a race can have several.
+# - Louisiana: the rows are whatever the House Clerk reported for the November date. In 2002 MEDSL
+#   lists the November open primary and the December runoff under one race, so Landrieu and Terrell
+#   each appear twice and totalvotes is the sum of both rounds.
+# - Georgia: stage PRE marks a November general that went to a runoff (1992, 2008). Those two runoffs
+#   are not in MEDSL's file; the January 2021 runoffs (year 2021) and the 2022 runoff are.
+# - New York 2024: MEDSL combined each candidate's party lines into one row
+#   ("DEMOCRATIC/WORKING FAMILIES"); earlier New York and Connecticut years list each line separately.
+schema:
+  - { name: year, type: year, description: Year of the election }
+  - { name: state, type: str, description: State name in upper case }
+  - { name: state_po, type: str, description: USPS state code }
+  - { name: state_fips, type: int, description: State FIPS code }
+  - { name: state_cen, type: int, description: Census Bureau state code }
+  - { name: state_ic, type: int, description: ICPSR state code }
+  - { name: state_id, type: str, description: Location id in the shared registry (us-<usps>) }
+  - { name: office, type: str, description: Always US SENATE }
+  - { name: district, type: str, description: Always STATEWIDE }
+  - { name: stage, type: str, description: "GEN (general), RUNOFF, or PRE (a general that went to a runoff)" }
+  - { name: special, type: bool, description: True for a special election to fill a vacancy }
+  - { name: race_row, type: int, description: Position of the row within its race in MEDSL's file, from 1 }
+  - { name: candidate, type: str, nullable: true, description: "Candidate as MEDSL spells it, upper case; null for unnamed write-ins" }
+  - { name: party_detailed, type: str, nullable: true, description: Ballot line (party) as reported }
+  - { name: party_simplified, type: str, nullable: true, description: "DEMOCRAT, REPUBLICAN, LIBERTARIAN or OTHER" }
+  - { name: writein, type: bool, description: True for write-in votes }
+  - { name: mode, type: str, description: Vote mode; always TOTAL in this file }
+  - { name: candidatevotes, type: int, unit: votes, nullable: true, description: "Votes on this ballot line; null where MEDSL marks a race with no reported count" }
+  - { name: totalvotes, type: int, unit: votes, nullable: true, description: Total votes in the race as MEDSL reports it }
+  - { name: candidate_total_votes, type: int, unit: votes, nullable: true, description: "The candidate's votes on all ballot lines in the race (fusion voting); null for unnamed write-ins" }
+  - { name: unofficial, type: bool, description: True where MEDSL took the figures from unofficial results }
+  - { name: version, type: date, description: Date MEDSL finalized the row }
+checks:
+  min_rows: 3900
+  rows_min_ratio: 0.99
+  ranges:
+    candidatevotes: [0, 20000000]
+    totalvotes: [1, 20000000]
+    candidate_total_votes: [0, 20000000]
+  max_null_fraction:
+    candidatevotes: 0.005
+    totalvotes: 0.005
