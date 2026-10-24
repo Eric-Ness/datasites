@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import threading
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -30,6 +31,14 @@ class Store(Protocol):
         ...
 
     def list(self, prefix: str) -> list[str]: ...
+
+    def list_dated(self, prefix: str) -> list[tuple[str, datetime]]:
+        """(key, last written, UTC) for every key under prefix."""
+        ...
+
+    def delete(self, key: str) -> None:
+        """Removes the key; a missing key is not an error."""
+        ...
 
 
 def get_json(store: Store, key: str) -> tuple[Any, str | None]:
@@ -94,6 +103,12 @@ class LocalStore:
         keys = (p.relative_to(base).as_posix() for p in base.rglob("*") if p.is_file() and not p.name.endswith(".tmp"))
         return sorted(k for k in keys if k.startswith(prefix))
 
+    def list_dated(self, prefix: str) -> list[tuple[str, datetime]]:
+        return [(k, datetime.fromtimestamp(self._path(k).stat().st_mtime, timezone.utc)) for k in self.list(prefix)]
+
+    def delete(self, key: str) -> None:
+        self._path(key).unlink(missing_ok=True)
+
 
 class R2Store:
     """Cloudflare R2 through its S3-compatible API. Conditional PutObject makes manifest flips atomic."""
@@ -156,6 +171,15 @@ class R2Store:
         for page in self.client.get_paginator("list_objects_v2").paginate(Bucket=self.bucket, Prefix=prefix):
             keys.extend(obj["Key"] for obj in page.get("Contents", []))
         return keys
+
+    def list_dated(self, prefix: str) -> list[tuple[str, datetime]]:
+        found: list[tuple[str, datetime]] = []
+        for page in self.client.get_paginator("list_objects_v2").paginate(Bucket=self.bucket, Prefix=prefix):
+            found.extend((obj["Key"], obj["LastModified"].astimezone(timezone.utc)) for obj in page.get("Contents", []))
+        return found
+
+    def delete(self, key: str) -> None:
+        self.client.delete_object(Bucket=self.bucket, Key=key)
 
 
 TARGETS = ("local", "staging", "production")

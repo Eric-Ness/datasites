@@ -124,6 +124,18 @@ def cmd_geo(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_gc(args: argparse.Namespace) -> int:
+    from .retention import collect_garbage
+
+    report = collect_garbage(open_store(args.target), dry_run=args.dry_run)
+    for ref in report.versions_deleted:
+        print(f"{'would expire' if args.dry_run else 'expired'}  {ref}")
+    for key in report.objects_deleted:
+        print(f"{'would delete' if args.dry_run else 'deleted'}  {key}")
+    print(("DRY RUN " if args.dry_run else "") + report.summary())
+    return 0
+
+
 def cmd_lint(args: argparse.Namespace) -> int:
     contracts = site_contracts(args.site) if args.site else all_contracts()
     if args.site and not contracts:
@@ -154,6 +166,10 @@ def main(argv: list[str] | None = None) -> int:
     lint = sub.add_parser("lint", help="check dataset contracts and that their pipeline modules import")
     lint.add_argument("--site", help="only this site's contracts")
 
+    gc = sub.add_parser("gc", help="expire old versions and delete storage nothing references (see retention.py)")
+    gc.add_argument("--target", choices=TARGETS, default="local")
+    gc.add_argument("--dry-run", action="store_true", help="report what would be removed without changing anything")
+
     geo_parser = sub.add_parser("geo", help="build or check the shared location registry (packages/geo)")
     geo_parser.add_argument("action", choices=("build", "check"))
 
@@ -165,6 +181,8 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_set(args, promote=args.command == "promote")
         if args.command == "geo":
             return cmd_geo(args)
+        if args.command == "gc":
+            return cmd_gc(args)
         return cmd_lint(args)
     except (ContractError, ValueError, RuntimeError) as err:
         print(f"error: {err}", file=sys.stderr)

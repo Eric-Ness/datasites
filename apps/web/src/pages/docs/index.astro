@@ -166,7 +166,8 @@ const etagExample = [
         />
         <ul>
           <li><code>{"/v1/{dataset}@{version}/..."}</code> works for every path of a dataset: metadata, series, tables and downloads.</li>
-          <li>Pinned responses never change and are cached as immutable for a year. Cite them in papers and reports.</li>
+          <li>Pinned responses never change and are cached as immutable for a year.</li>
+          <li>The first version of each month is a snapshot kept permanently: cite those in papers and reports. Other versions stay available for at least 30 days, then are removed unless they are the current version or one of the 10 before it.</li>
           <li><code>/versions</code> lists the current version, recent previous ones and one snapshot per month.</li>
           <li>A version that failed validation is never served. Asking for it returns <a href="/docs/errors/#unknown-version">unknown-version</a>.</li>
         </ul>

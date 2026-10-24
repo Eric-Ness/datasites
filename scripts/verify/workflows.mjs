@@ -85,6 +85,16 @@ for (const file of ingestFiles) {
   perWorkflow.push(`${file.replace(/^ingest-|\.ya?ml$/g, "")}=${Math.round(runs * perRun)}`);
   check(/datasites run /.test(runText(job)), `${file}: does not run a pipeline`);
 }
+// storage-gc: weekly, gated like ingest, and counted in the same budget (listing the bucket takes a few minutes).
+const gcFile = "storage-gc.yml";
+const gcJob = wf[gcFile]?.jobs?.gc;
+check(gcJob && /vars\.INGEST_ENABLED == 'true'/.test(gcJob.if ?? ""), `${gcFile}: missing, or its gc job is not gated on INGEST_ENABLED`);
+check(/datasites gc /.test(runText(gcJob)), `${gcFile}: does not run datasites gc`);
+const gcRuns = (wf[gcFile].on?.schedule ?? []).reduce((n, s) => n + runsPerDay(s.cron) * 30, 0);
+check(gcRuns > 0 && gcRuns <= 5, `${gcFile}: expected a weekly schedule, got ~${gcRuns} runs/month`);
+monthlyMinutes += gcRuns * 5;
+perWorkflow.push(`gc=${Math.round(gcRuns * 5)}`);
+
 const stale = Object.keys(MINUTES_PER_RUN).filter((f) => !ingestFiles.includes(f));
 check(stale.length === 0, `MINUTES_PER_RUN lists workflows that no longer exist: ${stale.join(", ")}`);
 check(

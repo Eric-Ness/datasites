@@ -1,0 +1,53 @@
+name: storage-gc
+
+# Weekly storage retention (pipelines/core/src/datasites_core/retention.py): expires versions older than 30 days
+# that are not current, a monthly snapshot, a recent previous version or quarantined, then deletes blobs and raw
+# archives nothing references. Deletion is two-phase, so an object is only removed a week after it was marked.
+# Stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md).
+
+on:
+  schedule:
+    - cron: "29 8 * * 0" # Sundays 08:29 UTC; odd minutes avoid GitHub's top-of-the-hour queue
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        type: boolean
+        description: "Only report what would be removed"
+        default: true
+      target:
+        type: choice
+        options: [production, staging]
+        default: production
+
+permissions:
+  contents: read
+
+concurrency:
+  group: storage-gc
+  cancel-in-progress: false
+
+jobs:
+  gc:
+    if: vars.INGEST_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: ${{ inputs.target || 'production' }}
+    defaults:
+      run:
+        working-directory: pipelines
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.2 # exact tag: setup-uv has no moving major tag
+        with:
+          enable-cache: true
+      - name: Collect garbage
+        env:
+          R2_ENDPOINT: ${{ vars.R2_ENDPOINT }}
+          R2_BUCKET: ${{ vars.R2_BUCKET }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: >
+          uv run --frozen datasites gc
+          --target "${{ inputs.target || 'production' }}"
+          ${{ inputs.dry_run && '--dry-run' || '' }}
+          | tee -a "$GITHUB_STEP_SUMMARY"

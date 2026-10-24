@@ -36,6 +36,7 @@ from .contracts import Contract, site_contracts
 from .fetch import CollectContext, Fetcher, fetch, http_date_to_iso
 from .layout import blob_key, catalog_key, manifest_key, raw_key, state_key, version_key
 from .outputs import Output, build_table_outputs, content_type_for, coverage, iter_series_outputs
+from .retention import load_candidates
 from .store import PreconditionFailed, Store, dumps, get_json, put_json
 from .validate import Report, validate_files, validate_series, validate_table
 
@@ -195,18 +196,27 @@ def rebuild_catalog(store: Store, site: str) -> None:
 # --- fetching -----------------------------------------------------------------------------------
 
 
-def _archive(store: Store, contract: Contract, name: str, url: str, body: bytes) -> dict[str, Any]:
+def _archive(store: Store, contract: Contract, name: str, url: str, body: bytes, marked: frozenset[str] = frozenset()) -> dict[str, Any]:
     raw_sha = sha256(body)
     tail = url.split("?", 1)[0].rsplit("/", 1)[-1]
     ext = tail.rsplit(".", 1)[-1] if "." in tail and len(tail.rsplit(".", 1)[-1]) <= 8 else "bin"
     key = raw_key(contract.source.id, raw_sha, ext)
     archived = len(body) <= contract.raw_archive_max_mb * 1024 * 1024
-    if archived and not store.exists(key):
+    # A key marked for garbage collection is written again, so the sweep sees it is in use (see retention.py).
+    if archived and (key in marked or not store.exists(key)):
         store.put(key, body, "application/octet-stream")
     return {"raw_sha256": raw_sha, "raw_key": key if archived else None, "archived": archived, "bytes": len(body)}
 
 
-def _collect(module: ModuleType, contract: Contract, store: Store, state: dict[str, Any], fetcher: Fetcher, now: datetime):
+def _collect(
+    module: ModuleType,
+    contract: Contract,
+    store: Store,
+    state: dict[str, Any],
+    fetcher: Fetcher,
+    now: datetime,
+    marked: frozenset[str] = frozenset(),
+):
     """Fetches every resource. Returns (bodies or None per resource, upstream state, normalized-content hash)."""
     normalize = getattr(module, "normalize", lambda _name, body: body)
     bodies: dict[str, bytes | None] = {}
@@ -218,7 +228,7 @@ def _collect(module: ModuleType, contract: Contract, store: Store, state: dict[s
             bodies[name] = body
             upstream[name] = {
                 "url": None,
-                **_archive(store, contract, name, f"{name}.bin", body),
+                **_archive(store, contract, name, f"{name}.bin", body, marked),
                 "norm_sha256": sha256(normalize(name, body)),
                 "retrieved_at": iso(now),
             }
@@ -239,7 +249,7 @@ def _collect(module: ModuleType, contract: Contract, store: Store, state: dict[s
                 "url": url,
                 "etag": got.etag,
                 "last_modified": got.last_modified,
-                **_archive(store, contract, name, url, got.body),
+                **_archive(store, contract, name, url, got.body, marked),
                 "norm_sha256": sha256(normalize(name, got.body)),
                 "retrieved_at": iso(now),
             }
@@ -268,8 +278,12 @@ def _materialize(bodies: dict[str, bytes | None], upstream: dict[str, Any], stor
 
 
 class _Uploader:
-    def __init__(self, store: Store):
+    """Uploads content-addressed blobs, skipping ones that exist, except ones marked for garbage collection,
+    which are written again so the sweep sees they are in use (see retention.py)."""
+
+    def __init__(self, store: Store, marked: frozenset[str] = frozenset()):
         self.store = store
+        self.marked = marked
         self.lock = threading.Lock()
         self.written = 0
         self._existing: set[str] | None = None
@@ -277,13 +291,14 @@ class _Uploader:
     def _known(self, seen: int) -> set[str] | None:
         """Past 50 files, one listing of the blob namespace beats thousands of existence checks."""
         if self._existing is None and seen > 50:
-            self._existing = {k.rsplit("/", 1)[-1] for k in self.store.list("blobs/sha256/")}
+            self._existing = {k.rsplit("/", 1)[-1] for k in self.store.list("blobs/sha256/") if k not in self.marked}
         return self._existing
 
     def _put(self, digest: str, out: Output, check_exists: bool) -> None:
-        if check_exists and self.store.exists(blob_key(digest)):
+        key = blob_key(digest)
+        if check_exists and key not in self.marked and self.store.exists(key):
             return
-        self.store.put(blob_key(digest), out.body, out.content_type)
+        self.store.put(key, out.body, out.content_type)
         with self.lock:
             self.written += 1
 
@@ -313,8 +328,9 @@ class _Uploader:
     def put_json_blob(self, value: Any) -> str:
         body = dumps(value)
         digest = sha256(body)
-        if not self.store.exists(blob_key(digest)):
-            self.store.put(blob_key(digest), body, "application/json")
+        key = blob_key(digest)
+        if key in self.marked or not self.store.exists(key):
+            self.store.put(key, body, "application/json")
             self.written += 1
         return digest
 
@@ -346,7 +362,8 @@ def run_dataset(
     transform_version = pipeline_version(module)
 
     try:
-        bodies, upstream, content_hash = _collect(module, contract, store, state, fetcher, now)
+        marked = frozenset(load_candidates(store)["keys"])
+        bodies, upstream, content_hash = _collect(module, contract, store, state, fetcher, now, marked)
         fingerprint = sha256(f"{content_hash}:{contract.version}:{core_version}:{transform_version}".encode())
         manifest, manifest_etag = get_json(store, manifest_key(contract.site, contract.id))
         source_updated = max((u for u in (http_date_to_iso(x.get("last_modified")) for x in upstream.values()) if u), default=None)
@@ -372,7 +389,7 @@ def run_dataset(
             return succeed("unchanged", manifest["current"], None)
 
         raw = _materialize(bodies, upstream, store, fetcher)
-        uploader = _Uploader(store)
+        uploader = _Uploader(store, marked)
         table: pl.DataFrame | None = None
         known: dict[str, str] = {}
         locations: dict[str, str] = {}

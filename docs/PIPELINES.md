@@ -141,6 +141,14 @@ Countries, states and counties come from `packages/geo` (`datasites_core.geo` in
 | table | `table/<partition>.json` and `.csv`, `table/all.*` (if ≤ 50,000 rows), `download/<id>.*` | `/v1/<id>/table/<partition>.json` |
 | files | whatever `build()` returns, at those paths | `/v1/<id>/<path>` |
 
+### Retention
+
+The weekly `storage-gc` workflow runs `datasites gc` (`pipelines/core/src/datasites_core/retention.py`):
+- **Versions kept:** the current version, every monthly snapshot and quarantined versions, permanently; the 10 previous versions and anything published in the last 30 days, until they age out. Other version documents are deleted.
+- **Storage collected:** blobs and raw archives that no kept version or pipeline state references. Deletion is two-phase: a run marks them, and a run at least a day later deletes those still unreferenced and not written since. Publishes re-upload a marked blob instead of reusing it, so nothing in use is ever removed.
+- **Pipelines that read earlier output** (`ctx.previous_files()`, `ctx.read_blob()`) only see the current version, which is always kept.
+- To see what a run would remove: `uv run datasites gc --target production --dry-run`.
+
 ## Tests
 
 - **Location:** tests go in `pipelines/tests/<domain>/`, with unique file names (`test_<domain>_<thing>.py`).
@@ -165,7 +173,7 @@ Each domain has `.github/workflows/ingest-<domain>.yml`. Copy `ingest-climate.ym
 
 - **Gate:** the job must be gated on `vars.INGEST_ENABLED == 'true'`.
 - **Schedule:** use a specific odd minute, never `0` or `*`.
-- **Minutes budget:** the repo is private, so all ingest workflows together get about 1,400 Actions minutes a month. `scripts/verify/workflows.mjs` enforces this. Daily is the default. Anything more frequent needs a reason, and every-3-hours is the ceiling.
+- **Minutes budget:** the repo is private, so all ingest workflows together get 1,500 Actions minutes a month. Time a forced run of your site (`uv run datasites run <site> --target local --force`), add the billed minutes per run to `MINUTES_PER_RUN` in `scripts/verify/workflows.mjs`, and check the total still fits. Daily is the default. Anything more frequent needs a reason, and every-3-hours is the ceiling.
 
 ## Sources and licensing
 
