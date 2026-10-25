@@ -193,10 +193,9 @@ Every dataset works without these except the ones named. Until a dataset's crede
 
 **API keys and billing (Phases 3 and 6):**
 
-1. Create the KV namespaces and paste their ids into `apps/api/wrangler.jsonc`, replacing the `REPLACE_WITH_*` placeholders:
+1. The production KV namespace for keys, `datasites-api-keys`, exists (created 2026-10-25) and is in `apps/api/wrangler.jsonc`. Staging has none, so it serves everyone anonymously. To test keys there, create one and add it to `env.staging` (see the comment in that file):
    ```powershell
-   pnpm --filter @datasites/api exec wrangler kv namespace create KEYS
-   pnpm --filter @datasites/api exec wrangler kv namespace create KEYS --env staging
+   pnpm --filter @datasites/api exec wrangler kv namespace create datasites-api-keys-staging
    ```
 2. Issue a key: `node apps/api/scripts/keys.mjs issue <account> --plan free --remote`. It prints the key once.
 3. For Stripe:
