@@ -19,6 +19,10 @@ on:
         type: choice
         options: [production, staging]
         default: production
+      force:
+        type: boolean
+        description: "Run even if a dataset was checked recently (skips the check_every wait)"
+        default: true
 
 permissions:
   contents: read
@@ -55,6 +59,7 @@ jobs:
         run: >
           uv run --frozen datasites run "${{ inputs.dataset || 'electiondata' }}"
           --target "${{ inputs.target || 'production' }}"
+          ${{ inputs.force && '--force' || '' }}
           --summary "$GITHUB_STEP_SUMMARY"
       - name: Ping healthchecks.io (result)
         if: always() && env.HC_URL != ''
