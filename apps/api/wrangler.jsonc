@@ -3,8 +3,8 @@
 // (deploy-staging.yml); it reads the datasites-data-staging bucket.
 // Add a site's route only once its zone is Active in Cloudflare, or the deploy fails.
 //
-// Before the first deploy with keys enabled, replace the placeholder ids:
-//   KEYS:  pnpm exec wrangler kv namespace create datasites-api-keys          (and ...-staging for env.staging)
+// Bindings that need nothing more:
+//   KEYS:  the datasites-api-keys KV namespace (created 2026-10-25). Staging has none yet; see env.staging.
 //   USAGE: Analytics Engine datasets are created on first write; nothing to create.
 //   UsageCounter: the Durable Object class is created by the v1 migration on deploy.
 // Stripe secrets are optional; without them billing stays inert:
@@ -23,7 +23,7 @@
   // Every 15 minutes: freshness check. 00:07 UTC: report the previous day's usage to Stripe.
   "triggers": { "crons": ["*/15 * * * *", "7 0 * * *"] },
   "r2_buckets": [{ "binding": "DATA", "bucket_name": "datasites-data" }],
-  "kv_namespaces": [{ "binding": "KEYS", "id": "REPLACE_WITH_KEYS_NAMESPACE_ID" }],
+  "kv_namespaces": [{ "binding": "KEYS", "id": "23b85cb95ebf49aaac94c4238d85e67e" }], // datasites-api-keys, created 2026-10-25
   "ratelimits": [
     { "name": "RL_ANON", "namespace_id": "1001", "simple": { "limit": 120, "period": 60 } },
     { "name": "RL_FREE", "namespace_id": "1003", "simple": { "limit": 600, "period": 60 } },
