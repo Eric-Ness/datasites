@@ -253,3 +253,36 @@ def test_manifest_written_once_per_publish(store):
     c = contract(pipeline="fake_once", schema=SERIES_SCHEMA, series={"t": "T"}, locations={"registry": "us-state"})
     publish.run_dataset(c, store, fetcher=static_fetcher({"https://example.org/r": b"r"}), now=NOW)
     assert get_json(store, manifest_key(c.site, c.id))[0]["rev"] == 1
+
+
+# --- per-series units --------------------------------------------------------------------------
+
+CLIMATE_LIKE = {
+    "pipeline": "x",
+    "series": {"tavg": "Average temperature", "pcpn": "Precipitation"},
+    "series_units": {"tavg": "degF", "pcpn": "in"},
+    "locations": {"explicit": {"us-md": "Maryland"}},
+    "schema": [
+        {"name": "date", "type": "month"},
+        {"name": "value", "type": "float", "unit": "degF or in, by series"},
+        {"name": "rank", "type": "int"},
+    ],
+}
+
+
+def test_series_units_label_each_series_file():
+    from datasites_core.outputs import iter_series_outputs
+
+    c = contract(**CLIMATE_LIKE)
+    table = pl.DataFrame(
+        {"series": ["pcpn", "tavg"], "location": ["us-md", "us-md"], "date": ["2026-09", "2026-09"], "value": [3.1, 71.5], "rank": [4, 9]}
+    )
+    files = dict(iter_series_outputs(c, table, {"us-md": "Maryland"}))
+    meta = lambda path: json.loads(files[path].body)["meta"]  # noqa: E731
+    assert meta("tavg/us-md.json")["units"] == {"value": "degF"}
+    assert meta("pcpn/us-md.json")["units"] == {"value": "in"}  # rank has no unit, so it stays out
+
+
+def test_series_units_must_name_known_series():
+    with pytest.raises(ContractError, match="series_units names series not in 'series'"):
+        contract(**{**CLIMATE_LIKE, "series_units": {"snow": "in"}})

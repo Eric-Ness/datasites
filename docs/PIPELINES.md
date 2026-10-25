@@ -62,6 +62,8 @@ Column types: `month` (YYYY-MM), `date` (YYYY-MM-DD), `year` (YYYY), `datetime` 
 ```yaml
 series:                       # series id (kebab-case) -> display name
   tavg: Average temperature
+series_units:                 # optional: when series measure different things in one column, the unit of
+  tavg: degF                  #   every unit-bearing column for that series (county-climate: degF vs in)
 locations:                    # one of three forms:
   world: World                #   1. a fixed map of id -> name
 # locations: {registry: us-county}                 2. every location of a geo-registry level

@@ -63,3 +63,20 @@ def test_retry_after_accepts_seconds_and_http_dates():
     assert fetch.retry_after_seconds("Sat, 24 Oct 2026 11:00:00 GMT", now) == 0  # already past
     assert fetch.retry_after_seconds("soon", now) is None
     assert fetch.retry_after_seconds(None, now) is None
+
+
+def test_rides_out_a_short_outage_with_the_default_retries(monkeypatch):
+    """FIRMS dropped out for a few minutes on 2026-10-25; the old 3 retries (26 s of waiting) failed the run."""
+    waits, calls = [], []
+    monkeypatch.setattr(fetch.time, "sleep", waits.append)
+
+    def flaky_get(url, **kwargs):
+        calls.append(kwargs["timeout"])
+        if len(calls) <= 4:
+            raise httpx.ConnectError("Network is unreachable")
+        return httpx.Response(200, content=b"ok", request=httpx.Request("GET", url))
+
+    monkeypatch.setattr(fetch.httpx, "get", flaky_get)
+    assert fetch.request("https://firms.example.test/x").content == b"ok"
+    assert waits == [2.0, 6.0, 18.0, 54.0]
+    assert calls[0].connect == fetch.CONNECT_TIMEOUT and calls[0].read == 120  # fail fast connecting, read slowly

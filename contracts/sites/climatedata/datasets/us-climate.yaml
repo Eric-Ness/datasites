@@ -1,5 +1,5 @@
 id: us-climate
-version: 1                       # bump on any schema change; forces a rebuild
+version: 2                       # bump on any schema change; forces a rebuild
 title: State and national climate
 description: >-
   Monthly average, maximum and minimum temperature and precipitation for each US state and
@@ -29,6 +29,11 @@ series:
   tmax: Maximum temperature (°F)
   tmin: Minimum temperature (°F)
   pcpn: Precipitation (inches)
+series_units:                    # the value, normal and anomaly unit of each series
+  tavg: degF
+  tmax: degF
+  tmin: degF
+  pcpn: in
 locations:
   registry: us-state             # nClimDiv has the 50 states; no DC or territories
   explicit:
@@ -37,17 +42,17 @@ schema:
   - { name: date, type: month }
   - name: value
     type: float
-    unit: degF (tavg, tmax, tmin); in (pcpn)
+    unit: degF or in        # by series; see series_units
     nullable: true
     description: Monthly mean temperature in degrees Fahrenheit, or total precipitation in inches, for the area
   - name: normal
     type: float
-    unit: degF (tavg, tmax, tmin); in (pcpn)
+    unit: degF or in        # by series; see series_units
     nullable: true
     description: NCEI's 1991-2020 average for this area and calendar month (climdiv-norm-*st, period 0010)
   - name: anomaly
     type: float
-    unit: degF (tavg, tmax, tmin); in (pcpn)
+    unit: degF or in        # by series; see series_units
     nullable: true
     description: value minus normal
   - name: rank

@@ -566,21 +566,21 @@
       {
         "name": "value",
         "type": "float",
-        "unit": "degF (tavg, tmax, tmin); in (pcpn)",
+        "unit": "degF or in",
         "nullable": true,
         "description": "Monthly mean temperature in degrees Fahrenheit, or total precipitation in inches, for the county"
       },
       {
         "name": "normal",
         "type": "float",
-        "unit": "degF (tavg, tmax, tmin); in (pcpn)",
+        "unit": "degF or in",
         "nullable": true,
         "description": "NCEI's 1991-2020 average for this county and calendar month (climdiv-norm-*cy, period 0010)"
       },
       {
         "name": "anomaly",
         "type": "float",
-        "unit": "degF (tavg, tmax, tmin); in (pcpn)",
+        "unit": "degF or in",
         "nullable": true,
         "description": "value minus normal"
       },
@@ -762,21 +762,21 @@
       {
         "name": "value",
         "type": "float",
-        "unit": "degF (tavg, tmax, tmin); in (pcpn)",
+        "unit": "degF or in",
         "nullable": true,
         "description": "Monthly mean temperature in degrees Fahrenheit, or total precipitation in inches, for the area"
       },
       {
         "name": "normal",
         "type": "float",
-        "unit": "degF (tavg, tmax, tmin); in (pcpn)",
+        "unit": "degF or in",
         "nullable": true,
         "description": "NCEI's 1991-2020 average for this area and calendar month (climdiv-norm-*st, period 0010)"
       },
       {
         "name": "anomaly",
         "type": "float",
-        "unit": "degF (tavg, tmax, tmin); in (pcpn)",
+        "unit": "degF or in",
         "nullable": true,
         "description": "value minus normal"
       },
