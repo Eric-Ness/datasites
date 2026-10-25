@@ -24,8 +24,8 @@
     {
       "binding": "DB",
       "database_name": "datasites-signups",
-      // Replace with the id printed by: pnpm exec wrangler d1 create datasites-signups
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      // Created 2026-10-25 with: pnpm exec wrangler d1 create datasites-signups
+      "database_id": "458a10f1-3b84-422a-83a5-2ed97e7e9ce4",
       "migrations_dir": "migrations"
     }
   ],
