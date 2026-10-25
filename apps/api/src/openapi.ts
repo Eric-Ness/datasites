@@ -279,7 +279,7 @@ function datasetPaths(d: Dataset, paths: Obj, schemas: Obj): void {
         tags,
         [
           ...pin,
-          { name: "folder", in: "path", required: true, description: "First path segment of the file.", schema: { type: "string" } },
+          { name: "folder", in: "path", required: true, description: "First path segment of the file. Deeper paths, such as `perimeters/<id>/<snapshot>.geojson`, are served too.", schema: { type: "string" } },
           { name: "file", in: "path", required: true, description: "File name, with its extension.", schema: { type: "string" } },
           ifNoneMatch,
         ],
