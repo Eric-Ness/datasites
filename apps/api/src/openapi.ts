@@ -3,7 +3,7 @@
 
 import type { Context } from "hono";
 import { datasetsForSite, siteById, type Column, type Dataset, type Site } from "@datasites/registry";
-import type { AppEnv } from "./middleware";
+import { isDevHost, type AppEnv } from "./middleware";
 
 type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 type Obj = { [key: string]: Json };
@@ -654,21 +654,28 @@ export function buildOpenApi(site: Site, siteDatasets: readonly Dataset[] = data
 
 const rendered = new Map<string, { body: string; etag: string }>();
 
-async function render(siteId: string): Promise<{ body: string; etag: string } | null> {
-  const hit = rendered.get(siteId);
+/** The spec as served. `devOrigin` (workers.dev staging, localhost) replaces the production server URL. */
+async function render(siteId: string, devOrigin: string | null): Promise<{ body: string; etag: string } | null> {
+  const cacheKey = `${siteId} ${devOrigin ?? ""}`;
+  const hit = rendered.get(cacheKey);
   if (hit) return hit;
   const site = siteById(siteId);
   if (!site) return null;
-  const body = JSON.stringify(buildOpenApi(site));
+  const spec = buildOpenApi(site);
+  if (devOrigin) {
+    spec.servers = [{ url: devOrigin, description: `${site.name}, not production: add ?site=${site.id} to every request` }];
+  }
+  const body = JSON.stringify(spec);
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(body));
   const etag = `"${[...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("")}"`;
   const out = { body, etag };
-  rendered.set(siteId, out);
+  rendered.set(cacheKey, out);
   return out;
 }
 
 export async function openapi(c: Context<AppEnv>): Promise<Response> {
-  const doc = await render(c.get("site").id);
+  const origin = new URL(c.req.url).origin;
+  const doc = await render(c.get("site").id, isDevHost(new URL(origin).hostname) ? origin : null);
   if (!doc) throw new Error("site vanished from the registry");
   const headers = { "content-type": "application/json; charset=utf-8", "cache-control": OPENAPI_CACHE, etag: doc.etag };
   const inm = c.req.header("if-none-match");

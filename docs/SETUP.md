@@ -122,6 +122,26 @@ Then add email or phone-push integrations to the project so a failure reaches yo
 
 ---
 
+## Optional: a staging API before the domains are ready
+
+The API's staging environment deploys to a free `workers.dev` address, so you can see the real API serve real data while DirectNIC finishes. It needs sections 2 and 3, but not section 1.
+
+1. **Create a GitHub environment named `staging`** (Settings → Environments) with the same secrets as `production`, but pointing at the staging bucket:
+   ```powershell
+   gh variable set R2_ENDPOINT --env staging --body "https://<account-id>.r2.cloudflarestorage.com"
+   gh variable set R2_BUCKET --env staging --body "datasites-data-staging"
+   gh secret set R2_ACCESS_KEY_ID --env staging
+   gh secret set R2_SECRET_ACCESS_KEY --env staging
+   gh secret set CLOUDFLARE_API_TOKEN --env staging
+   ```
+2. **Turn on the staging deploy:** `gh variable set STAGING_ENABLED --body true`, then **Actions → deploy-staging → Run workflow**. The run's summary prints the address, for example `https://datasites-api-staging.<your-subdomain>.workers.dev`. After this, every change to the API on `main` redeploys staging.
+3. **Fill the staging bucket:** **Actions → ingest-climate → Run workflow**, with target `staging`. Repeat for the other sites you want to see. Scheduled runs only write to production, so staging data stays as of the last manual run.
+4. **Try it:** `https://datasites-api-staging.<your-subdomain>.workers.dev/v1/catalog?site=climatedata`. Add `?site=<id>` to every request, since the address doesn't name a site; links in the responses keep it for you.
+
+Staging serves everyone anonymously: it has no API-key namespace until you add one (see the comment in `apps/api/wrangler.jsonc`).
+
+---
+
 ## 5. First deploy
 
 Deploy only when the zones in the Workers' `routes` lists are **Active**. If some aren't yet, remove them from `apps/coming-soon/wrangler.jsonc` and add them back later.

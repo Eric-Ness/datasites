@@ -19,7 +19,7 @@ export const cors: MiddlewareHandler<AppEnv> = async (c, next) => {
   c.res.headers.set("x-plan", c.get("plan") ?? "anonymous");
 };
 
-function isDevHost(hostname: string): boolean {
+export function isDevHost(hostname: string): boolean {
   return hostname === "localhost" || hostname === "127.0.0.1" || hostname.endsWith(".workers.dev");
 }
 
@@ -27,6 +27,15 @@ function isDevHost(hostname: string): boolean {
  * api.climatedata.dev -> climatedata. On localhost, workers.dev previews and in local development
  * (`wrangler dev` rewrites the hostname to the first route, so ENV flags it), ?site= picks the site.
  */
+/**
+ * A link to another API path for this request's site. Where the host doesn't name the site (workers.dev
+ * staging, localhost), the link carries ?site=<id>, so following it lands on the same site.
+ */
+export function siteLink(c: Context<AppEnv>, path: string): string {
+  if (!isDevHost(new URL(c.req.url).hostname) && c.env.ENV !== "development") return path;
+  return `${path}${path.includes("?") ? "&" : "?"}site=${encodeURIComponent(c.get("site").id)}`;
+}
+
 export const resolveSite: MiddlewareHandler<AppEnv> = async (c, next) => {
   const hostname = new URL(c.req.url).hostname;
   const dev = isDevHost(hostname) || c.env.ENV === "development";

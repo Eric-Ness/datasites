@@ -78,7 +78,9 @@ const COUNTY = base({
 
 describe("GET /v1/openapi.json", () => {
   it("serves OpenAPI 3.1 for the site, cacheable for an hour, with an ETag", async () => {
-    const res = await request("/v1/openapi.json");
+    const production = (init: RequestInit = {}) =>
+      app.request("https://api.climatedata.dev/v1/openapi.json", init, { DATA: seededBucket().asBucket(), ENV: "production" } as unknown as Env);
+    const res = await production();
     expect(res.status).toBe(200);
     expect(res.headers.get("cache-control")).toBe("public, max-age=3600");
     expect(res.headers.get("content-type")).toContain("application/json");
@@ -88,8 +90,18 @@ describe("GET /v1/openapi.json", () => {
     expect(doc.servers).toEqual([{ url: "https://api.climatedata.dev", description: siteById("climatedata")!.name }]);
     for (const p of ["/v1", "/v1/catalog", "/v1/status", "/v1/openapi.json"]) expect(doc.paths[p]).toBeDefined();
 
-    const again = await request("/v1/openapi.json", { headers: { "if-none-match": res.headers.get("etag")! } });
+    const again = await production({ headers: { "if-none-match": res.headers.get("etag")! } });
     expect(again.status).toBe(304);
+  });
+
+  it("names the staging host as the server when served from workers.dev", async () => {
+    const env = { DATA: seededBucket().asBucket(), ENV: "staging" } as unknown as Env;
+    const host = "https://datasites-api-staging.example.workers.dev";
+    const res = await app.request(`${host}/v1/openapi.json?site=climatedata`, {}, env);
+    const doc = (await res.json()) as Doc;
+    expect(doc.servers).toEqual([{ url: host, description: expect.stringContaining("add ?site=climatedata") }]);
+    const prod = await app.request("https://api.climatedata.dev/v1/openapi.json", {}, env);
+    expect(res.headers.get("etag")).not.toBe(prod.headers.get("etag"));
   });
 
   it("is not mistaken for a dataset called openapi.json", async () => {
