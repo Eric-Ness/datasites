@@ -29,6 +29,8 @@ app.get("/v1/:ref/locations", (c) => locations(c, c.req.param("ref")));
 app.get("/v1/:ref/:file{[^/]+\.[A-Za-z0-9]+}", (c) => topFile(c, c.req.param("ref"), c.req.param("file")));
 app.get("/v1/:ref/download/:file", (c) => download(c, c.req.param("ref"), c.req.param("file")));
 app.get("/v1/:ref/:series/:file", (c) => seriesFile(c, c.req.param("ref"), c.req.param("series"), c.req.param("file")));
+// Deeper paths of a files dataset, such as fire-perimeters' perimeters/<incident>/<snapshot>.geojson archive.
+app.get("/v1/:ref/:path{.+/.+/.+\.[A-Za-z0-9]+}", (c) => topFile(c, c.req.param("ref"), c.req.param("path")));
 
 app.notFound((c) => problem(c, 404, "not-found", "Not found", "No such endpoint.", { hint: "GET /v1" }));
 app.onError((err, c) => {

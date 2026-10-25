@@ -158,7 +158,8 @@ describe("big and non-series datasets", () => {
       series: { tavg: "Average temperature" }, validation: { status: "pass", errors: [], warnings: [] }, run: null, tree: "t",
       files: { "download/county-climate.parquet": { blob: blob(5), bytes: 11, type: "application/vnd.apache.parquet" },
                "boundaries/states.geojson": { blob: blob(6), bytes: 42, type: "application/geo+json" },
-               "index.json": { blob: blob(6), bytes: 42, type: "application/json" } },
+               "index.json": { blob: blob(6), bytes: 42, type: "application/json" },
+               "perimeters/abc/20261019T185954Z-1.geojson": { blob: blob(6), bytes: 42, type: "application/geo+json" } },
       file_shards: { tavg: blob(7), table: blob(9) },
       locations_blob: blob(8),
     });
@@ -189,6 +190,16 @@ describe("big and non-series datasets", () => {
     expect(top.headers.get("content-type")).toBe("application/json");
     expect((await request("/v1/county-climate/missing.json")).status).toBe(404);
     expect((await request("/v1/county-climate/locations")).status).toBe(200);
+  });
+
+  it("serves files nested more than one folder deep", async () => {
+    seedBig();
+    const deep = await request("/v1/county-climate/perimeters/abc/20261019T185954Z-1.geojson");
+    expect(deep.status).toBe(200);
+    expect(deep.headers.get("content-type")).toBe("application/geo+json");
+    const missing = await request("/v1/county-climate/perimeters/abc/nope.geojson");
+    expect(missing.status).toBe(404);
+    expect(await missing.json()).not.toMatchObject({ detail: "No such endpoint." }); // a file 404, not a routing miss
   });
 
   it("lists locations from the shards and the locations blob", async () => {

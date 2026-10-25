@@ -270,7 +270,7 @@ export function seriesFile(c: C, ref: string, series: string, file: string): Pro
   return serveFile(c, ref, `${series}/${file}`);
 }
 
-/** /v1/{dataset}/{file}: a file at the top of a files dataset, such as the boundaries pack's index.json. */
+/** /v1/{dataset}/{path}: a files-dataset file at the top (the boundaries pack's index.json) or nested deeper. */
 export function topFile(c: C, ref: string, file: string): Promise<Response> {
   return serveFile(c, ref, file);
 }
