@@ -4,7 +4,8 @@ name: keepalive
 # would silently stop every ingest on a stable site. Once a month this re-enables each scheduled workflow
 # (itself included) through the API, which resets that clock without making commits. Harmless while the repo
 # is private. If it ever fails, the healthchecks.io alerts on the ingest workflows are the backstop.
-# Stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md).
+# The schedule stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md); manual runs
+# (Actions → Run workflow) always work, for example to fill the staging bucket.
 
 on:
   schedule:
@@ -16,7 +17,7 @@ permissions:
 
 jobs:
   keepalive:
-    if: vars.INGEST_ENABLED == 'true'
+    if: vars.INGEST_ENABLED == 'true' || github.event_name == 'workflow_dispatch' # the switch only gates the schedule
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

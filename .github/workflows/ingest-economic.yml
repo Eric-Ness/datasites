@@ -1,7 +1,8 @@
 name: ingest-economic
 
 # Daily check of every economicdata.dev dataset. Conditional GETs make no-change days nearly free.
-# Stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md).
+# The schedule stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md); manual runs
+# (Actions → Run workflow) always work, for example to fill the staging bucket.
 # BEA_API_KEY and CENSUS_API_KEY are optional: without them those two datasets report needs-credentials.
 
 on:
@@ -26,7 +27,7 @@ concurrency:
 
 jobs:
   ingest:
-    if: vars.INGEST_ENABLED == 'true'
+    if: vars.INGEST_ENABLED == 'true' || github.event_name == 'workflow_dispatch' # the switch only gates the schedule
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: ${{ inputs.target || 'production' }}

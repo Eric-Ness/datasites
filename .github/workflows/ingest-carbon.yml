@@ -3,7 +3,8 @@ name: ingest-carbon
 # Weekly check of every carbondata.dev dataset. The sources change yearly (Hub, eGRID, USEEIO, DESNZ,
 # Global Carbon Budget) or about monthly (Ember), and Zenodo serves its files in full on every request,
 # so the contracts set check_every: P7D and this runs once a week.
-# Stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md).
+# The schedule stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md); manual runs
+# (Actions → Run workflow) always work, for example to fill the staging bucket.
 
 on:
   schedule:
@@ -27,7 +28,7 @@ concurrency:
 
 jobs:
   ingest:
-    if: vars.INGEST_ENABLED == 'true'
+    if: vars.INGEST_ENABLED == 'true' || github.event_name == 'workflow_dispatch' # the switch only gates the schedule
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: ${{ inputs.target || 'production' }}

@@ -6,7 +6,8 @@ name: ingest-air
 #     then ~2 min of transform and file building), ~13 min for a first build that downloads everything.
 #     Once a day is plenty: AirNow's daily file for a date settles about a day later.
 #   - county-aqi-annual is a few 304s except after EPA's twice-yearly AirData release.
-# Stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md).
+# The schedule stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md); manual runs
+# (Actions → Run workflow) always work, for example to fill the staging bucket.
 
 on:
   schedule:
@@ -30,7 +31,7 @@ concurrency:
 
 jobs:
   ingest:
-    if: vars.INGEST_ENABLED == 'true'
+    if: vars.INGEST_ENABLED == 'true' || github.event_name == 'workflow_dispatch' # the switch only gates the schedule
     runs-on: ubuntu-latest
     timeout-minutes: 60 # a first build fetches ~410 files (47 AirData years, a year of AirNow days); later days take minutes
     environment: ${{ inputs.target || 'production' }}
