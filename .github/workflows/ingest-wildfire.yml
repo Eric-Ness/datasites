@@ -4,7 +4,8 @@ name: ingest-wildfire
 # near-real-time detections arrive ~3 h after each satellite pass, so a faster schedule would mostly
 # re-fetch the same files. Each run is short (~2 min): conditional GETs make the unchanged FIRMS and
 # HMS files and the 15 MB Natural Earth boundaries 304s, and WFIGS is a few paged queries.
-# Stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md).
+# The schedule stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md); manual runs
+# (Actions → Run workflow) always work, for example to fill the staging bucket.
 
 on:
   schedule:
@@ -28,7 +29,7 @@ concurrency:
 
 jobs:
   ingest:
-    if: vars.INGEST_ENABLED == 'true'
+    if: vars.INGEST_ENABLED == 'true' || github.event_name == 'workflow_dispatch' # the switch only gates the schedule
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: ${{ inputs.target || 'production' }}

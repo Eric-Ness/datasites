@@ -3,7 +3,8 @@ name: storage-gc
 # Weekly storage retention (pipelines/core/src/datasites_core/retention.py): expires versions older than 30 days
 # that are not current, a monthly snapshot, a recent previous version or quarantined, then deletes blobs and raw
 # archives nothing references. Deletion is two-phase, so an object is only removed a week after it was marked.
-# Stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md).
+# The schedule stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md); manual runs
+# (Actions → Run workflow) always work, for example to fill the staging bucket.
 
 on:
   schedule:
@@ -28,7 +29,7 @@ concurrency:
 
 jobs:
   gc:
-    if: vars.INGEST_ENABLED == 'true'
+    if: vars.INGEST_ENABLED == 'true' || github.event_name == 'workflow_dispatch' # the switch only gates the schedule
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: ${{ inputs.target || 'production' }}

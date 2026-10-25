@@ -4,7 +4,8 @@ name: ingest-climate
 # most days this is a few 304s and a 9-byte procdate.txt. The heavy days are planned:
 #   - county-climate rebuilds once a month when NCEI reissues nClimDiv (~20M rows, ~3 GB of output files);
 #   - world-capitals is due weekly (check_every P7D) and makes ~200 paced NASA POWER requests (temperature only) (~12 min).
-# Stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md).
+# The schedule stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md); manual runs
+# (Actions → Run workflow) always work, for example to fill the staging bucket.
 
 on:
   schedule:
@@ -28,7 +29,7 @@ concurrency:
 
 jobs:
   ingest:
-    if: vars.INGEST_ENABLED == 'true'
+    if: vars.INGEST_ENABLED == 'true' || github.event_name == 'workflow_dispatch' # the switch only gates the schedule
     runs-on: ubuntu-latest
     timeout-minutes: 60 # a county-climate rebuild and the weekly capitals pass can land on the same day
     environment: ${{ inputs.target || 'production' }}
