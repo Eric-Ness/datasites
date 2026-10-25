@@ -1,6 +1,6 @@
 // G8: CI uploads preview versions of both Workers on PRs (once deploys are enabled), the gated
 // workflows are gated, and every secret/variable the workflows read is documented in docs/SETUP.md.
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "yaml";
 import { ROOT, check } from "./lib.mjs";
@@ -30,7 +30,18 @@ check(!/wrangler deploy\b/.test(previewRun), "preview job must not deploy to pro
 const deploy = wf["deploy.yml"]?.jobs?.deploy;
 check(deploy && /vars\.DEPLOY_ENABLED == 'true'/.test(deploy.if), "deploy job is not gated on DEPLOY_ENABLED");
 const deployRun = runText(deploy);
-for (const app of ["coming-soon", "api"]) check(new RegExp(`@datasites/${app} exec wrangler deploy`).test(deployRun), `deploy does not deploy ${app}`);
+check(/@datasites\/api exec wrangler deploy/.test(deployRun), "deploy does not deploy the API Worker");
+check(/@datasites\/web exec wrangler deploy -c "wrangler\/\$site\.jsonc"/.test(deployRun), "deploy does not deploy the websites in WEB_SITES");
+// Every launched website has a Worker config and an api.<domain> route, and every API route is a launched site.
+const webSites = String(deploy.env?.WEB_SITES ?? "").split(/\s+/).filter(Boolean);
+check(webSites.length > 0, "deploy.yml WEB_SITES lists no sites");
+const apiRoutes = [...readFileSync(join(ROOT, "apps", "api", "wrangler.jsonc"), "utf8").matchAll(/"pattern":\s*"api\.([a-z]+)\.dev"/g)].map((m) => m[1]);
+for (const site of webSites) {
+  check(existsSync(join(ROOT, "apps", "web", "wrangler", `${site}.jsonc`)), `WEB_SITES lists ${site}, but apps/web/wrangler/${site}.jsonc is missing`);
+  check(apiRoutes.includes(site), `WEB_SITES lists ${site}, but apps/api/wrangler.jsonc has no api.${site}.dev route`);
+}
+const unlaunched = apiRoutes.filter((s) => !webSites.includes(s));
+check(unlaunched.length === 0, `apps/api/wrangler.jsonc routes api.<domain> for sites not in WEB_SITES: ${unlaunched.join(", ")}`);
 
 // every ingest workflow: gated, scheduled at odd minutes, runs the pipelines, fits the private-repo minutes budget
 // (measured minutes per run below, not a flat guess)

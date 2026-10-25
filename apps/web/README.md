@@ -34,19 +34,17 @@ Astro is pinned to 7.4.1 because 7.4.2 refuses to run on Node versions older tha
 
 Each site is an assets-only Worker named `web-<id>`, configured in `wrangler/<id>.jsonc`. It has no script. It serves `dist/<id>` on the apex domain, returns `404.html` for missing paths, and redirects `/docs` to `/docs/`.
 
-Right now the coming-soon Worker (`apps/coming-soon`) owns every apex domain. A custom domain can belong to only one Worker, so swap one site at a time:
+The **deploy** workflow (`.github/workflows/deploy.yml`) builds and deploys every site listed in its `WEB_SITES`, against the production API. To launch a site, add it there together with its `api.<domain>` route; docs/SETUP.md section 5 has the steps. By hand, the same thing for one site is:
 
-1. Remove the domain's route from `apps/coming-soon/wrangler.jsonc` and deploy the coming-soon Worker:
-   `pnpm --filter @datasites/coming-soon run deploy`
-2. Build the site against the production API, without `PUBLIC_API_BASE`:
+1. Build the site against the production API, without `PUBLIC_API_BASE`:
    `SITE=climatedata pnpm --filter @datasites/web run build`
-3. Deploy it:
+2. Deploy it:
    `pnpm --filter @datasites/web exec wrangler deploy -c wrangler/climatedata.jsonc`
-4. Check `https://climatedata.dev/`, a dataset page and `/status/`.
+3. Check `https://climatedata.dev/`, a dataset page and `/status/`.
 
-Between steps 1 and 3 the apex domain serves nothing for a moment, so run them back to back. To roll back, deploy the coming-soon Worker with the route restored. That moves the domain back.
+A custom domain can belong to only one Worker. If the coming-soon Worker (`apps/coming-soon`) holds a domain, remove the domain from its routes and redeploy it first, then deploy the site straight after, because the domain serves nothing in between.
 
-The privacy page still mentions launch-email signups, so keep the D1 signups table until those emails have gone out.
+The privacy page explains launch-email signups for any site that used the coming-soon placeholder; keep the D1 signups table until those emails have gone out.
 
 ## Layout
 

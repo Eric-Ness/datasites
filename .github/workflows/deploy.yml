@@ -1,7 +1,10 @@
 name: deploy
 
-# Deploys both Workers when main changes. Stays off until the repository variable
-# DEPLOY_ENABLED is "true" and the Cloudflare secrets exist (see docs/SETUP.md).
+# Deploys the API Worker and the website of every launched site when main changes. Stays off until the
+# repository variable DEPLOY_ENABLED is "true" and the Cloudflare secrets exist (see docs/SETUP.md).
+#
+# To launch another site, once its zone is Active in Cloudflare: add its id to WEB_SITES below and its
+# api.<domain> route to apps/api/wrangler.jsonc, in the same change.
 
 on:
   push:
@@ -20,11 +23,14 @@ jobs:
   deploy:
     if: vars.DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25 # builds each site and waits out new custom-domain certificates
     environment: production
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      # Sites whose apex domain serves the real website (apps/web/wrangler/<id>.jsonc) and whose API answers
+      # at api.<id>.dev. Every id here needs its zone Active in Cloudflare.
+      WEB_SITES: climatedata electiondata
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -36,14 +42,26 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
 
-      - name: Apply D1 migrations (signups)
-        run: pnpm --filter @datasites/coming-soon exec wrangler d1 migrations apply datasites-signups --remote
-      - name: Deploy coming-soon Worker
-        run: pnpm --filter @datasites/coming-soon exec wrangler deploy
       - name: Deploy API Worker
         run: pnpm --filter @datasites/api exec wrangler deploy
 
-      - name: Smoke test
+      - name: Build and deploy websites
         run: |
-          curl -fsS https://api.climatedata.dev/v1/status
-          curl -fsS -o /dev/null https://climatedata.dev/
+          for site in $WEB_SITES; do
+            SITE=$site pnpm --filter @datasites/web run build
+            pnpm --filter @datasites/web exec wrangler deploy -c "wrangler/$site.jsonc"
+          done
+
+      - name: Smoke test
+        shell: bash
+        run: |
+          # A newly attached custom domain can take a minute or two to get its certificate, so each request retries.
+          fetch() { curl -fsS --retry 12 --retry-delay 15 --retry-all-errors "$@"; }
+          for site in $WEB_SITES; do
+            domain="$site.dev"
+            fetch -o /dev/null "https://$domain/"
+            fetch -o /dev/null "https://$domain/datasets/"
+            fetch "https://api.$domain/v1" | grep -q "\"site\":\"$site\""
+            fetch -o /dev/null "https://api.$domain/v1/status"
+            echo "ok: https://$domain and https://api.$domain" | tee -a "$GITHUB_STEP_SUMMARY"
+          done
