@@ -24,7 +24,7 @@ It should list `*.ns.cloudflare.com`.
 **Settings for each zone:**
 - Leave **Bot Fight Mode off**, because it blocks API clients.
 - Turn on **SSL/TLS → Edge Certificates → Always Use HTTPS**.
-- Optional: **Email → Email Routing**, to forward `hello@<domain>` to your inbox.
+- **Email → Email Routing**, to forward `hello@<domain>` to your inbox. Needed for every launched site (section 5).
 
 ### votingdata.net redirect
 1. In the votingdata.net zone, add two **proxied** DNS records: `A @ 192.0.2.1` and `AAAA www 100::`. They are placeholders; the redirect answers before any server is contacted.
@@ -58,10 +58,10 @@ Same pattern for each .dev domain:
    pnpm --filter @datasites/coming-soon exec wrangler d1 create datasites-signups
    ```
    Copy the `database_id` it prints into `apps/coming-soon/wrangler.jsonc`, replacing the zeros. Commit that change.
-5. **Create the Turnstile widget:**
+5. **Create the Turnstile widget (only for coming-soon placeholder pages; the real websites don't need it):**
    - Go to **Turnstile → Add widget**, mode **Managed**, and add the nine .dev domains as hostnames.
    - Put the **site key** in `apps/coming-soon/wrangler.jsonc` as `vars.TURNSTILE_SITE_KEY`. It's public, so it's fine in git. Commit that change.
-   - Keep the **secret key** for step 5. It must not go in git.
+   - Keep the **secret key** for section 5. It must not go in git.
 6. **Create an R2 API token for the pipelines:**
    - Go to **R2 → Manage API tokens → Create API token**.
    - Permission: **Object Read & Write**, limited to `datasites-data` and `datasites-data-staging`.
@@ -142,40 +142,32 @@ Staging serves everyone anonymously: it has no API-key namespace until you add o
 
 ---
 
-## 5. First deploy
+## 5. Launching sites
 
-Deploy only when the zones in the Workers' `routes` lists are **Active**. If some aren't yet, remove them from `apps/coming-soon/wrangler.jsonc` and add them back later.
+Each site launches straight to its real website: the static site on the apex domain (`web-<id>` Worker) and the API at `api.<domain>`. The **deploy** workflow deploys the API Worker and every site listed in `WEB_SITES` at the top of `.github/workflows/deploy.yml`. `climatedata` and `electiondata` are listed first.
 
-1. Merge the `phase-0/scaffold` pull request. With `DEPLOY_ENABLED=true`, the **deploy** workflow then:
-   - runs the tests,
-   - applies the D1 migration,
-   - deploys both Workers,
-   - smoke-tests `https://api.climatedata.dev/v1/status`.
-
-   To deploy from your machine instead:
+1. **Wait for the zones to be Active** in Cloudflare (each domain's overview page). A deploy that names a zone still pending fails.
+   Then turn on **Email → Email Routing** for each launched domain and forward `hello@<domain>` to your inbox. The privacy page gives that address, and the pipelines send `hello@climatedata.dev` in their User-Agent, so it is how data providers would reach you about a problem.
+2. **Fill the production bucket** for those sites, so the pages have data from the first minute: **Actions → ingest-climate → Run workflow** (target `production`), then the same for **ingest-election**. Manual runs work while `INGEST_ENABLED` is off.
+3. **Turn deploys on and deploy:**
    ```powershell
-   pnpm --filter @datasites/coming-soon exec wrangler d1 migrations apply datasites-signups --remote
-   pnpm --filter @datasites/coming-soon exec wrangler deploy
-   pnpm --filter @datasites/api exec wrangler deploy
+   gh variable set DEPLOY_ENABLED --body true
+   gh workflow run deploy.yml
    ```
-2. Set the Turnstile secret:
+   The workflow runs the tests, deploys the API Worker, builds and deploys each website, and smoke-tests every launched domain and its API. New custom domains can take a minute or two to get certificates; the smoke test waits for them.
+4. **Check it worked:**
    ```powershell
-   pnpm --filter @datasites/coming-soon exec wrangler secret put TURNSTILE_SECRET_KEY
+   node scripts/verify/live.mjs dns --sites climatedata,electiondata
+   node scripts/verify/live.mjs prod --sites climatedata,electiondata
    ```
-   Until it's set, signups in production return an error rather than skipping the bot check.
-3. Run the first ingest: **Actions → ingest-climate → Run workflow**.
+   They print `LIVE DNS OK` and `LIVE PROD OK`, or list exactly what isn't up yet.
+5. **Keep the data fresh:** `gh variable set INGEST_ENABLED --body true` starts every ingest schedule (about 1,400 Actions minutes a month; see section 3). Set up the healthchecks in section 4 first, so a failing schedule reaches you.
 
-**Check it worked:**
-```powershell
-pnpm verify:live
-```
-This checks everything in one go:
-- all ten domains on Cloudflare nameservers and answering HTTPS;
-- the nine coming-soon pages;
-- the votingdata.net redirect;
-- `api.climatedata.dev/v1/status` reporting every dataset ok.
+**Launching another site**, once its zone is Active: in one pull request, add its id to `WEB_SITES` in `deploy.yml` and its `api.<domain>` route to `apps/api/wrangler.jsonc`, and remove its route from `apps/coming-soon/wrangler.jsonc`. `node scripts/verify/workflows.mjs` fails if the two lists disagree. Fill its data with a manual ingest run, then merge.
 
-It prints `LIVE DNS OK` and `LIVE PROD OK` when everything is up. Otherwise it lists exactly what isn't up yet, so you can also run it partway through these steps to see what's left.
+When every site is launched, `pnpm verify:live` (no `--sites`) also checks the votingdata.net redirect.
+
+The coming-soon Worker (`apps/coming-soon`) is not deployed by the workflow. To put a placeholder with signups on a domain that isn't ready, deploy it by hand with only that domain in its routes. It needs a Turnstile widget (section 2, step 5) and `pnpm --filter @datasites/coming-soon exec wrangler secret put TURNSTILE_SECRET_KEY`.
 
 ---
 

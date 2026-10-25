@@ -18,7 +18,8 @@
   "preview_urls": true,
   "observability": { "enabled": true, "head_sampling_rate": 0.1 },
   "routes": [
-    { "pattern": "api.climatedata.dev", "custom_domain": true }
+    { "pattern": "api.climatedata.dev", "custom_domain": true },
+    { "pattern": "api.electiondata.dev", "custom_domain": true }
   ],
   // Every 15 minutes: freshness check. 00:07 UTC: report the previous day's usage to Stripe.
   "triggers": { "crons": ["*/15 * * * *", "7 0 * * *"] },
