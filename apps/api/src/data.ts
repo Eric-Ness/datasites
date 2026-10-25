@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import { blobCacheKey, cacheable, matchBlob, putBlob } from "./cache";
 import { cacheControl, defer, json, problem, shortCache } from "./http";
-import type { AppEnv } from "./middleware";
+import { siteLink, type AppEnv } from "./middleware";
 import { readJson, TTL } from "./store";
 import { keys, type Catalog, type FileEntry, type Manifest, type VersionDoc } from "./types";
 
@@ -172,7 +172,7 @@ export function index(c: C): Response {
       name: site.name,
       tagline: site.tagline,
       api_version: "v1",
-      links: { catalog: "/v1/catalog", status: "/v1/status", openapi: "/v1/openapi.json" },
+      links: { catalog: siteLink(c, "/v1/catalog"), status: siteLink(c, "/v1/status"), openapi: siteLink(c, "/v1/openapi.json") },
     },
     shortCache(300),
   );
@@ -190,7 +190,7 @@ export async function datasetMeta(c: C, ref: string): Promise<Response> {
   const { doc, manifest, dataset } = r;
   const downloads = Object.entries(doc.files)
     .filter(([path]) => path.startsWith("download/"))
-    .map(([path, entry]) => ({ name: path.slice("download/".length), bytes: entry.bytes, url: `/v1/${dataset}/${path}` }));
+    .map(([path, entry]) => ({ name: path.slice("download/".length), bytes: entry.bytes, url: siteLink(c, `/v1/${dataset}/${path}`) }));
   return json(
     {
       dataset,
@@ -209,9 +209,9 @@ export async function datasetMeta(c: C, ref: string): Promise<Response> {
       ...(doc.kind === "table" ? { key: doc.key ?? [], partition: doc.partition ?? null } : {}),
       downloads,
       links: {
-        locations: `/v1/${dataset}/locations`,
-        versions: `/v1/${dataset}/versions`,
-        this_version: `/v1/${dataset}@${doc.version}`,
+        locations: siteLink(c, `/v1/${dataset}/locations`),
+        versions: siteLink(c, `/v1/${dataset}/versions`),
+        this_version: siteLink(c, `/v1/${dataset}@${doc.version}`),
       },
     },
     r.pinned ? cacheControl(doc.cadence, true) : shortCache(300),

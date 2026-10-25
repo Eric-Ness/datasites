@@ -43,6 +43,26 @@ describe("site resolution", () => {
     expect(await other.json()).toMatchObject({ site: "waterdata" });
   });
 
+  it("serves any site on workers.dev staging, and its links keep ?site=", async () => {
+    const host = "https://datasites-api-staging.example.workers.dev";
+    const res = await request(`${host}/v1?site=climatedata`, {}, { ENV: "staging" });
+    const body = (await res.json()) as { site: string; links: Record<string, string> };
+    expect(body.site).toBe("climatedata");
+    expect(body.links.catalog).toBe("/v1/catalog?site=climatedata");
+    const meta = (await (await request(`${host}/v1/co2-monthly?site=climatedata`, {}, { ENV: "staging" })).json()) as {
+      links: Record<string, string>;
+      downloads: { url: string }[];
+    };
+    expect(meta.links.versions).toBe("/v1/co2-monthly/versions?site=climatedata");
+    expect(meta.downloads.every((d) => d.url.endsWith("?site=climatedata"))).toBe(true);
+    expect((await request(`${host}/v1`, {}, { ENV: "staging" })).status).toBe(404); // no ?site=: says to add one
+  });
+
+  it("keeps production links bare", async () => {
+    const body = (await (await request("https://api.climatedata.dev/v1")).json()) as { links: Record<string, string> };
+    expect(body.links.catalog).toBe("/v1/catalog");
+  });
+
   it("honors ?site= on any hostname in local development (wrangler dev rewrites the host)", async () => {
     const res = await request("https://api.climatedata.dev/v1?site=waterdata", {}, { ENV: "development" });
     expect(await res.json()).toMatchObject({ site: "waterdata" });
@@ -197,7 +217,7 @@ describe("metadata endpoints", () => {
       version: CURRENT,
       pinned: false,
       source: { license: "LicenseRef-US-Government-Work", commercial_ok: true },
-      downloads: [{ name: "co2-monthly.csv", url: "/v1/co2-monthly/download/co2-monthly.csv" }],
+      downloads: [{ name: "co2-monthly.csv", url: "/v1/co2-monthly/download/co2-monthly.csv?site=climatedata" }], // localhost keeps ?site=
     });
   });
 

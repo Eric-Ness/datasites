@@ -1,0 +1,51 @@
+name: deploy-staging
+
+# Deploys the API Worker's staging environment to datasites-api-staging.<account>.workers.dev, which needs no
+# custom domain, so the API can serve real data before the domains are on Cloudflare. ?site=<id> picks the site.
+# It reads the datasites-data-staging bucket: fill it by running an ingest workflow with target "staging".
+# Stays off until the repository variable STAGING_ENABLED is "true" (see docs/SETUP.md).
+
+on:
+  push:
+    branches: [main]
+    paths: ["apps/api/**", "packages/**", "contracts/sites/**", "pnpm-lock.yaml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: vars.STAGING_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: staging
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check:registry
+      - run: pnpm --filter @datasites/api typecheck
+      - run: pnpm --filter @datasites/api test
+
+      - name: Deploy API Worker (staging)
+        shell: bash # -o pipefail, so a failed deploy isn't hidden by tee
+        run: pnpm --filter @datasites/api exec wrangler deploy --env staging 2>&1 | tee "$RUNNER_TEMP/deploy.log"
+
+      - name: Smoke test
+        run: |
+          url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' "$RUNNER_TEMP/deploy.log" | head -1)
+          test -n "$url" || { echo "no workers.dev URL in the deploy output"; exit 1; }
+          echo "Staging API: $url/v1?site=climatedata" | tee -a "$GITHUB_STEP_SUMMARY"
+          curl -fsS "$url/v1?site=climatedata"
+          curl -fsS -o /dev/null "$url/v1/status?site=climatedata"

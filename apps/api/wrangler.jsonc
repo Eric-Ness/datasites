@@ -1,4 +1,6 @@
 // One API Worker serves every site at api.<domain>; the site is picked from the Host header.
+// env.staging deploys to datasites-api-staging.<account>.workers.dev, where ?site=<id> picks the site
+// (deploy-staging.yml); it reads the datasites-data-staging bucket.
 // Add a site's route only once its zone is Active in Cloudflare, or the deploy fails.
 //
 // Before the first deploy with keys enabled, replace the placeholder ids:
@@ -38,7 +40,10 @@
       "routes": [],
       "triggers": { "crons": [] },
       "r2_buckets": [{ "binding": "DATA", "bucket_name": "datasites-data-staging" }],
-      "kv_namespaces": [{ "binding": "KEYS", "id": "REPLACE_WITH_STAGING_KEYS_NAMESPACE_ID" }],
+      // No KEYS binding yet, so staging serves everyone anonymously and deploys without a KV namespace.
+      // To try API keys on staging, create one (wrangler kv namespace create datasites-api-keys-staging) and
+      // set: "kv_namespaces": [{ "binding": "KEYS", "id": "<its id>" }]
+      "kv_namespaces": [],
       "ratelimits": [
         { "name": "RL_ANON", "namespace_id": "1002", "simple": { "limit": 600, "period": 60 } },
         { "name": "RL_FREE", "namespace_id": "1005", "simple": { "limit": 1200, "period": 60 } },
