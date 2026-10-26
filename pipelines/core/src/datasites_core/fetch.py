@@ -42,6 +42,8 @@ Fetcher = Callable[[str, "str | None", "str | None"], Fetched]
 MAX_WAIT = 20 * 60  # seconds; a longer Retry-After is capped (the next answer brings a fresh one)
 BACKOFF_START = 2.0
 BACKOFF_MAX = 300.0
+RETRIES = 5  # waits of 2, 6, 18, 54 and 162 s: a source that drops out for up to ~4 minutes doesn't fail the run
+CONNECT_TIMEOUT = 15.0  # a host that doesn't answer fails fast, so retries aren't spent on one hung connect
 
 
 def retry_after_seconds(value: str | None, now: datetime | None = None) -> float | None:
@@ -65,7 +67,7 @@ def request(
     *,
     params: dict[str, Any] | None = None,
     headers: dict[str, str] | None = None,
-    retries: int = 3,
+    retries: int = RETRIES,
     timeout: float = 120,
     max_wait: float = MAX_WAIT,
 ) -> httpx.Response:
@@ -73,13 +75,20 @@ def request(
 
     A Retry-After answer waits exactly as long as asked (capped at max_wait) and does not feed the backoff,
     so a ten-minute rate limit stays ten minutes instead of growing into hours. Without one, waits back off
-    from 2 seconds, tripling up to 5 minutes.
+    from 2 seconds, tripling up to 5 minutes. `timeout` bounds reading a response; connecting gets
+    CONNECT_TIMEOUT, so an unreachable host costs seconds per attempt, not minutes.
     """
     all_headers = {"User-Agent": user_agent(), **(headers or {})}
     backoff = BACKOFF_START
     for attempt in range(retries + 1):
         try:
-            res = httpx.get(url, params=params, headers=all_headers, timeout=timeout, follow_redirects=True)
+            res = httpx.get(
+                url,
+                params=params,
+                headers=all_headers,
+                timeout=httpx.Timeout(timeout, connect=min(CONNECT_TIMEOUT, timeout)),
+                follow_redirects=True,
+            )
         except httpx.TransportError as err:
             if attempt == retries:
                 raise
@@ -100,7 +109,7 @@ def request(
     raise AssertionError("unreachable")
 
 
-def fetch(url: str, etag: str | None = None, last_modified: str | None = None, *, retries: int = 3) -> Fetched:
+def fetch(url: str, etag: str | None = None, last_modified: str | None = None, *, retries: int = RETRIES) -> Fetched:
     headers = {}
     if etag:
         headers["If-None-Match"] = etag

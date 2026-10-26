@@ -104,6 +104,9 @@ class Contract:
     checks: Checks
     kind: str = "series"
     series: dict[str, str] = field(default_factory=dict)
+    # Per-series unit for the columns that have one, where series measure different things in one column
+    # (county-climate: degF for temperatures, in for precipitation). Columns keep their own unit otherwise.
+    series_units: dict[str, str] = field(default_factory=dict)
     locations: Locations = field(default_factory=Locations)
     key: tuple[str, ...] = ()
     partition: str | None = None
@@ -200,6 +203,12 @@ def parse_contract(site: str, data: dict[str, Any], where: str) -> Contract:
         raise ContractError(f"{where}: duplicate schema column names")
 
     series = dict(data.get("series") or {})
+    series_units = {str(k): str(v) for k, v in (data.get("series_units") or {}).items()}
+    unknown_units = sorted(set(series_units) - set(series))
+    if unknown_units:
+        raise ContractError(f"{where}: series_units names series not in 'series': {unknown_units}")
+    if series_units and not any(c.unit for c in schema):
+        raise ContractError(f"{where}: series_units needs at least one schema column with a unit to apply to")
     locations = _locations(data.get("locations"), where)
     key = tuple(data.get("key") or ())
     partition = data.get("partition")
@@ -255,6 +264,7 @@ def parse_contract(site: str, data: dict[str, Any], where: str) -> Contract:
         checks=checks,
         kind=kind,
         series=series,
+        series_units=series_units,
         locations=locations,
         key=key,
         partition=partition,

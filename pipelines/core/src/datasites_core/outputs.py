@@ -86,6 +86,10 @@ def iter_series_outputs(contract: Contract, table: pl.DataFrame, location_names:
     table = sort_table(contract, table)
     value_columns = [c.name for c in contract.schema]
     units = {c.name: c.unit for c in contract.schema if c.unit}
+    # series_units overrides every unit-bearing column for its series (degF for tavg, in for pcpn).
+    units_for = {
+        s: {name: contract.series_units.get(s, unit) for name, unit in units.items()} for s in contract.series
+    }
     # The table is sorted by series and location, so each group is a contiguous zero-copy slice.
     bounds = (
         table.select("series", "location")
@@ -101,7 +105,7 @@ def iter_series_outputs(contract: Contract, table: pl.DataFrame, location_names:
             "series_name": contract.series[series],
             "location": location,
             "location_name": location_names.get(location, location),
-            "units": units,
+            "units": units_for.get(series, units),
         }
         body = '{"meta":' + _dumps(meta) + ',"data":' + _json_rows(values) + "}"
         yield f"{series}/{location}.json", Output(body.encode(), JSON_TYPE, rows)
