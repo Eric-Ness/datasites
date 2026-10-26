@@ -29,10 +29,8 @@ It should list `*.ns.cloudflare.com`.
 ### votingdata.net redirect
 Nothing to do by hand once the zone is Active. The **deploy** workflow deploys the `apps/redirect` Worker on `votingdata.net` and `www.votingdata.net`, and its custom domains create the DNS records. Every request answers **302** to the same path and query string on electiondata.dev. It uses 302, not 301, because browsers cache 301s almost forever and this domain may become its own site later.
 
-### www for the .dev sites (optional)
-Same pattern for each .dev domain:
-1. Add a proxied `AAAA www 100::` record.
-2. Add a Single Redirect from `www.<domain>` to `https://<domain>`, 301, preserving path and query string.
+### www for the .dev sites
+Nothing to do by hand. The same `apps/redirect` Worker answers `www.<domain>` for every launched site with a **301** to `https://<domain>`, keeping the path and query string. `scripts/verify/workflows.mjs` fails if a site in `WEB_SITES` has no `www` route, and the deploy smoke test checks each one.
 
 ---
 

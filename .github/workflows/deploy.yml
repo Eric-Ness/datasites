@@ -66,6 +66,8 @@ jobs:
             fetch -o /dev/null "https://$domain/datasets/"
             fetch "https://api.$domain/v1" | grep -q "\"site\":\"$site\""
             fetch -o /dev/null "https://api.$domain/v1/status"
+            www=$(fetch -o /dev/null -w '%{redirect_url}' "https://www.$domain/datasets/?x=1")
+            test "$www" = "https://$domain/datasets/?x=1" || { echo "www.$domain redirects to '$www'"; exit 1; }
             echo "ok: https://$domain and https://api.$domain" | tee -a "$GITHUB_STEP_SUMMARY"
           done
           location=$(curl -sS --retry 12 --retry-delay 15 --retry-all-errors -o /dev/null -w '%{redirect_url}' "https://votingdata.net/some/path?x=1")

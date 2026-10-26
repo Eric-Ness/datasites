@@ -1,5 +1,5 @@
-// votingdata.net redirects every request to the same path on electiondata.dev, keeping the query string.
-// 302, not 301: browsers cache a 301 almost forever, and votingdata.net may become its own site later.
+// Hostnames that only redirect: votingdata.net (302 to electiondata.dev) and www.<site>.dev (301 to the bare
+// domain), keeping the path and query string. See src/index.ts.
 // The custom domains create their own DNS records, so the zone needs nothing else.
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
@@ -10,6 +10,15 @@
   "preview_urls": false,
   "routes": [
     { "pattern": "votingdata.net", "custom_domain": true },
-    { "pattern": "www.votingdata.net", "custom_domain": true }
+    { "pattern": "www.votingdata.net", "custom_domain": true },
+    { "pattern": "www.airdata.dev", "custom_domain": true },
+    { "pattern": "www.carbondata.dev", "custom_domain": true },
+    { "pattern": "www.climatedata.dev", "custom_domain": true },
+    { "pattern": "www.economicdata.dev", "custom_domain": true },
+    { "pattern": "www.electiondata.dev", "custom_domain": true },
+    { "pattern": "www.satellitedata.dev", "custom_domain": true },
+    { "pattern": "www.visualizedata.dev", "custom_domain": true },
+    { "pattern": "www.waterdata.dev", "custom_domain": true },
+    { "pattern": "www.wildfiredata.dev", "custom_domain": true }
   ]
 }
