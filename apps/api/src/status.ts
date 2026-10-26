@@ -75,7 +75,7 @@ export async function siteStatus(bucket: R2Bucket, siteId: string, now: number):
   return { site: siteId, generated_at: new Date(now).toISOString(), overall: healthy ? "ok" : "degraded", datasets };
 }
 
-/** Cron: check every site and ping the healthchecks.io dead-man switch with the result. */
+/** Cron: check every site and ping the tickharbor dead-man switch (a healthchecks.io-style ping URL) with the result. */
 export async function runFreshnessCheck(env: Env, now = Date.now()): Promise<string[]> {
   const problems: string[] = [];
   for (const site of sites) {

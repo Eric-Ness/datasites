@@ -49,7 +49,7 @@ jobs:
       - uses: astral-sh/setup-uv@v10.3.2 # exact tag: setup-uv has no moving major tag
         with:
           enable-cache: true
-      - name: Ping healthchecks.io (start)
+      - name: Ping tickharbor (start)
         if: env.HC_URL != ''
         run: curl -fsS -m 10 --retry 3 "$HC_URL/start" || true
       - name: Add swap space
@@ -73,6 +73,6 @@ jobs:
           --target "${{ inputs.target || 'production' }}"
           ${{ inputs.force && '--force' || '' }}
           --summary "$GITHUB_STEP_SUMMARY"
-      - name: Ping healthchecks.io (result)
+      - name: Ping tickharbor (result)
         if: always() && env.HC_URL != ''
         run: curl -fsS -m 10 --retry 3 "$HC_URL/${{ job.status == 'success' && '0' || '1' }}" || true

@@ -8,10 +8,14 @@ A person then reviews the change, updates the citation and bumps the contract ve
 
 from __future__ import annotations
 
+import hashlib
 import re
+from pathlib import Path
 from typing import Any
 
 import polars as pl
+
+from datasites_core.contracts import repo_root
 
 DATAVERSE = "https://dataverse.harvard.edu"
 CITED_VERSION = re.compile(r"Harvard Dataverse, V(\d+)(?:\.(\d+))?\b")
@@ -35,8 +39,8 @@ def cited_version(attribution: str) -> tuple[int, int]:
     return int(m.group(1)), int(m.group(2) or 0)
 
 
-def resolve_file(meta: dict[str, Any], doi: str, filename: str, attribution: str) -> int:
-    """The id of `filename` in the latest released version, which must be the version the contract cites."""
+def latest_version(meta: dict[str, Any], doi: str, attribution: str) -> dict[str, Any]:
+    """The latest released version, which must be the version the contract cites."""
     data = meta.get("data") or {}
     latest = data.get("latestVersion") or {}
     if latest.get("versionState") != "RELEASED":
@@ -48,16 +52,55 @@ def resolve_file(meta: dict[str, Any], doi: str, filename: str, attribution: str
             f"{doi}: MEDSL has published V{found[0]}.{found[1]} but the contract cites V{cited[0]}.{cited[1]}. "
             "Review the new version, then update source.attribution to its Dataverse citation and bump the contract version."
         )
-    if data.get("guestbookId") or latest.get("guestbookId"):
-        raise RuntimeError(f"{doi}: the dataset now requires a guestbook response, so it can't be downloaded automatically")
+    return latest
+
+
+def find_file(latest: dict[str, Any], doi: str, filename: str) -> dict[str, Any]:
     for item in latest.get("files") or []:
         datafile = item.get("dataFile") or {}
         if filename in (datafile.get("originalFileName"), datafile.get("filename")):
             if item.get("restricted") or datafile.get("restricted"):
                 raise RuntimeError(f"{doi}: {filename} is restricted")
-            return int(datafile["id"])
+            return datafile
     names = sorted((i.get("dataFile") or {}).get("filename", "?") for i in latest.get("files") or [])
-    raise RuntimeError(f"{doi}: no file named {filename} in V{found[0]}.{found[1]} (files: {names})")
+    raise RuntimeError(f"{doi}: no file named {filename} in V{latest.get('versionNumber')}.{latest.get('versionMinorNumber')} (files: {names})")
+
+
+def resolve_file(meta: dict[str, Any], doi: str, filename: str, attribution: str) -> int:
+    """The id of `filename` in the latest released version, which must be the version the contract cites."""
+    latest = latest_version(meta, doi, attribution)
+    if (meta.get("data") or {}).get("guestbookId") or latest.get("guestbookId"):
+        raise RuntimeError(f"{doi}: the dataset now requires a guestbook response, so it can't be downloaded automatically")
+    return int(find_file(latest, doi, filename)["id"])
+
+
+def check_local_copy(meta: dict[str, Any], doi: str, filename: str, attribution: str, body: bytes) -> None:
+    """A hand-downloaded file must be exactly `filename` of the cited version, which must still be the latest.
+
+    Dataverse's metadata API needs no guestbook response, so each run can confirm this and notice a new
+    version, which a person then downloads."""
+    datafile = find_file(latest_version(meta, doi, attribution), doi, filename)
+    expected = (datafile.get("checksum") or {}).get("value") if (datafile.get("checksum") or {}).get("type") == "MD5" else datafile.get("md5")
+    if not expected:
+        raise RuntimeError(f"{doi}: Dataverse lists no MD5 checksum for {filename}")
+    if hashlib.md5(body).hexdigest() != expected:
+        raise RuntimeError(
+            f"{doi}: the copy in {local_dir()} doesn't match {filename} of the cited version (MD5 {expected}). "
+            "Download it again, as data/sources/medsl/README.md describes."
+        )
+
+
+def local_dir() -> Path:
+    """Where the hand-downloaded MEDSL files live (data/sources/medsl/README.md says how to update them)."""
+    return repo_root() / "data" / "sources" / "medsl"
+
+
+def local_file(filename: str) -> bytes:
+    """A MEDSL file that Dataverse puts behind a guestbook, so a person downloads it into the repository."""
+    path = local_dir() / filename
+    if not path.is_file():
+        raise FileNotFoundError(f"{path} is missing: download it by hand, as data/sources/medsl/README.md describes")
+    return path.read_bytes()
 
 
 # --- parsing --------------------------------------------------------------------------------------

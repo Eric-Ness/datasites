@@ -1322,6 +1322,335 @@
   },
   {
     "site": "electiondata",
+    "id": "county-president",
+    "kind": "table",
+    "title": "County presidential election results, 2000-2024",
+    "description": "Presidential votes by county for every election from 2000 to 2024: one row per county per candidate, from the MIT Election Data + Science Lab.",
+    "cadence": "P4Y",
+    "check_every": "P7D",
+    "sla": "P5Y",
+    "discontinued": false,
+    "source": {
+      "name": "MIT Election Data and Science Lab, County Presidential Election Returns 2000-2024",
+      "publisher": "MIT Election Data and Science Lab (MEDSL)",
+      "url": "https://doi.org/10.7910/DVN/VOQCHQ",
+      "license": "CC0-1.0",
+      "commercial_ok": true,
+      "attribution": "MIT Election Data and Science Lab, 2018, \"County Presidential Election Returns 2000-2024\", https://doi.org/10.7910/DVN/VOQCHQ, Harvard Dataverse, V20, UNF:6:xvsJJxrfXMIvzAuDYlfvVw== [fileUNF]"
+    },
+    "series": {},
+    "locations": {},
+    "schema": [
+      {
+        "name": "year",
+        "type": "year",
+        "unit": null,
+        "nullable": false,
+        "description": "Year of the election"
+      },
+      {
+        "name": "state",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "State name in upper case"
+      },
+      {
+        "name": "state_po",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "USPS state code"
+      },
+      {
+        "name": "state_id",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Location id in the shared registry (us-<usps>)"
+      },
+      {
+        "name": "county_name",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "County or other reporting unit as MEDSL names it, upper case"
+      },
+      {
+        "name": "county_fips",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Five-digit county FIPS code; null for units that aren't counties"
+      },
+      {
+        "name": "county_id",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Location id in the shared registry (us-county-<fips>); null where the county no longer exists"
+      },
+      {
+        "name": "unit_id",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Identifies the reporting unit: county_fips, or <state>-<NAME> for a unit without one"
+      },
+      {
+        "name": "office",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Always US PRESIDENT"
+      },
+      {
+        "name": "candidate",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Candidate as MEDSL spells it, upper case; OTHER for all other candidates"
+      },
+      {
+        "name": "party",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "DEMOCRAT, REPUBLICAN, LIBERTARIAN, GREEN or OTHER"
+      },
+      {
+        "name": "candidatevotes",
+        "type": "int",
+        "unit": "votes",
+        "nullable": true,
+        "description": "The candidate's votes in the county; null where MEDSL has no count"
+      },
+      {
+        "name": "totalvotes",
+        "type": "int",
+        "unit": "votes",
+        "nullable": false,
+        "description": "Total presidential votes in the county as MEDSL reports it"
+      },
+      {
+        "name": "from_modes",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True where MEDSL reports the county only by vote mode and candidatevotes is the sum of the modes"
+      },
+      {
+        "name": "version",
+        "type": "date",
+        "unit": null,
+        "nullable": false,
+        "description": "Date MEDSL finalized the row"
+      }
+    ],
+    "key": [
+      "year",
+      "state_po",
+      "unit_id",
+      "candidate",
+      "party"
+    ],
+    "partition": "year"
+  },
+  {
+    "site": "electiondata",
+    "id": "house-results",
+    "kind": "table",
+    "title": "US House election results, 1976-2024",
+    "description": "District returns for every US House election from 1976 to 2024, including special elections: one row per candidate per ballot line, from the MIT Election Data + Science Lab.",
+    "cadence": "P2Y",
+    "check_every": "P7D",
+    "sla": "P3Y",
+    "discontinued": false,
+    "source": {
+      "name": "MIT Election Data and Science Lab, U.S. House 1976-2024",
+      "publisher": "MIT Election Data and Science Lab (MEDSL)",
+      "url": "https://doi.org/10.7910/DVN/IG0UN2",
+      "license": "CC0-1.0",
+      "commercial_ok": true,
+      "attribution": "MIT Election Data and Science Lab, 2017, \"U.S. House 1976–2024\", https://doi.org/10.7910/DVN/IG0UN2, Harvard Dataverse, V15, UNF:6:cIJWG41N8qe3Kyf7oKuPdw== [fileUNF]"
+    },
+    "series": {},
+    "locations": {},
+    "schema": [
+      {
+        "name": "year",
+        "type": "year",
+        "unit": null,
+        "nullable": false,
+        "description": "Year of the election"
+      },
+      {
+        "name": "state",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "State name in upper case"
+      },
+      {
+        "name": "state_po",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "USPS state code"
+      },
+      {
+        "name": "state_fips",
+        "type": "int",
+        "unit": null,
+        "nullable": false,
+        "description": "State FIPS code"
+      },
+      {
+        "name": "state_cen",
+        "type": "int",
+        "unit": null,
+        "nullable": false,
+        "description": "Census Bureau state code"
+      },
+      {
+        "name": "state_ic",
+        "type": "int",
+        "unit": null,
+        "nullable": false,
+        "description": "ICPSR state code"
+      },
+      {
+        "name": "state_id",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Location id in the shared registry (us-<usps>)"
+      },
+      {
+        "name": "office",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Always US HOUSE"
+      },
+      {
+        "name": "district",
+        "type": "int",
+        "unit": null,
+        "nullable": false,
+        "description": "District number; 0 for an at-large seat"
+      },
+      {
+        "name": "stage",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "GEN (general) or PRI (Texas 1996 special open primaries)"
+      },
+      {
+        "name": "runoff",
+        "type": "bool",
+        "unit": null,
+        "nullable": true,
+        "description": "True for a runoff; null where MEDSL doesn't record it (2006-2018)"
+      },
+      {
+        "name": "special",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True for a special election to fill a vacancy"
+      },
+      {
+        "name": "race_row",
+        "type": "int",
+        "unit": null,
+        "nullable": false,
+        "description": "Position of the row within its race in MEDSL's file"
+      },
+      {
+        "name": "candidate",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Candidate as the House Clerk prints it, upper case; WRITEIN for unnamed write-ins"
+      },
+      {
+        "name": "party",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Ballot line (party) as reported"
+      },
+      {
+        "name": "writein",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True for write-in votes"
+      },
+      {
+        "name": "fusion_ticket",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True on the extra party lines of a candidate nominated by several parties (the main line is false)"
+      },
+      {
+        "name": "mode",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Vote mode; always TOTAL in this file"
+      },
+      {
+        "name": "candidatevotes",
+        "type": "int",
+        "unit": "votes",
+        "nullable": true,
+        "description": "Votes on this ballot line; null for an uncontested race with no reported count"
+      },
+      {
+        "name": "totalvotes",
+        "type": "int",
+        "unit": "votes",
+        "nullable": true,
+        "description": "Total votes in the race as MEDSL reports it"
+      },
+      {
+        "name": "candidate_total_votes",
+        "type": "int",
+        "unit": "votes",
+        "nullable": true,
+        "description": "The candidate's votes on all ballot lines in the race (fusion voting); null for unnamed write-ins"
+      },
+      {
+        "name": "unofficial",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True where MEDSL took the figures from unofficial results"
+      },
+      {
+        "name": "version",
+        "type": "date",
+        "unit": null,
+        "nullable": false,
+        "description": "Date MEDSL finalized the row"
+      }
+    ],
+    "key": [
+      "year",
+      "state_po",
+      "district",
+      "stage",
+      "special",
+      "race_row"
+    ],
+    "partition": "year"
+  },
+  {
+    "site": "electiondata",
     "id": "senate-results",
     "kind": "table",
     "title": "US Senate election results, 1976-2024",

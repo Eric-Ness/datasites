@@ -94,24 +94,37 @@ Making the repository public removes the limit: Actions minutes are free for pub
 
 ---
 
-## 4. Monitoring (healthchecks.io, free plan)
+## 4. Monitoring (tickharbor.net)
 
-Create one check per ingest workflow, plus the API freshness check. Each period matches its workflow's schedule.
+Alerts go through [tickharbor.net](https://tickharbor.net), our own cron monitor. It takes healthchecks.io-style pings:
+- `https://ping.tickharbor.net/<uuid>` when a run succeeds;
+- `/start` when a run begins;
+- `/fail` or `/<exit code>` with the result.
 
-| Check | Period | Grace | Where its ping URL goes |
+Each ingest workflow pings `$HC_URL/start` and then `$HC_URL/0` or `$HC_URL/1`. The API's freshness cron pings `HEALTHCHECK_URL` (or `/fail`) every 15 minutes. If a secret is missing, that ping is skipped.
+
+**Setting up the checks.** Create one check per row in the tickharbor dashboard, with the cron schedule (UTC) and grace below. The schedules copy the workflows' `cron:` lines. Each grace covers GitHub's scheduling delay, which has reached 1 h 41 min, plus the run's own length. Then paste each check's ping URL where the last column says.
+
+| Check | Schedule (cron, UTC) | Grace | Where its ping URL goes |
 |---|---|---|---|
-| `ingest-climate` | 1 day | 2 hours | `gh secret set HC_INGEST_CLIMATE --env production` |
-| `ingest-water` | 1 day | 2 hours | `gh secret set HC_INGEST_WATER --env production` |
-| `ingest-election` | 1 day | 2 hours | `gh secret set HC_INGEST_ELECTION --env production` |
-| `ingest-economic` | 1 day | 2 hours | `gh secret set HC_INGEST_ECONOMIC --env production` |
-| `ingest-air` | 1 day | 2 hours | `gh secret set HC_INGEST_AIR --env production` |
-| `ingest-satellite` | 1 day | 2 hours | `gh secret set HC_INGEST_SATELLITE --env production` |
-| `ingest-wildfire` | 3 hours | 1 hour | `gh secret set HC_INGEST_WILDFIRE --env production` |
-| `ingest-carbon` | 7 days | 6 hours | `gh secret set HC_INGEST_CARBON --env production` |
-| `ingest-visualize` | 7 days | 6 hours | `gh secret set HC_INGEST_VISUALIZE --env production` |
-| `api-freshness` | 15 minutes | 30 minutes | `pnpm --filter @datasites/api exec wrangler secret put HEALTHCHECK_URL` (after the first deploy) |
+| `datasites-ingest-air` | `19 16 * * *` | 3 hours | `gh secret set HC_INGEST_AIR --env production` |
+| `datasites-ingest-carbon` | `41 6 * * 2` | 6 hours | `gh secret set HC_INGEST_CARBON --env production` |
+| `datasites-ingest-climate` | `23 14 * * *` | 3 hours | `gh secret set HC_INGEST_CLIMATE --env production` |
+| `datasites-ingest-economic` | `47 13 * * *` | 3 hours | `gh secret set HC_INGEST_ECONOMIC --env production` |
+| `datasites-ingest-election` | `41 15 * * 1` | 6 hours | `gh secret set HC_INGEST_ELECTION --env production` |
+| `datasites-ingest-satellite` | `19 3 * * *` | 3 hours | `gh secret set HC_INGEST_SATELLITE --env production` |
+| `datasites-ingest-visualize` | `53 5 * * 4` | 6 hours | `gh secret set HC_INGEST_VISUALIZE --env production` |
+| `datasites-ingest-water` | `41 11 * * *` | 3 hours | `gh secret set HC_INGEST_WATER --env production` |
+| `datasites-ingest-wildfire` | `37 */3 * * *` | 2 hours | `gh secret set HC_INGEST_WILDFIRE --env production` |
+| `datasites-api-freshness` | `*/15 * * * *` | 30 minutes | `pnpm --filter @datasites/api exec wrangler secret put HEALTHCHECK_URL` |
 
-Then add email or phone-push integrations to the project so a failure reaches you.
+**Optional settings:**
+- A run time limit for the slow-run alert. Water can take up to 60 minutes; the others take under 10.
+- A `datasites` tag on the checks, so `https://ping.tickharbor.net/api/v1/status?tag=datasites` shows them together.
+
+The project's email and ntfy channels deliver the alerts.
+
+`gh secret set` asks for the value, so the URL never lands in your shell history. The ingest secrets live in the `production` environment, so manual runs against `staging` don't ping.
 
 ---
 
@@ -154,7 +167,7 @@ Each site launches straight to its real website: the static site on the apex dom
    node scripts/verify/live.mjs prod --sites climatedata,electiondata
    ```
    They print `LIVE DNS OK` and `LIVE PROD OK`, or list exactly what isn't up yet.
-5. **Keep the data fresh:** `gh variable set INGEST_ENABLED --body true` starts every ingest schedule (about 1,400 Actions minutes a month; see section 3). Set up the healthchecks in section 4 first, so a failing schedule reaches you.
+5. **Keep the data fresh:** `gh variable set INGEST_ENABLED --body true` starts every ingest schedule (about 1,400 Actions minutes a month; see section 3). Set up the tickharbor checks in section 4 first, so a failing schedule reaches you.
 
 **Launching another site**, once its zone is Active: in one pull request, add its id to `WEB_SITES` in `deploy.yml` and its `api.<domain>` route to `apps/api/wrangler.jsonc`, and remove its route from `apps/coming-soon/wrangler.jsonc`. `node scripts/verify/workflows.mjs` fails if the two lists disagree. Fill its data with a manual ingest run, then merge.
 
@@ -174,7 +187,7 @@ Every dataset works without these except the ones named. Until a dataset's crede
 | Census API key (free) | economicdata `census-acs-income` | Sign up at https://api.census.gov/data/key_signup.html, then `gh secret set CENSUS_API_KEY --env production` |
 | Space-Track account (free; one per person, never shared) | satellitedata `gp-current` | Register at https://www.space-track.org, then `gh secret set SPACETRACK_USERNAME --env production` and `gh secret set SPACETRACK_PASSWORD --env production` |
 | USGS Water Data API key (free; needed while the repo is private) | waterdata `stream-gages`, `streamflow-daily` | Works without it, but the anonymous rate limit can stretch a daily run to an hour of Actions minutes (see section 3). It is an api.data.gov key: sign up at https://api.data.gov/signup/, then `gh secret set USGS_WATERDATA_API_KEY --env production` |
-| MIT Election Lab files | electiondata county presidential and House history | Download them in your browser (Dataverse guestbook) into `data/sources/medsl/`; see the README there |
+| MIT Election Lab files | electiondata `county-president`, `house-results` | Done 2026-10-26: V20 and V15 are committed in `data/sources/medsl/`. When MEDSL publishes a new version the weekly run stops with an error; download the files again in your browser (Dataverse guestbook) as that folder's README describes |
 
 **API keys and billing (Phases 3 and 6):**
 
@@ -209,7 +222,7 @@ Every dataset works without these except the ones named. Until a dataset's crede
 | R2 access key and secret | GitHub environment `production` | Python pipelines |
 | Cloudflare deploy token | GitHub environment `production` | deploy workflow |
 | Turnstile secret key | `wrangler secret put` on `datasites-coming-soon` | signup form |
-| healthchecks ping URLs (`HC_INGEST_*`, `HEALTHCHECK_URL`) | GitHub environment `production`, `wrangler secret put` on `datasites-api` | ingest workflows, freshness cron |
+| tickharbor ping URLs (`HC_INGEST_*`, `HEALTHCHECK_URL`) | GitHub environment `production`, `wrangler secret put` on `datasites-api` | ingest workflows, freshness cron |
 | `BEA_API_KEY`, `CENSUS_API_KEY`, `SPACETRACK_USERNAME`, `SPACETRACK_PASSWORD`, `USGS_WATERDATA_API_KEY` | GitHub environment `production` | economicdata, satellitedata and waterdata pipelines |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | `wrangler secret put` on `datasites-api` | billing webhook and nightly meter report |
 | Local development | `apps/*/.dev.vars` (gitignored; copy from `.dev.vars.example`) | `wrangler dev` |

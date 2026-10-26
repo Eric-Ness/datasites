@@ -9,3 +9,6 @@
 
 # Verbatim captures of upstream responses (USDM answers with CRLF); tests depend on the exact bytes.
 pipelines/tests/water/fixtures/** -text
+# MEDSL's files exactly as Dataverse serves them (CRLF); the pipelines check their MD5 against Dataverse's.
+data/sources/medsl/** -text
+data/sources/medsl/README.md text eol=lf
