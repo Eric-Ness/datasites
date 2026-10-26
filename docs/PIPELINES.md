@@ -27,7 +27,8 @@ title: County climate
 description: >-
   One or two plain sentences: what it covers and from when.
 pipeline: datasites_climate.nclimdiv_county    # module that implements it
-check_every: P1D              # how often the runner looks (ISO 8601). Not due => skipped
+check_every: P1D              # how often the runner looks (ISO 8601). Checked more recently than check_every
+                              #   minus a slack (10% of it, at least an hour, at most half) => skipped as not due
 cadence: P1M                  # how often the source should change
 sla: P45D                     # status turns "stale-upstream" if the source hasn't changed in this long
 requires_env: [BEA_API_KEY]   # optional: secrets it needs; without them the run reports "needs-credentials"

@@ -12,7 +12,7 @@ import os
 import sys
 from pathlib import Path
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from . import durations
 from .contracts import ContractError, all_contracts, load_contract, site_contracts
@@ -48,7 +48,17 @@ def _summary(results: list[RunResult], failures: list[tuple[str, str]], path: st
         fh.write("\n".join(lines) + "\n")
 
 
-DUE_TOLERANCE = 0.9  # a daily job firing a few seconds early still counts as due
+DUE_FRACTION = 0.1  # slack as a share of check_every
+DUE_MIN_SLACK = timedelta(hours=1)  # GitHub starts scheduled runs 5-60 minutes late, unevenly
+
+
+def due_slack(check_every: timedelta) -> timedelta:
+    """How early a dataset counts as due: 10% of check_every, at least an hour, at most half of it.
+
+    Scheduled runs start late by varying amounts, so two runs of a 3-hourly workflow can land 2h42m apart.
+    With only 10% slack (18 minutes) that run skipped the dataset, which then refreshed every 6 hours.
+    """
+    return min(max(check_every * DUE_FRACTION, DUE_MIN_SLACK), check_every / 2)
 
 
 def not_due(contract, store, now: datetime) -> bool:
@@ -57,7 +67,8 @@ def not_due(contract, store, now: datetime) -> bool:
     if not checked:
         return False
     elapsed = now - datetime.fromisoformat(checked.replace("Z", "+00:00"))
-    return elapsed < durations.parse(contract.check_every) * DUE_TOLERANCE
+    every = durations.parse(contract.check_every)
+    return elapsed < every - due_slack(every)
 
 
 def cmd_run(args: argparse.Namespace) -> int:
