@@ -1,0 +1,60 @@
+id: county-president
+version: 1                       # bump on any schema change; forces a rebuild
+kind: table
+title: County presidential election results, 2000-2024
+description: >-
+  Presidential votes by county for every election from 2000 to 2024: one row per county per
+  candidate, from the MIT Election Data + Science Lab.
+pipeline: datasites_election.medsl_county_president
+check_every: P7D                 # each run checks the committed copy against MEDSL's latest version
+cadence: P4Y                     # new rows after each presidential election
+sla: P5Y                         # MEDSL added 2024 in February 2026
+source:
+  id: medsl-county-president
+  name: MIT Election Data and Science Lab, County Presidential Election Returns 2000-2024
+  publisher: MIT Election Data and Science Lab (MEDSL)
+  url: https://doi.org/10.7910/DVN/VOQCHQ
+  license: CC0-1.0
+  commercial_ok: true
+  # The Dataverse citation for the version in data/sources/medsl/. When MEDSL publishes a new
+  # version the run stops with an error until the file is downloaded again, this is updated and
+  # the contract version is bumped.
+  attribution: >-
+    MIT Election Data and Science Lab, 2018, "County Presidential Election Returns 2000-2024",
+    https://doi.org/10.7910/DVN/VOQCHQ, Harvard Dataverse, V20, UNF:6:xvsJJxrfXMIvzAuDYlfvVw== [fileUNF]
+key: [year, state_po, unit_id, candidate, party]
+partition: year
+# Notes on MEDSL's data, kept as published:
+# - Candidates: MEDSL lists the Democratic and Republican candidates, plus the Libertarian (2020,
+#   2024) and Green (2000) ones; every other candidate is counted under candidate OTHER. In 2020
+#   OTHER appears twice, once with party GREEN and once with party OTHER.
+# - totalvotes counts every presidential vote in the county. In Arizona, Iowa and Vermont in 2024 it
+#   also counts under-, over- and spoiled votes, so the candidates add up to less.
+# - Alaska reports by state house district (DISTRICT 1 ...), which changed with redistricting.
+# - Connecticut is reported by its eight former counties in every year, including 2024.
+# - Missouri reports Kansas City separately from the counties it lies in.
+# - MEDSL's codebook: Alaska's 2004 district returns "significantly overstate the number of votes cast".
+schema:
+  - { name: year, type: year, description: Year of the election }
+  - { name: state, type: str, description: State name in upper case }
+  - { name: state_po, type: str, description: USPS state code }
+  - { name: state_id, type: str, description: Location id in the shared registry (us-<usps>) }
+  - { name: county_name, type: str, description: "County or other reporting unit as MEDSL names it, upper case" }
+  - { name: county_fips, type: str, nullable: true, description: "Five-digit county FIPS code; null for units that aren't counties" }
+  - { name: county_id, type: str, nullable: true, description: "Location id in the shared registry (us-county-<fips>); null where the county no longer exists" }
+  - { name: unit_id, type: str, description: "Identifies the reporting unit: county_fips, or <state>-<NAME> for a unit without one" }
+  - { name: office, type: str, description: Always US PRESIDENT }
+  - { name: candidate, type: str, description: "Candidate as MEDSL spells it, upper case; OTHER for all other candidates" }
+  - { name: party, type: str, description: "DEMOCRAT, REPUBLICAN, LIBERTARIAN, GREEN or OTHER" }
+  - { name: candidatevotes, type: int, unit: votes, nullable: true, description: "The candidate's votes in the county; null where MEDSL has no count" }
+  - { name: totalvotes, type: int, unit: votes, description: Total presidential votes in the county as MEDSL reports it }
+  - { name: from_modes, type: bool, description: "True where MEDSL reports the county only by vote mode and candidatevotes is the sum of the modes" }
+  - { name: version, type: date, description: Date MEDSL finalized the row }
+checks:
+  min_rows: 75000
+  rows_min_ratio: 0.99
+  ranges:
+    candidatevotes: [0, 5000000]
+    totalvotes: [0, 5000000]
+  max_null_fraction:
+    candidatevotes: 0.001

@@ -172,7 +172,7 @@ Each domain has `scripts/verify/<domain>.mjs`, which prints `<DOMAIN> VERIFIED .
 
 ## Ingest workflow
 
-Each domain has `.github/workflows/ingest-<domain>.yml`. Copy `ingest-climate.yml` and change the name, schedule, site argument, secrets and the healthchecks secret (`HC_INGEST_<DOMAIN>`).
+Each domain has `.github/workflows/ingest-<domain>.yml`. Copy `ingest-climate.yml` and change the name, schedule, site argument, secrets and the tickharbor ping secret (`HC_INGEST_<DOMAIN>`; see docs/SETUP.md section 4).
 
 - **Gate:** the job must be gated on `vars.INGEST_ENABLED == 'true'`.
 - **Schedule:** use a specific odd minute, never `0` or `*`.

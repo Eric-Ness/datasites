@@ -1,0 +1,68 @@
+# Excerpt of https://dataverse.harvard.edu/api/datasets/:persistentId/?persistentId=doi:10.7910/DVN/IG0UN2
+# Captured 2026-10-26. Only the keys the pipeline reads are kept (the citation metadata blocks are dropped); every value is unchanged.
+{
+ "status": "OK",
+ "data": {
+  "id": 3059095,
+  "identifier": "DVN/IG0UN2",
+  "persistentUrl": "https://doi.org/10.7910/DVN/IG0UN2",
+  "protocol": "doi",
+  "authority": "10.7910",
+  "publisher": "Harvard Dataverse",
+  "publicationDate": "2017-11-01",
+  "guestbookId": 458,
+  "latestVersion": {
+   "id": 721192,
+   "datasetId": 3059095,
+   "datasetPersistentId": "doi:10.7910/DVN/IG0UN2",
+   "versionNumber": 15,
+   "versionMinorNumber": 0,
+   "versionState": "RELEASED",
+   "lastUpdateTime": "2026-03-09T17:49:25Z",
+   "releaseTime": "2026-03-09T17:49:25Z",
+   "license": {
+    "name": "CC0 1.0",
+    "uri": "http://creativecommons.org/publicdomain/zero/1.0",
+    "iconUri": "https://licensebuttons.net/p/zero/1.0/88x31.png",
+    "rightsIdentifier": "CC0-1.0",
+    "rightsIdentifierScheme": "SPDX",
+    "schemeUri": "https://spdx.org/licenses/",
+    "languageCode": "en"
+   },
+   "guestbookId": 458,
+   "fileAccessRequest": false,
+   "files": [
+    {
+     "label": "1976-2024-house.tab",
+     "restricted": false,
+     "version": 1,
+     "datasetVersionId": 721192,
+     "dataFile": {
+      "id": 13592823,
+      "persistentId": "",
+      "filename": "1976-2024-house.tab",
+      "contentType": "text/tab-separated-values",
+      "filesize": 4229898,
+      "originalFileFormat": "text/tsv",
+      "originalFileName": "1976-2024-house.tab",
+      "md5": "a9566ac393913a1af343284e837c17bb"
+     }
+    },
+    {
+     "label": "codebook-us-house-1976–2024.md",
+     "restricted": false,
+     "version": 1,
+     "datasetVersionId": 721192,
+     "dataFile": {
+      "id": 12066703,
+      "persistentId": "",
+      "filename": "codebook-us-house-1976–2024.md",
+      "contentType": "text/markdown",
+      "filesize": 5412,
+      "md5": "4ca4082f75b976b7245c00126615cd2f"
+     }
+    }
+   ]
+  }
+ }
+}

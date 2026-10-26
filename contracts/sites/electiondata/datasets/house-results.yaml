@@ -1,0 +1,77 @@
+id: house-results
+version: 1                       # bump on any schema change; forces a rebuild
+kind: table
+title: US House election results, 1976-2024
+description: >-
+  District returns for every US House election from 1976 to 2024, including special elections:
+  one row per candidate per ballot line, from the MIT Election Data + Science Lab.
+pipeline: datasites_election.medsl_house
+check_every: P7D                 # each run checks the committed copy against MEDSL's latest version
+cadence: P2Y                     # new rows after each federal election
+sla: P3Y                         # MEDSL has taken 6-18 months to add an election
+source:
+  id: medsl-house
+  name: MIT Election Data and Science Lab, U.S. House 1976-2024
+  publisher: MIT Election Data and Science Lab (MEDSL)
+  url: https://doi.org/10.7910/DVN/IG0UN2
+  license: CC0-1.0
+  commercial_ok: true
+  # The Dataverse citation for the version in data/sources/medsl/. When MEDSL publishes a new
+  # version the run stops with an error until the file is downloaded again, this is updated and
+  # the contract version is bumped.
+  attribution: >-
+    MIT Election Data and Science Lab, 2017, "U.S. House 1976–2024",
+    https://doi.org/10.7910/DVN/IG0UN2, Harvard Dataverse, V15, UNF:6:cIJWG41N8qe3Kyf7oKuPdw== [fileUNF]
+key: [year, state_po, district, stage, special, race_row]
+partition: year
+# Notes on MEDSL's data, kept as published:
+# - The source is the House Clerk's "Statistics of the Congressional Election"; 2018 comes from state
+#   election websites, and some 2018 rows are marked unofficial.
+# - totalvotes is MEDSL's race total. In some states and years it includes blank, void or scattered
+#   votes, which then appear as their own rows (candidate BLANK, VOID, SCATTERING, ...). In New York
+#   in 2024 the ballot lines add up to more than totalvotes.
+# - Maine's ranked-choice races: MEDSL lists the final round with an EXHAUSTED BALLOT(S) row. Its
+#   2022 2nd District row says 322,778, about the whole race, so that race's totalvotes (656,104) is
+#   double the ballots cast.
+# - Unnamed write-ins are candidate WRITEIN with a null party; a race can have several.
+# - Fusion voting: a candidate on several party lines has one row per line; MEDSL sets fusion_ticket
+#   on the extra lines only.
+# - 2020 and 2024 also have the District of Columbia's non-voting delegate (district 0). MEDSL's 2020
+#   DC race also lists candidates who ran for Guam's delegate seat (Michael F Q San Nicolas, Robert A
+#   Underwood).
+# - stage PRI marks Texas's November 1996 special open primaries, held after a court redrew 13
+#   districts; the December runoffs are runoff = true.
+schema:
+  - { name: year, type: year, description: Year of the election }
+  - { name: state, type: str, description: State name in upper case }
+  - { name: state_po, type: str, description: USPS state code }
+  - { name: state_fips, type: int, description: State FIPS code }
+  - { name: state_cen, type: int, description: Census Bureau state code }
+  - { name: state_ic, type: int, description: ICPSR state code }
+  - { name: state_id, type: str, description: Location id in the shared registry (us-<usps>) }
+  - { name: office, type: str, description: Always US HOUSE }
+  - { name: district, type: int, description: "District number; 0 for an at-large seat" }
+  - { name: stage, type: str, description: "GEN (general) or PRI (Texas 1996 special open primaries)" }
+  - { name: runoff, type: bool, nullable: true, description: "True for a runoff; null where MEDSL doesn't record it (2006-2018)" }
+  - { name: special, type: bool, description: True for a special election to fill a vacancy }
+  - { name: race_row, type: int, description: Position of the row within its race in MEDSL's file, from 1 }
+  - { name: candidate, type: str, description: "Candidate as the House Clerk prints it, upper case; WRITEIN for unnamed write-ins" }
+  - { name: party, type: str, nullable: true, description: Ballot line (party) as reported }
+  - { name: writein, type: bool, description: True for write-in votes }
+  - { name: fusion_ticket, type: bool, description: "True on the extra party lines of a candidate nominated by several parties (the main line is false)" }
+  - { name: mode, type: str, description: Vote mode; always TOTAL in this file }
+  - { name: candidatevotes, type: int, unit: votes, nullable: true, description: "Votes on this ballot line; null for an uncontested race with no reported count" }
+  - { name: totalvotes, type: int, unit: votes, nullable: true, description: Total votes in the race as MEDSL reports it }
+  - { name: candidate_total_votes, type: int, unit: votes, nullable: true, description: "The candidate's votes on all ballot lines in the race (fusion voting); null for unnamed write-ins" }
+  - { name: unofficial, type: bool, description: True where MEDSL took the figures from unofficial results }
+  - { name: version, type: date, description: Date MEDSL finalized the row }
+checks:
+  min_rows: 33000
+  rows_min_ratio: 0.99
+  ranges:
+    candidatevotes: [0, 2000000]
+    totalvotes: [1, 2000000]
+    candidate_total_votes: [0, 2000000]
+  max_null_fraction:
+    candidatevotes: 0.01
+    totalvotes: 0.01

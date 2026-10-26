@@ -187,7 +187,7 @@ checks: { rows_min_ratio: 0.995, ranges: { tavg_f: [-60, 130] }, max_null_fracti
 
 ### Monitoring
 
-1. **Dead-man switches (healthchecks.io).** Every workflow pings when it starts and finishes. This catches GitHub skipping a scheduled run, which it sometimes does, and schedules disabled after 60 days without activity.
+1. **Dead-man switches (tickharbor.net, a self-hosted healthchecks.io-style monitor).** Every workflow pings when it starts and finishes. This catches GitHub skipping a scheduled run, which it sometimes does, and schedules disabled after 60 days without activity.
 2. **The freshness check** runs every 15 minutes and marks each dataset `ok`, `late`, `stale-upstream`, `failing`, `blocked` or `discontinued`.
 3. **The status endpoint** `https://api.<site>/v1/status` is polled by an external uptime monitor and shown on each site's status page.
 
@@ -219,7 +219,7 @@ The dates assume part-time solo work. If you fall behind, push the whole phase b
 |---|---|---|
 | Cloudflare Workers Paid | $5.00 | $5.00 |
 | Extra requests, CPU, R2 storage and operations | $0 | ~$16 |
-| GitHub Actions, healthchecks.io, Email Routing, D1 | $0 (free tiers; requires a public repo) | $0 |
+| GitHub Actions, tickharbor.net (self-hosted on Workers), Email Routing, D1 | $0 (free tiers; requires a public repo) | $0 |
 | **Infrastructure total** | **~$5/month** | **~$21/month** |
 | Domain renewals | ~$208/year (~$17/month) from year two | Lower after moving to Cloudflare Registrar |
 
@@ -247,7 +247,7 @@ A month with 300M requests and no rate limits would cost about $120. The rate li
 | Account | Needed for | Phase |
 |---|---|---|
 | Cloudflare Workers Paid, and narrowly scoped API tokens | Everything | 0 |
-| GitHub repo (public), healthchecks.io | CI, schedules, alerts | 0 |
+| GitHub repo (public), tickharbor.net | CI, schedules, alerts | 0 |
 | Copernicus Climate Data Store account | ERA5 | 1 |
 | api.data.gov key | USGS Water Data, Congress.gov, FEC | 2 |
 | Census API key | Turnout denominators, population, income | 2–3 |
