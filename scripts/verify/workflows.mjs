@@ -41,6 +41,9 @@ for (const site of webSites) {
   check(existsSync(join(ROOT, "apps", "web", "wrangler", `${site}.jsonc`)), `WEB_SITES lists ${site}, but apps/web/wrangler/${site}.jsonc is missing`);
   check(apiRoutes.includes(site), `WEB_SITES lists ${site}, but apps/api/wrangler.jsonc has no api.${site}.dev route`);
 }
+const redirectRoutes = [...readFileSync(join(ROOT, "apps", "redirect", "wrangler.jsonc"), "utf8").matchAll(/"pattern":\s*"www\.([a-z]+)\.dev"/g)].map((m) => m[1]);
+const noWww = webSites.filter((s) => !redirectRoutes.includes(s));
+check(noWww.length === 0, `apps/redirect/wrangler.jsonc has no www.<domain> route for: ${noWww.join(", ")}`);
 const unlaunched = apiRoutes.filter((s) => !webSites.includes(s));
 check(unlaunched.length === 0, `apps/api/wrangler.jsonc routes api.<domain> for sites not in WEB_SITES: ${unlaunched.join(", ")}`);
 
