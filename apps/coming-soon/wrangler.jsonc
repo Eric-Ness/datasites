@@ -1,7 +1,7 @@
 // The placeholder page for domains without a real site. deploy.yml does not deploy it: the sites launch
 // straight to their real websites (WEB_SITES in deploy.yml). Deploy it by hand only to put a placeholder
 // on a domain, once that zone is Active in Cloudflare; a domain can belong to only one Worker.
-// climatedata.dev and electiondata.dev serve their real websites (web-climatedata, web-electiondata).
+// Every site now serves its real website (web-<id>), so it holds no domains.
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "datasites-coming-soon",
@@ -10,15 +10,7 @@
   "workers_dev": false,
   "preview_urls": true,
   "observability": { "enabled": true, "head_sampling_rate": 0.1 },
-  "routes": [
-    { "pattern": "airdata.dev", "custom_domain": true },
-    { "pattern": "carbondata.dev", "custom_domain": true },
-    { "pattern": "economicdata.dev", "custom_domain": true },
-    { "pattern": "satellitedata.dev", "custom_domain": true },
-    { "pattern": "visualizedata.dev", "custom_domain": true },
-    { "pattern": "waterdata.dev", "custom_domain": true },
-    { "pattern": "wildfiredata.dev", "custom_domain": true }
-  ],
+  "routes": [],
   "d1_databases": [
     {
       "binding": "DB",
