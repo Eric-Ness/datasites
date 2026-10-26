@@ -48,3 +48,26 @@ def test_not_due_uses_check_every_with_tolerance(contract, store):
     assert cli.not_due(contract, store, now)  # 6h ago, check_every is P1D
     put_json(store, state_key(contract.site, contract.id), {"checked_at": "2026-10-23T14:23:05Z"})
     assert not cli.not_due(contract, store, now)  # a day minus a few seconds is still due
+
+
+@pytest.mark.parametrize(
+    "every, slack",
+    [
+        (timedelta(hours=3), timedelta(hours=1)),  # 10% would be 18 minutes; at least an hour
+        (timedelta(days=1), timedelta(hours=2.4)),  # 10% is already more than an hour
+        (timedelta(hours=1), timedelta(minutes=30)),  # never more than half the interval
+    ],
+)
+def test_due_slack(every, slack):
+    assert cli.due_slack(every) == slack
+
+
+def test_a_late_scheduled_run_does_not_skip_a_three_hourly_dataset(contract, store):
+    """GitHub started two runs of ingest-wildfire 2h42m apart on 2026-10-26; the second skipped three datasets."""
+    from dataclasses import replace
+
+    three_hourly = replace(contract, check_every="PT3H")
+    # each dataset is checked a minute or so into its run, so the real gap was a little under 2h42m
+    put_json(store, state_key(contract.site, contract.id), {"checked_at": "2026-10-26T07:12:40Z"})
+    assert not cli.not_due(three_hourly, store, datetime(2026, 10, 26, 9, 53, 10, tzinfo=timezone.utc))  # 2h40m30s: due
+    assert cli.not_due(three_hourly, store, datetime(2026, 10, 26, 8, 40, tzinfo=timezone.utc))  # 1h29m later: not yet
