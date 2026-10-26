@@ -1,0 +1,15 @@
+// votingdata.net redirects every request to the same path on electiondata.dev, keeping the query string.
+// 302, not 301: browsers cache a 301 almost forever, and votingdata.net may become its own site later.
+// The custom domains create their own DNS records, so the zone needs nothing else.
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "datasites-votingdata-redirect",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    { "pattern": "votingdata.net", "custom_domain": true },
+    { "pattern": "www.votingdata.net", "custom_domain": true }
+  ]
+}

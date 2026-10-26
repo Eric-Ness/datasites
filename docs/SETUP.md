@@ -27,12 +27,7 @@ It should list `*.ns.cloudflare.com`.
 - **Email → Email Routing**, to forward `hello@<domain>` to your inbox. Needed for every launched site (section 5).
 
 ### votingdata.net redirect
-1. In the votingdata.net zone, add two **proxied** DNS records: `A @ 192.0.2.1` and `AAAA www 100::`. They are placeholders; the redirect answers before any server is contacted.
-2. Go to **Rules → Redirect Rules → Create rule (Single Redirect)** and set:
-   - **When:** `(http.host eq "votingdata.net") or (http.host eq "www.votingdata.net")`
-   - **Then:** dynamic `concat("https://electiondata.dev", http.request.uri.path)`
-   - **Status 302**, with "preserve query string" on.
-   - Use 302, not 301: browsers cache 301s almost forever, and this domain may become its own site later.
+Nothing to do by hand once the zone is Active. The **deploy** workflow deploys the `apps/redirect` Worker on `votingdata.net` and `www.votingdata.net`, and its custom domains create the DNS records. Every request answers **302** to the same path and query string on electiondata.dev. It uses 302, not 301, because browsers cache 301s almost forever and this domain may become its own site later.
 
 ### www for the .dev sites (optional)
 Same pattern for each .dev domain:

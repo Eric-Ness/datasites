@@ -31,6 +31,7 @@ const deploy = wf["deploy.yml"]?.jobs?.deploy;
 check(deploy && /vars\.DEPLOY_ENABLED == 'true'/.test(deploy.if), "deploy job is not gated on DEPLOY_ENABLED");
 const deployRun = runText(deploy);
 check(/@datasites\/api exec wrangler deploy/.test(deployRun), "deploy does not deploy the API Worker");
+check(/@datasites\/redirect exec wrangler deploy/.test(deployRun), "deploy does not deploy the votingdata.net redirect");
 check(/@datasites\/web exec wrangler deploy -c "wrangler\/\$site\.jsonc"/.test(deployRun), "deploy does not deploy the websites in WEB_SITES");
 // Every launched website has a Worker config and an api.<domain> route, and every API route is a launched site.
 const webSites = String(deploy.env?.WEB_SITES ?? "").split(/\s+/).filter(Boolean);

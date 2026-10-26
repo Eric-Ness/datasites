@@ -1,6 +1,6 @@
 name: deploy
 
-# Deploys the API Worker and the website of every launched site when main changes. Stays off until the
+# Deploys the API Worker, the votingdata.net redirect and the website of every launched site when main changes. Stays off until the
 # repository variable DEPLOY_ENABLED is "true" and the Cloudflare secrets exist (see docs/SETUP.md).
 #
 # To launch another site, once its zone is Active in Cloudflare: add its id to WEB_SITES below and its
@@ -45,6 +45,9 @@ jobs:
       - name: Deploy API Worker
         run: pnpm --filter @datasites/api exec wrangler deploy
 
+      - name: Deploy votingdata.net redirect
+        run: pnpm --filter @datasites/redirect exec wrangler deploy
+
       - name: Build and deploy websites
         run: |
           for site in $WEB_SITES; do
@@ -65,3 +68,6 @@ jobs:
             fetch -o /dev/null "https://api.$domain/v1/status"
             echo "ok: https://$domain and https://api.$domain" | tee -a "$GITHUB_STEP_SUMMARY"
           done
+          location=$(curl -sS --retry 12 --retry-delay 15 --retry-all-errors -o /dev/null -w '%{redirect_url}' "https://votingdata.net/some/path?x=1")
+          test "$location" = "https://electiondata.dev/some/path?x=1" || { echo "votingdata.net redirects to '$location'"; exit 1; }
+          echo "ok: votingdata.net redirects to electiondata.dev" | tee -a "$GITHUB_STEP_SUMMARY"
