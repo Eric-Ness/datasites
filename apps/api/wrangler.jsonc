@@ -18,8 +18,15 @@
   "preview_urls": true,
   "observability": { "enabled": true, "head_sampling_rate": 0.1 },
   "routes": [
+    { "pattern": "api.airdata.dev", "custom_domain": true },
+    { "pattern": "api.carbondata.dev", "custom_domain": true },
     { "pattern": "api.climatedata.dev", "custom_domain": true },
-    { "pattern": "api.electiondata.dev", "custom_domain": true }
+    { "pattern": "api.economicdata.dev", "custom_domain": true },
+    { "pattern": "api.electiondata.dev", "custom_domain": true },
+    { "pattern": "api.satellitedata.dev", "custom_domain": true },
+    { "pattern": "api.visualizedata.dev", "custom_domain": true },
+    { "pattern": "api.waterdata.dev", "custom_domain": true },
+    { "pattern": "api.wildfiredata.dev", "custom_domain": true }
   ],
   // Every 15 minutes: freshness check. 00:07 UTC: report the previous day's usage to Stripe.
   "triggers": { "crons": ["*/15 * * * *", "7 0 * * *"] },
