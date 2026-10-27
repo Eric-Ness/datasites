@@ -15,6 +15,7 @@ import {
   type Selection,
 } from "./datasets";
 import { datasetSnippets, type Snippets } from "./snippets";
+import { chartsFor, type DatasetCharts } from "./visualizedata";
 
 export interface ClientColumn {
   name: string;
@@ -55,6 +56,8 @@ export interface DatasetPageModel {
   client: DatasetClientConfig;
   /** The heading of the kind-specific explorer. */
   exploreTitle: string;
+  /** visualizedata.org's indicators and pages built from this dataset, or null when it has none. */
+  charts: DatasetCharts | null;
 }
 
 export function datasetPageModel(
@@ -84,8 +87,10 @@ export function datasetPageModel(
     sourceName: ds.source.publisher ?? ds.source.name,
   };
   const exploreTitle = ds.kind === "series" ? "Chart" : ds.kind === "table" ? "Preview" : "Files";
+  const charts = chartsFor(site.id, ds.id);
   const sections: Section[] = [
     { id: "explore", label: exploreTitle },
+    ...(charts ? [{ id: "visualizedata", label: "On visualizedata.org" }] : []),
     { id: "api", label: "Use the API" },
     ...(ds.kind === "files" ? [] : [{ id: "downloads", label: "Downloads" }]),
     { id: "schema", label: ds.kind === "series" ? "Schema and series" : "Schema" },
@@ -100,6 +105,7 @@ export function datasetPageModel(
     locations: ds.kind === "series" ? describeLocations(ds, levelCounts) : null,
     client,
     exploreTitle,
+    charts,
   };
 }
 

@@ -8,6 +8,13 @@
       "port": 8787
     },
     {
+      "name": "web-electiondata",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@datasites/web", "dev"],
+      "env": { "SITE": "electiondata" },
+      "port": 4321
+    },
+    {
       "name": "coming-soon",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@datasites/coming-soon", "dev"],

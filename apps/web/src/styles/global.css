@@ -1011,6 +1011,12 @@ details.data-table thead th {
   overflow-wrap: anywhere;
 }
 
+/* The same box for named links (visualizedata.org's indicators), in the body font. */
+.file-list.link-list a {
+  font-family: inherit;
+  font-size: inherit;
+}
+
 .pager {
   display: flex;
   flex-wrap: wrap;

@@ -10,6 +10,7 @@ import { clientConfigJson, datasetPageModel } from "../../lib/dataset-page";
 import { cadenceLabel, commercialLabel, displayUnit, durationLabel, kindLabel, licenseInfo } from "../../lib/format";
 import { datasetJsonLd } from "../../lib/jsonld";
 import { TABLE_ALL_MAX_ROWS } from "../../lib/api-facts";
+import { VISUALIZEDATA_ORG } from "../../lib/visualizedata";
 
 export function getStaticPaths() {
   return siteDatasets.map((dataset) => ({ params: { id: dataset.id }, props: { dataset } }));
@@ -169,6 +170,42 @@ const measures = model.client.measures;
       )
     }
   </section>
+
+  {
+    model.charts && (
+      <section class="section" id="visualizedata" aria-labelledby="visualizedata-h">
+        <h2 id="visualizedata-h">On visualizedata.org</h2>
+        <p class="muted prose">
+          <a href={VISUALIZEDATA_ORG}>visualizedata.org</a> draws charts and maps from this dataset.
+          {model.charts.indicators.length > 0 && " Each indicator compares every place it covers."}
+        </p>
+        {
+          model.charts.indicators.length > 0 && (
+            <ul class="file-list link-list">
+              {model.charts.indicators.map((link) => (
+                <li>
+                  <a href={link.href}>{link.label}</a>
+                  <span class="small muted">Indicator</span>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+        {
+          model.charts.pages.length > 0 && (
+            <ul class="file-list link-list">
+              {model.charts.pages.map((link) => (
+                <li>
+                  <a href={link.href}>{link.label}</a>
+                  <span class="small muted">Page</span>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </section>
+    )
+  }
 
   <section class="section" id="api" aria-labelledby="api-h">
     <h2 id="api-h">Use the API</h2>
