@@ -1,0 +1,43 @@
+---
+// The site's indicators (injected by astro.config.ts only for sites visualizedata.org builds indicators from).
+import Base from "../layouts/Base.astro";
+import IndicatorCard from "../components/IndicatorCard.astro";
+import { datasets, site, siteDatasets } from "../lib/site";
+import { datasetPath } from "../lib/routes";
+import { indicatorsForSite, VISUALIZEDATA_ORG } from "../lib/visualizedata";
+
+const list = indicatorsForSite(site.id, datasets);
+const fromDatasets = [...new Set(list.map((i) => i.dataset))]
+  .map((id) => siteDatasets.find((d) => d.id === id))
+  .filter((d) => d !== undefined);
+---
+
+<Base
+  title="Indicators"
+  description={`${list.length} indicators built from ${site.name}'s datasets: one number per place and year, charted and mapped on visualizedata.org.`}
+>
+  <header class="hero">
+    <p class="eyebrow">{site.domain}</p>
+    <h1>Indicators</h1>
+    <p class="lede">
+      {list.length} {list.length === 1 ? "indicator" : "indicators"} built from this site's data: one number per place and
+      year, so places can be compared and mapped.
+    </p>
+    <p class="muted">
+      <a href={`${VISUALIZEDATA_ORG}/indicators/`}>visualizedata.org</a> computes them from
+      {
+        fromDatasets.map((d, i) => (
+          <>
+            {i > 0 && (i === fromDatasets.length - 1 ? " and " : ", ")}
+            <a href={datasetPath(d.id)}>{d.title}</a>
+          </>
+        ))
+      }
+      and maps every place. Each page here says how its indicator is computed and which columns it uses.
+    </p>
+  </header>
+
+  <ul class="card-grid">
+    {list.map((ind) => <IndicatorCard indicator={ind} headingLevel={2} />)}
+  </ul>
+</Base>

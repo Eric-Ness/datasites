@@ -90,7 +90,7 @@ export function datasetPageModel(
   const charts = chartsFor(site.id, ds.id);
   const sections: Section[] = [
     { id: "explore", label: exploreTitle },
-    ...(charts ? [{ id: "visualizedata", label: "On visualizedata.org" }] : []),
+    ...(charts ? [{ id: "visualizedata", label: "Indicators and charts" }] : []),
     { id: "api", label: "Use the API" },
     ...(ds.kind === "files" ? [] : [{ id: "downloads", label: "Downloads" }]),
     { id: "schema", label: ds.kind === "series" ? "Schema and series" : "Schema" },

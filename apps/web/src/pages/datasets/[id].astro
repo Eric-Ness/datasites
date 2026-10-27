@@ -10,7 +10,7 @@ import { clientConfigJson, datasetPageModel } from "../../lib/dataset-page";
 import { cadenceLabel, commercialLabel, displayUnit, durationLabel, kindLabel, licenseInfo } from "../../lib/format";
 import { datasetJsonLd } from "../../lib/jsonld";
 import { TABLE_ALL_MAX_ROWS } from "../../lib/api-facts";
-import { VISUALIZEDATA_ORG } from "../../lib/visualizedata";
+import { indicatorPath, VISUALIZEDATA_ORG } from "../../lib/visualizedata";
 
 export function getStaticPaths() {
   return siteDatasets.map((dataset) => ({ params: { id: dataset.id }, props: { dataset } }));
@@ -174,18 +174,18 @@ const measures = model.client.measures;
   {
     model.charts && (
       <section class="section" id="visualizedata" aria-labelledby="visualizedata-h">
-        <h2 id="visualizedata-h">On visualizedata.org</h2>
+        <h2 id="visualizedata-h">Indicators and charts</h2>
         <p class="muted prose">
           <a href={VISUALIZEDATA_ORG}>visualizedata.org</a> draws charts and maps from this dataset.
-          {model.charts.indicators.length > 0 && " Each indicator compares every place it covers."}
+          {model.charts.indicators.length > 0 && " Each indicator gives one number per place and year, so places can be compared."}
         </p>
         {
           model.charts.indicators.length > 0 && (
             <ul class="file-list link-list">
               {model.charts.indicators.map((link) => (
                 <li>
-                  <a href={link.href}>{link.label}</a>
-                  <span class="small muted">Indicator</span>
+                  <a href={indicatorPath(link.id)}>{link.label}</a>
+                  <a class="small" href={link.href}>Map on visualizedata.org</a>
                 </li>
               ))}
             </ul>

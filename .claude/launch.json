@@ -15,6 +15,13 @@
       "port": 4321
     },
     {
+      "name": "web-airdata",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@datasites/web", "dev"],
+      "env": { "SITE": "airdata" },
+      "port": 4321
+    },
+    {
       "name": "coming-soon",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@datasites/coming-soon", "dev"],
