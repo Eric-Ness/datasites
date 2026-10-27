@@ -1,12 +1,15 @@
 ---
 import Base from "../../layouts/Base.astro";
 import DatasetCard from "../../components/DatasetCard.astro";
-import { apiBase, site, siteDatasets } from "../../lib/site";
+import IndicatorCard from "../../components/IndicatorCard.astro";
+import { apiBase, datasets, site, siteDatasets } from "../../lib/site";
+import { indicatorsForSite, VISUALIZEDATA_ORG } from "../../lib/visualizedata";
 import { cadenceLabel, commercialLabel, kindLabel, licenseInfo } from "../../lib/format";
 import { datasetPath } from "../../lib/routes";
 import { apiUrl, paths } from "../../lib/urls";
 
 const catalogUrl = apiUrl(apiBase, site.id, paths.catalog());
+const indicators = indicatorsForSite(site.id, datasets);
 ---
 
 <Base title="Datasets" description={`Every ${site.name} dataset, with its source, license, update schedule and API.`}>
@@ -33,6 +36,22 @@ const catalogUrl = apiUrl(apiBase, site.id, paths.catalog());
             <DatasetCard dataset={d} headingLevel={2} />
           ))}
         </ul>
+
+        {indicators.length > 0 && (
+          <section class="section" aria-labelledby="indicators-h">
+            <h2 id="indicators-h">Indicators</h2>
+            <p class="muted prose">
+              {indicators.length} {indicators.length === 1 ? "indicator is" : "indicators are"} built from these datasets: one
+              number per place and year, charted and mapped on <a href={`${VISUALIZEDATA_ORG}/indicators/`}>visualizedata.org</a>.{" "}
+              <a href="/indicators/">All indicators</a>
+            </p>
+            <ul class="card-grid">
+              {indicators.map((ind) => (
+                <IndicatorCard indicator={ind} />
+              ))}
+            </ul>
+          </section>
+        )}
 
         <section class="section" aria-labelledby="compare-h">
           <h2 id="compare-h">At a glance</h2>

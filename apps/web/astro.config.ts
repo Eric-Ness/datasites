@@ -7,8 +7,8 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "astro/config";
 import type { AstroIntegration } from "astro";
-import { sites as registrySites, type Site } from "@datasites/registry";
-import { EXTRA_PAGES } from "./src/lib/routes";
+import { datasets as registryDatasets, sites as registrySites, type Dataset, type Site } from "@datasites/registry";
+import { EXTRA_PAGES, INDICATOR_ROUTES, indicatorPages } from "./src/lib/routes";
 import { apiBaseFor } from "./src/lib/urls";
 
 const here = (path: string) => fileURLToPath(new URL(path, import.meta.url));
@@ -19,6 +19,9 @@ const registryOverride = process.env.WEB_REGISTRY ? here(`./${process.env.WEB_RE
 const sites: readonly Site[] = registryOverride
   ? (JSON.parse(readFileSync(join(dirname(registryOverride), "sites.json"), "utf8")) as Site[])
   : registrySites;
+const datasets: readonly Dataset[] = registryOverride
+  ? (JSON.parse(readFileSync(join(dirname(registryOverride), "datasets.json"), "utf8")) as Dataset[])
+  : registryDatasets;
 
 const siteId = process.env.SITE?.trim() || "climatedata";
 const site = sites.find((s) => s.id === siteId);
@@ -30,7 +33,7 @@ const apiBase = apiBaseFor(site.domain, process.env.PUBLIC_API_BASE);
 // WEB_DIST: where the sites go (default dist/), relative to apps/web or absolute.
 const distRoot = resolve(here("./"), process.env.WEB_DIST ?? "dist");
 
-/** Adds the pages only some sites have (the visualizedata gallery). */
+/** Adds the pages only some sites have (the visualizedata gallery, indicator pages). */
 function siteRoutes(id: string): AstroIntegration {
   return {
     name: "datasites-site-routes",
@@ -39,6 +42,7 @@ function siteRoutes(id: string): AstroIntegration {
         for (const page of EXTRA_PAGES[id] ?? []) {
           injectRoute({ pattern: page.path.replace(/\/$/, ""), entrypoint: page.entrypoint });
         }
+        if (indicatorPages({ id }, datasets).length) for (const route of INDICATOR_ROUTES) injectRoute(route);
       },
     },
   };

@@ -1,0 +1,150 @@
+---
+// One indicator: what it measures, how it is computed from this site's dataset, its trend and the latest year's
+// highest and lowest places. The values are visualizedata.org's, copied at build time (src/lib/visualizedata.json).
+import Base from "../layouts/Base.astro";
+import { datasets, site, siteDatasets } from "../lib/site";
+import { datasetPath } from "../lib/routes";
+import { formatIndicator, indicatorsForSite, placeLabel, sentence, type Indicator, type PlaceValue } from "../lib/visualizedata";
+
+export function getStaticPaths() {
+  return indicatorsForSite(site.id, datasets).map((indicator) => ({ params: { id: indicator.id }, props: { indicator } }));
+}
+
+interface Props {
+  indicator: Indicator;
+}
+
+const { indicator: ind } = Astro.props;
+const ds = siteDatasets.find((d) => d.id === ind.dataset)!;
+const levelName = ind.latest?.level ?? (ind.scope === "us" ? "place" : "country");
+const plural = levelName === "country" ? "countries" : levelName === "county" ? "counties" : `${levelName}s`;
+const points = ind.trend.points;
+const chart =
+  points.length > 1
+    ? JSON.stringify({
+        title: `${ind.name}: ${ind.trend.label}`,
+        unit: ind.unit,
+        label: ind.trend.label,
+        points,
+      }).replace(/</g, "\\u003c")
+    : null;
+const first = points[0];
+const last = points.at(-1);
+const betterNote = ind.better === "up" ? "Higher is better." : ind.better === "down" ? "Lower is better." : null;
+---
+
+<Base title={ind.name} description={`${ind.name} by ${levelName}, from ${ds.title}. ${ind.note ?? ""}`.trim()}>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/indicators/">Indicators</a></li>
+      <li><span aria-current="page">{ind.name}</span></li>
+    </ol>
+  </nav>
+
+  <header class="hero">
+    <p class="eyebrow">Indicator · <span class="mono">{ind.id}</span></p>
+    <h1>{ind.name}</h1>
+    {ind.note && <p class="lede">{sentence(ind.note)}</p>}
+  </header>
+
+  <dl class="facts">
+    <div><dt>Unit</dt><dd>{ind.unit}</dd></div>
+    <div><dt>Places</dt><dd>{ind.latest ? `${ind.latest.count.toLocaleString("en-US")} ${plural} in ${ind.latest.year}` : "—"}</dd></div>
+    <div><dt>Built from</dt><dd><a href={datasetPath(ds.id)}>{ds.title}</a></dd></div>
+    {betterNote && <div><dt>Reading it</dt><dd>{betterNote}</dd></div>}
+  </dl>
+
+  <p>
+    <a href={ind.href}>Map and compare every {levelName} on visualizedata.org →</a>
+  </p>
+
+  {
+    chart && first && last && (
+      <section class="section" aria-labelledby="trend-h">
+        <h2 id="trend-h">{ind.trend.label}, {first[0]}–{last[0]}</h2>
+        <figure class="chart-figure" aria-labelledby="trend-h">
+          <div class="chart-box" data-chart>
+            <div class="chart-state" role="status">
+              Loading…
+            </div>
+          </div>
+          <figcaption>
+            {ind.trend.label.startsWith("Median")
+              ? `The middle value of every ${levelName} with data that year.`
+              : `${ind.trend.label} as a whole.`}{" "}
+            {last[0]}: {formatIndicator(last[1], ind)}.
+          </figcaption>
+        </figure>
+        <details class="data-table">
+          <summary>Show the data as a table</summary>
+          <div data-table-slot />
+        </details>
+        <script type="application/json" id="indicator-chart" is:inline set:html={chart} />
+      </section>
+    )
+  }
+
+  {
+    ind.latest && (
+      <section class="section" aria-labelledby="latest-h">
+        <h2 id="latest-h">Highest and lowest in {ind.latest.year}</h2>
+        <div class="split">
+          {[
+            ["Highest", ind.latest.highest, ind.latest.highestTies],
+            ["Lowest", ind.latest.lowest, ind.latest.lowestTies],
+          ].map(([label, rows, ties]) => (
+            <div class="table-wrap">
+              <table>
+                <caption class="small muted" style="text-align:left">
+                  {label as string}
+                </caption>
+                <tbody>
+                  {(rows as PlaceValue[]).map((p) => (
+                    <tr>
+                      <th scope="row">{placeLabel(p)}</th>
+                      <td class="num">{formatIndicator(p.value, ind)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {(ties as number) > 5 && (
+                <p class="small muted">
+                  {(ties as number).toLocaleString("en-US")} {plural} share this value; five are shown, alphabetically.
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section" aria-labelledby="method-h">
+    <h2 id="method-h">How it is computed</h2>
+    <p class="prose">
+      {ind.method && <>{sentence(ind.method).replace(/\.$/, "")}, from </>}
+      {!ind.method && <>From </>}
+      the <a href={datasetPath(ds.id)}>{ds.title}</a> dataset on this site. visualizedata.org computes the indicator for
+      every place and year; the full table, the map and each place's history are on
+      <a href={ind.href}>its page there</a>. The underlying data, with its source and license, is on the
+      <a href={`${datasetPath(ds.id)}#api`}>dataset page</a>, with the API and downloads.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .split {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  }
+  .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  import "../client/indicator-page";
+</script>

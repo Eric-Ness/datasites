@@ -1,0 +1,30 @@
+---
+import { formatIndicator, indicatorPath, placeLabel, sentence, type Indicator } from "../lib/visualizedata";
+
+interface Props {
+  indicator: Indicator;
+  headingLevel?: 2 | 3;
+}
+const { indicator: ind, headingLevel = 3 } = Astro.props;
+const Heading = headingLevel === 2 ? "h2" : "h3";
+const top = ind.latest?.highest[0];
+const about = ind.note ?? ind.method;
+---
+
+<li class="card">
+  <a class="card-link" href={indicatorPath(ind.id)}>
+    <Heading style="font-size:18px;margin:0">{ind.name}</Heading>
+  </a>
+  {about && <p>{sentence(about)}</p>}
+  <p class="meta">
+    <span class="badge badge-accent">{ind.scope === "us" ? `By ${ind.latest?.level ?? "place"}` : "By country"}</span>
+    <span class="badge">{ind.unit}</span>
+    {
+      ind.latest && top && (
+        <span class="small muted">
+          {ind.latest.year}: highest {placeLabel(top)}, {formatIndicator(top.value, ind)}
+        </span>
+      )
+    }
+  </p>
+</li>

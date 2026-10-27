@@ -3,7 +3,7 @@ import "../styles/global.css";
 import { isCurrent, navItems } from "../lib/routes";
 import { faviconSvg, themeCss } from "../lib/theme";
 import { apiUrl, siteUrl } from "../lib/urls";
-import { apiBase, siblings, site } from "../lib/site";
+import { apiBase, datasets, siblings, site } from "../lib/site";
 import { jsonLdScript } from "../lib/jsonld";
 import { VISUALIZEDATA_ORG } from "../lib/visualizedata";
 
@@ -23,7 +23,7 @@ const { title, description, canonicalPath, noindex = false, jsonLd, ogType = "we
 const pathname = Astro.url.pathname;
 const canonical = siteUrl(site.domain, canonicalPath ?? pathname);
 const fullTitle = pathname === "/" && !canonicalPath ? `${site.name}: ${site.tagline}` : `${title} | ${site.name}`;
-const nav = navItems(site.id);
+const nav = navItems(site.id, datasets);
 const mark = faviconSvg(site.id).replace("<svg ", '<svg aria-hidden="true" focusable="false" ');
 ---
 
