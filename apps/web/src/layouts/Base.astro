@@ -5,6 +5,7 @@ import { faviconSvg, themeCss } from "../lib/theme";
 import { apiUrl, siteUrl } from "../lib/urls";
 import { apiBase, siblings, site } from "../lib/site";
 import { jsonLdScript } from "../lib/jsonld";
+import { VISUALIZEDATA_ORG } from "../lib/visualizedata";
 
 interface Props {
   /** The page's own title; the site name is appended. */
@@ -110,6 +111,9 @@ const mark = faviconSvg(site.id).replace("<svg ", '<svg aria-hidden="true" focus
               ))
             }
           </ul>
+          <p class="small" style="margin:12px 0 0">
+            Charts and maps from all of this data: <a href={`${VISUALIZEDATA_ORG}/`}>visualizedata.org</a>
+          </p>
         </div>
       </div>
     </footer>
