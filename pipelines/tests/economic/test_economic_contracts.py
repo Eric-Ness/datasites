@@ -4,8 +4,8 @@ import json
 from datasites_core import cli
 from datasites_core.contracts import site_contracts
 
-KEYLESS = {"laus", "qcew", "world-macro"}
-KEYED = {"bea-county-income": "BEA_API_KEY", "census-acs-income": "CENSUS_API_KEY"}
+KEYLESS = {"laus", "qcew", "world-macro", "bea-county-income"}
+KEYED = {"census-acs-income": "CENSUS_API_KEY"}
 
 
 def test_every_contract_loads_and_its_module_has_a_transform():
@@ -30,7 +30,7 @@ def test_sources_and_credentials():
         assert c.source.commercial_ok is True
     assert contracts["world-macro"].source.license == "CC-BY-4.0"
     assert contracts["world-macro"].source.attribution.startswith("The World Bank: World Development Indicators: ")
-    assert "not endorsed or certified by BEA" in contracts["bea-county-income"].source.attribution
+    assert "Not endorsed or certified by BEA" in contracts["bea-county-income"].source.attribution
     assert "not endorsed or certified by the Census Bureau" in contracts["census-acs-income"].source.attribution
     for dataset in ("laus", "qcew"):
         assert contracts[dataset].source.attribution.startswith("Source: U.S. Bureau of Labor Statistics")

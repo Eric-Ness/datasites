@@ -894,7 +894,7 @@
       "url": "https://www.bea.gov/data/income-saving/personal-income-by-county",
       "license": "LicenseRef-US-Government-Work",
       "commercial_ok": true,
-      "attribution": "U.S. Bureau of Economic Analysis, \"CAINC1 County and MSA personal income summary: personal income, population, per capita personal income\" (https://www.bea.gov/data/income-saving/personal-income-by-county). This product uses the Bureau of Economic Analysis (BEA) Data API but is not endorsed or certified by BEA."
+      "attribution": "U.S. Bureau of Economic Analysis, \"CAINC1 County and MSA personal income summary: personal income, population, per capita personal income\" (https://www.bea.gov/data/income-saving/personal-income-by-county), from BEA's bulk download https://apps.bea.gov/regional/zip/CAINC1.zip. Not endorsed or certified by BEA."
     },
     "series": {
       "annual": "Annual estimates"

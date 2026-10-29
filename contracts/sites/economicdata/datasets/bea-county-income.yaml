@@ -8,22 +8,20 @@ description: >-
   their counties and Kalawao with Maui; those combination areas appear under BEA's own codes
   (bea-*). Connecticut has both its legacy counties and its planning regions where BEA publishes them.
 pipeline: datasites_economic.bea_cainc1
-check_every: P7D                 # six full API requests per check; BEA discourages polling unchanged data
+check_every: P7D                 # one conditional GET of BEA's bulk zip; BEA publishes CAINC1 once or twice a year
 cadence: P1Y
 sla: P400D
-requires_env: [BEA_API_KEY]
 source:
   id: bea-regional-cainc1
   name: BEA Regional Economic Accounts, CAINC1 County and MSA personal income summary
   publisher: U.S. Bureau of Economic Analysis
   url: https://www.bea.gov/data/income-saving/personal-income-by-county
-  license: LicenseRef-US-Government-Work   # API terms: https://apps.bea.gov/API/_pdf/bea_api_tos.pdf
+  license: LicenseRef-US-Government-Work
   commercial_ok: true
   attribution: >-
     U.S. Bureau of Economic Analysis, "CAINC1 County and MSA personal income summary: personal
-    income, population, per capita personal income" (https://www.bea.gov/data/income-saving/personal-income-by-county).
-    This product uses the Bureau of Economic Analysis (BEA) Data API but is not endorsed or
-    certified by BEA.
+    income, population, per capita personal income" (https://www.bea.gov/data/income-saving/personal-income-by-county),
+    from BEA's bulk download https://apps.bea.gov/regional/zip/CAINC1.zip. Not endorsed or certified by BEA.
 series:
   annual: Annual estimates
 # Registry counties, plus county codes BEA still reports that the 2024 Gazetteer no longer has.

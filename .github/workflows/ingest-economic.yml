@@ -3,7 +3,7 @@ name: ingest-economic
 # Daily check of every economicdata.dev dataset. Conditional GETs make no-change days nearly free.
 # The schedule stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md); manual runs
 # (Actions → Run workflow) always work, for example to fill the staging bucket.
-# BEA_API_KEY and CENSUS_API_KEY are optional: without them those two datasets report needs-credentials.
+# CENSUS_API_KEY is optional: without it census-acs-income reports needs-credentials. BEA is read from its keyless bulk zip.
 
 on:
   schedule:
@@ -54,7 +54,6 @@ jobs:
           R2_BUCKET: ${{ vars.R2_BUCKET }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          BEA_API_KEY: ${{ secrets.BEA_API_KEY }}
           CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
         run: >
           uv run --frozen datasites run "${{ inputs.dataset || 'economicdata' }}"

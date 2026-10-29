@@ -31,7 +31,7 @@ check_every: P1D              # how often the runner looks (ISO 8601). Checked m
                               #   minus a slack (10% of it, at least an hour, at most half) => skipped as not due
 cadence: P1M                  # how often the source should change
 sla: P45D                     # status turns "stale-upstream" if the source hasn't changed in this long
-requires_env: [BEA_API_KEY]   # optional: secrets it needs; without them the run reports "needs-credentials"
+requires_env: [CENSUS_API_KEY] # optional: secrets it needs; without them the run reports "needs-credentials"
 raw_archive_max_mb: 100       # optional: raw downloads above this aren't archived (they're refetched if needed)
 source:
   id: noaa-ncei-nclimdiv      # kebab-case, used as the raw-archive folder
