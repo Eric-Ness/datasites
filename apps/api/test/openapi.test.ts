@@ -45,6 +45,7 @@ const base = (over: Partial<Dataset>): Dataset => ({
   check_every: "P1D",
   sla: "P2D",
   discontinued: false,
+  needs_credentials: false,
   source: { name: "S", publisher: null, url: "https://example.org", license: "CC0-1.0", commercial_ok: true, attribution: "S" },
   series: {},
   locations: {},
