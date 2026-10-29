@@ -6,5 +6,5 @@ description: >-
   Monthly temperature and precipitation for every US county since 1895, with
   normals, anomalies and rankings, plus the global temperature and greenhouse-gas
   records. Free JSON, CSV and Parquet downloads and an open API.
-status: coming-soon
+status: live
 phase: 1

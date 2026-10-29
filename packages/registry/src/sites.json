@@ -5,7 +5,7 @@
     "name": "Air Data",
     "tagline": "Air quality for every US county, from 1980 to yesterday.",
     "description": "The daily Air Quality Index for every US county with an EPA monitor, joining EPA's validated history to the preliminary days since its last release, plus yearly county summaries. Each row says whether it is validated or preliminary.",
-    "status": "coming-soon",
+    "status": "live",
     "phase": 4
   },
   {
@@ -14,7 +14,7 @@
     "name": "Carbon Data",
     "tagline": "Open, versioned emission factors for carbon accounting.",
     "description": "Scope 1, 2 and 3 emission factors in consistent units, with permanent versioned URLs that auditors can cite. Facility and company emissions to follow.",
-    "status": "coming-soon",
+    "status": "live",
     "phase": 3
   },
   {
@@ -23,7 +23,7 @@
     "name": "Climate Data",
     "tagline": "Clean climate data for every US county and the world, updated monthly.",
     "description": "Monthly temperature and precipitation for every US county since 1895, with normals, anomalies and rankings, plus the global temperature and greenhouse-gas records. Free JSON, CSV and Parquet downloads and an open API.",
-    "status": "coming-soon",
+    "status": "live",
     "phase": 1
   },
   {
@@ -32,7 +32,7 @@
     "name": "Economic Data",
     "tagline": "US regional and international economic data in one consistent schema.",
     "description": "Unemployment for every US state, county and metro area since 1976, county jobs and wages, county income, and GDP, inflation and population for every country. Every number keeps its source, and every version stays citable.",
-    "status": "coming-soon",
+    "status": "live",
     "phase": 3
   },
   {
@@ -41,7 +41,7 @@
     "name": "Election Data",
     "tagline": "Election results with every number traced to its source.",
     "description": "Every US Senate election from 1976 to 2024, one row per candidate, with county presidential and House history and certified 2026 results to follow. Each row keeps the source it came from.",
-    "status": "coming-soon",
+    "status": "live",
     "phase": 2
   },
   {
@@ -50,7 +50,7 @@
     "name": "Satellite Data",
     "tagline": "A unified, up-to-date catalog of every object in orbit.",
     "description": "One record per object since Sputnik, with owner, orbit and status, the newest orbital elements for everything the US Space Force tracks, and a log of every launch. Ready for the new 6-digit catalog numbers.",
-    "status": "coming-soon",
+    "status": "live",
     "phase": 5
   },
   {
@@ -59,7 +59,7 @@
     "name": "Visualize Data",
     "tagline": "Charts, maps and embeds built from the whole data family.",
     "description": "The chart and map layer for climatedata, economicdata, electiondata and the other sites: ready-made visualizations, embeddable charts and shared map boundaries.",
-    "status": "coming-soon",
+    "status": "live",
     "phase": 5
   },
   {
@@ -68,7 +68,7 @@
     "name": "Water Data",
     "tagline": "Daily streamflow at every active US stream gage, and drought by county.",
     "description": "Daily mean flow for the last 400 days at every active USGS stream gage, with approval and ice flags, plus weekly US Drought Monitor categories for every county. Built on the new USGS Water Data APIs: a stable replacement for scripts that used the legacy WaterServices API.",
-    "status": "coming-soon",
+    "status": "live",
     "phase": 2
   },
   {
@@ -77,7 +77,7 @@
     "name": "Wildfire Data",
     "tagline": "Active fires from satellites, linked to official incidents and perimeters.",
     "description": "Satellite fire detections grouped into fires and matched to the official incident name, size, containment and perimeter, with a daily smoke overlay. Updated every 3 hours.",
-    "status": "coming-soon",
+    "status": "live",
     "phase": 4
   }
 ]

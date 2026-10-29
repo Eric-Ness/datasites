@@ -6,5 +6,5 @@ description: >-
   Satellite fire detections grouped into fires and matched to the official
   incident name, size, containment and perimeter, with a daily smoke overlay.
   Updated every 3 hours.
-status: coming-soon
+status: live
 phase: 4

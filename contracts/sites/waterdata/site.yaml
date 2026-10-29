@@ -7,5 +7,5 @@ description: >-
   approval and ice flags, plus weekly US Drought Monitor categories for every
   county. Built on the new USGS Water Data APIs: a stable replacement for
   scripts that used the legacy WaterServices API.
-status: coming-soon
+status: live
 phase: 2

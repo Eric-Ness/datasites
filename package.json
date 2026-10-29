@@ -15,7 +15,8 @@
     "dev:coming-soon": "pnpm --filter @datasites/coming-soon dev",
     "verify:local": "node scripts/verify/e2e-local.mjs api && node scripts/verify/e2e-local.mjs coming-soon && node scripts/verify/geo.mjs",
     "verify:github": "node scripts/verify/github.mjs && node scripts/verify/actions.mjs && node scripts/verify/workflows.mjs && node scripts/verify/ci-green.mjs",
-    "verify:live": "node scripts/verify/live.mjs dns && node scripts/verify/live.mjs prod"
+    "verify:live": "node scripts/verify/live.mjs dns && node scripts/verify/live.mjs prod",
+    "verify:sync": "node scripts/verify/visualizedata-sync.mjs"
   },
   "devDependencies": {
     "typescript": "^7.0.2",

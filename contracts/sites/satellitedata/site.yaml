@@ -6,5 +6,5 @@ description: >-
   One record per object since Sputnik, with owner, orbit and status, the newest
   orbital elements for everything the US Space Force tracks, and a log of every
   launch. Ready for the new 6-digit catalog numbers.
-status: coming-soon
+status: live
 phase: 5
