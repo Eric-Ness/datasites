@@ -32,6 +32,8 @@ export interface Dataset {
   check_every: string;
   sla: string;
   discontinued: boolean;
+  /** The pipeline needs a key or account (contract requires_env); until one is set up it never publishes. */
+  needs_credentials: boolean;
   source: {
     name: string;
     publisher: string | null;

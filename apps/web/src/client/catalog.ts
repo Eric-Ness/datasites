@@ -18,6 +18,13 @@ async function run() {
     return;
   }
   const byId = new Map(catalog.datasets.map((d) => [d.id, d]));
+  const summary = document.querySelector<HTMLElement>("[data-catalog-summary]");
+  const waiting = catalog.datasets.filter((d) => !d.current).length;
+  if (summary && waiting) {
+    const published = catalog.datasets.length - waiting;
+    summary.textContent = `${published} published, ${waiting} not published yet.`;
+    summary.hidden = false;
+  }
   for (const card of cards) {
     const slot = card.querySelector<HTMLElement>("[data-coverage]");
     const entry = byId.get(card.dataset.datasetCard ?? "");

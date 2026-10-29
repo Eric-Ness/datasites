@@ -9,6 +9,7 @@
     "check_every": "P1D",
     "sla": "P8M",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "EPA AirData annual AQI by county",
       "publisher": "US EPA",
@@ -169,6 +170,7 @@
     "check_every": "P1D",
     "sla": "P4D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "EPA AirData daily AQI by county (validated) and EPA AirNow daily data files (preliminary)",
       "publisher": "US EPA (AirData, AirNow) and the AirNow partner agencies",
@@ -266,6 +268,7 @@
     "check_every": "P7D",
     "sla": "P90D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "EPA GHG Emission Factors Hub 2026 and eGRID2024 (Cornerstone releases), Supply Chain GHG Emission Factors v1.4.0 (USEEIO, Cornerstone release), UK Government GHG Conversion Factors 2026 (DESNZ) and Ember Yearly Electricity Data",
       "publisher": "Cornerstone Sustainability Data Initiative; UK Department for Energy Security and Net Zero; Ember",
@@ -405,6 +408,7 @@
     "check_every": "P7D",
     "sla": "P400D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "The Global Carbon Project's fossil CO2 emissions dataset (Global Carbon Budget)",
       "publisher": "Global Carbon Project (Robbie M. Andrew and Glen P. Peters, CICERO)",
@@ -465,6 +469,7 @@
     "check_every": "P1D",
     "sla": "P45D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "NOAA Global Monitoring Laboratory, Trends in Atmospheric Carbon Dioxide",
       "publisher": "NOAA GML",
@@ -526,6 +531,7 @@
     "check_every": "P1D",
     "sla": "P45D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "NOAA Monthly U.S. Climate Divisional Database (nClimDiv), county files",
       "publisher": "NOAA NCEI",
@@ -605,6 +611,7 @@
     "check_every": "P1D",
     "sla": "P45D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "NASA GISS Surface Temperature Analysis (GISTEMP v4) and Met Office Hadley Centre/CRU HadCRUT5",
       "publisher": "NASA Goddard Institute for Space Studies; Met Office Hadley Centre",
@@ -674,6 +681,7 @@
     "check_every": "P1D",
     "sla": "P60D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "NOAA Global Monitoring Laboratory, Trends in Atmospheric Methane and Nitrous Oxide",
       "publisher": "NOAA GML",
@@ -729,6 +737,7 @@
     "check_every": "P1D",
     "sla": "P45D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "NOAA Monthly U.S. Climate Divisional Database (nClimDiv), statewide and national files",
       "publisher": "NOAA NCEI",
@@ -801,6 +810,7 @@
     "check_every": "P7D",
     "sla": "P75D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "NASA Langley Research Center POWER Project, Monthly and Annual API; capitals from Natural Earth",
       "publisher": "NASA Langley Research Center",
@@ -888,6 +898,7 @@
     "check_every": "P7D",
     "sla": "P400D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "BEA Regional Economic Accounts, CAINC1 County and MSA personal income summary",
       "publisher": "U.S. Bureau of Economic Analysis",
@@ -966,6 +977,7 @@
     "check_every": "P7D",
     "sla": "P450D",
     "discontinued": false,
+    "needs_credentials": true,
     "source": {
       "name": "U.S. Census Bureau, American Community Survey 5-Year Estimates, table B19013 (Census Data API)",
       "publisher": "U.S. Census Bureau",
@@ -1051,6 +1063,7 @@
     "check_every": "P1D",
     "sla": "P45D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "BLS Local Area Unemployment Statistics (LAUS)",
       "publisher": "U.S. Bureau of Labor Statistics",
@@ -1140,6 +1153,7 @@
     "check_every": "P1D",
     "sla": "P120D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "BLS Quarterly Census of Employment and Wages (QCEW) open-data CSV slices",
       "publisher": "U.S. Bureau of Labor Statistics",
@@ -1245,6 +1259,7 @@
     "check_every": "P1D",
     "sla": "P200D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "World Bank World Development Indicators (Indicators API v2)",
       "publisher": "The World Bank",
@@ -1330,6 +1345,7 @@
     "check_every": "P7D",
     "sla": "P5Y",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "MIT Election Data and Science Lab, County Presidential Election Returns 2000-2024",
       "publisher": "MIT Election Data and Science Lab (MEDSL)",
@@ -1466,6 +1482,7 @@
     "check_every": "P7D",
     "sla": "P3Y",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "MIT Election Data and Science Lab, U.S. House 1976-2024",
       "publisher": "MIT Election Data and Science Lab (MEDSL)",
@@ -1659,6 +1676,7 @@
     "check_every": "P7D",
     "sla": "P3Y",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "MIT Election Data and Science Lab, U.S. Senate statewide 1976-2024",
       "publisher": "MIT Election Data and Science Lab (MEDSL)",
@@ -1844,6 +1862,7 @@
     "check_every": "P1D",
     "sla": "P2D",
     "discontinued": false,
+    "needs_credentials": true,
     "source": {
       "name": "Space-Track.org GP class (current general perturbations element sets)",
       "publisher": "USSPACECOM, 18th Space Defense Squadron",
@@ -2067,6 +2086,7 @@
     "check_every": "P1D",
     "sla": "P14D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "General Catalog of Artificial Space Objects (GCAT), launch list",
       "publisher": "Jonathan C. McDowell",
@@ -2283,6 +2303,7 @@
     "check_every": "P1D",
     "sla": "P14D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "General Catalog of Artificial Space Objects (GCAT), object catalogs and currentcat",
       "publisher": "Jonathan C. McDowell",
@@ -2555,6 +2576,7 @@
     "check_every": "P30D",
     "sla": "P400D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "U.S. Census Bureau 2025 Cartographic Boundary Files (state, county, 119th Congress congressional district; 1:20,000,000 and 1:5,000,000) and Natural Earth Admin 0 Countries v5.1.2 (1:110m, 1:50m)",
       "publisher": "U.S. Census Bureau; Natural Earth",
@@ -2579,6 +2601,7 @@
     "check_every": "P1D",
     "sla": "P15D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "U.S. Drought Monitor county statistics (categorical percent of area)",
       "publisher": "National Drought Mitigation Center, University of Nebraska-Lincoln",
@@ -2659,6 +2682,7 @@
     "check_every": "P1D",
     "sla": "P3D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "USGS Water Data APIs (OGC API), monitoring-locations and time-series-metadata",
       "publisher": "U.S. Geological Survey",
@@ -2847,6 +2871,7 @@
     "check_every": "P1D",
     "sla": "P3D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "USGS Water Data APIs (OGC API), daily values",
       "publisher": "U.S. Geological Survey",
@@ -2918,6 +2943,7 @@
     "check_every": "PT3H",
     "sla": "PT12H",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "NASA LANCE FIRMS VIIRS 375 m Active Fire NRT (VNP14IMGTDL_NRT, VJ114IMGTDL_NRT, VJ214IMGTDL_NRT); incidents and perimeters from NIFC WFIGS; boundaries from Natural Earth",
       "publisher": "NASA LANCE FIRMS",
@@ -3134,6 +3160,7 @@
     "check_every": "PT3H",
     "sla": "PT12H",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "NIFC WFIGS Current Wildland Fire Incident Locations",
       "publisher": "National Interagency Fire Center (NIFC)",
@@ -3357,6 +3384,7 @@
     "check_every": "PT3H",
     "sla": "P2D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "NIFC WFIGS Current Interagency Fire Perimeters",
       "publisher": "National Interagency Fire Center (NIFC)",
@@ -3381,6 +3409,7 @@
     "check_every": "PT3H",
     "sla": "P3D",
     "discontinued": false,
+    "needs_credentials": false,
     "source": {
       "name": "NOAA NESDIS Hazard Mapping System (HMS) Fire and Smoke Analysis, smoke polygons",
       "publisher": "NOAA NESDIS Office of Satellite and Product Operations",
