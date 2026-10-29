@@ -90,7 +90,9 @@ async function loadMeta(c: DatasetClientConfig) {
       notice(
         unpublished ? "info" : "error",
         unpublished
-          ? "This dataset hasn't been published yet. Its first version appears here as soon as its pipeline runs."
+          ? c.needsCredentials
+            ? "This dataset hasn't been published yet: its pipeline needs an API key or account from the publisher, which hasn't been set up. Its first version appears here once it has."
+            : "This dataset hasn't been published yet. Its first version appears here as soon as its pipeline runs."
           : `${describeFailure(err, host)} The description, schema and URLs on this page don't depend on it.`,
         unpublished ? undefined : () => void loadMeta(c),
       ),

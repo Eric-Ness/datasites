@@ -19,10 +19,11 @@ const indicators = indicatorsForSite(site.id, datasets);
     <p class="lede">
       {
         siteDatasets.length
-          ? `${siteDatasets.length} ${siteDatasets.length === 1 ? "dataset" : "datasets"}, each with a chart or preview, downloads and an API.`
+          ? `${siteDatasets.length === 1 ? "One dataset" : `${siteDatasets.length} datasets`} in the catalog. ${siteDatasets.length === 1 ? "It has" : "Each one that is published has"} a chart or preview, downloads and an API.`
           : "No datasets are published here yet."
       }
     </p>
+    <p class="muted small" data-catalog-summary hidden></p>
     <p class="muted small">
       Machine-readable: <a class="mono" href={catalogUrl}>/v1/catalog</a>
     </p>

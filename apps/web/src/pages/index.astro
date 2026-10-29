@@ -55,7 +55,7 @@ const kinds = new Set(siteDatasets.map((d) => d.kind));
   <section class="section" aria-labelledby="datasets-h">
     <div class="section-head">
       <h2 id="datasets-h">Datasets</h2>
-      {siteDatasets.length > 0 && <a href="/datasets/">All {siteDatasets.length} datasets</a>}
+      {siteDatasets.length > 0 && <a href="/datasets/">{siteDatasets.length === 1 ? "The dataset" : `All ${siteDatasets.length} datasets`}</a>}
     </div>
     {
       siteDatasets.length ? (

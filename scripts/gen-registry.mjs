@@ -58,6 +58,7 @@ for (const site of siteDirs) {
       check_every: c.check_every,
       sla: c.sla,
       discontinued: Boolean(c.discontinued),
+      needs_credentials: (c.requires_env ?? []).length > 0,
       source: {
         name: c.source?.name,
         publisher: c.source?.publisher ?? null,

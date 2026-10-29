@@ -1,0 +1,28 @@
+# Cut from https://apps.bea.gov/regional/zip/CAINC1.zip (CAINC1__ALL_AREAS_1969_2024.csv, BEA release of
+# 2026-02-05), downloaded 2026-10-28: seven areas, years 2023-2024 only, Latin-1 as published; quotes kept only on GeoFIPS and GeoName.
+GeoFIPS,GeoName,Region,TableName,LineCode,IndustryClassification,Description,Unit,2023,2024
+ "00000","United States", ,CAINC1,1,...,Personal income (thousands of dollars) ,Thousands of dollars,23577208000,24897613000
+ "00000","United States", ,CAINC1,2,...,Population (persons) 1/,Number of persons,336806231,340110988
+ "00000","United States", ,CAINC1,3,...,Per capita personal income (dollars) 2/,Dollars,70002,73204
+ "09110","Capitol, CT*",1,CAINC1,1,...,Personal income (thousands of dollars) ,Thousands of dollars,(NA),82016501
+ "09110","Capitol, CT*",1,CAINC1,2,...,Population (persons) 1/,Number of persons,(NA),991508
+ "09110","Capitol, CT*",1,CAINC1,3,...,Per capita personal income (dollars) 2/,Dollars,(NA),82719
+ "10000","Delaware",2,CAINC1,1,...,Personal income (thousands of dollars) ,Thousands of dollars,66943793,71594214
+ "10000","Delaware",2,CAINC1,2,...,Population (persons) 1/,Number of persons,1036423,1051917
+ "10000","Delaware",2,CAINC1,3,...,Per capita personal income (dollars) 2/,Dollars,64591,68061
+ "10001","Kent, DE",2,CAINC1,1,...,Personal income (thousands of dollars) ,Thousands of dollars,10041990,10689379
+ "10001","Kent, DE",2,CAINC1,2,...,Population (persons) 1/,Number of persons,190123,192690
+ "10001","Kent, DE",2,CAINC1,3,...,Per capita personal income (dollars) 2/,Dollars,52818,55474
+ "35013","Doña Ana, NM",6,CAINC1,1,...,Personal income (thousands of dollars) ,Thousands of dollars,10768476,11409025
+ "35013","Doña Ana, NM",6,CAINC1,2,...,Population (persons) 1/,Number of persons,226534,229366
+ "35013","Doña Ana, NM",6,CAINC1,3,...,Per capita personal income (dollars) 2/,Dollars,47536,49742
+ "51901","Albemarle + Charlottesville, VA*",5,CAINC1,1,...,Personal income (thousands of dollars) ,Thousands of dollars,16878483,17850944
+ "51901","Albemarle + Charlottesville, VA*",5,CAINC1,2,...,Population (persons) 1/,Number of persons,160904,162080
+ "51901","Albemarle + Charlottesville, VA*",5,CAINC1,3,...,Per capita personal income (dollars) 2/,Dollars,104898,110137
+ "97000","Rocky Mountain",7,CAINC1,1,...,Personal income (thousands of dollars) ,Thousands of dollars,935488277,985009641
+ "97000","Rocky Mountain",7,CAINC1,2,...,Population (persons) 1/,Number of persons,13032052,13187576
+ "97000","Rocky Mountain",7,CAINC1,3,...,Per capita personal income (dollars) 2/,Dollars,71784,74692
+"Note: See the included footnote file."
+"CAINC1: County personal income summary: personal income, population, per capita personal income "
+"Last updated: February 5, 2026-- new statistics for 2024; revised statistics for 2020-2023."
+"U.S. Bureau of Economic Analysis"

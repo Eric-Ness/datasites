@@ -6,5 +6,5 @@ description: >-
   The daily Air Quality Index for every US county with an EPA monitor, joining
   EPA's validated history to the preliminary days since its last release, plus
   yearly county summaries. Each row says whether it is validated or preliminary.
-status: coming-soon
+status: live
 phase: 4

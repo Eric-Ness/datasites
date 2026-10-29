@@ -40,6 +40,7 @@ export interface DatasetClientConfig {
   defaultMeasure: string | null;
   selection: Selection;
   sourceName: string;
+  needsCredentials: boolean;
 }
 
 export interface Section {
@@ -85,6 +86,7 @@ export function datasetPageModel(
     defaultMeasure: defaultMeasure(ds),
     selection,
     sourceName: ds.source.publisher ?? ds.source.name,
+    needsCredentials: ds.needs_credentials,
   };
   const exploreTitle = ds.kind === "series" ? "Chart" : ds.kind === "table" ? "Preview" : "Files";
   const charts = chartsFor(site.id, ds.id);
