@@ -6,6 +6,8 @@ name: ingest-wildfire
 # HMS files and the 15 MB Natural Earth boundaries 304s, and WFIGS is a few paged queries.
 # The schedule stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md); manual runs
 # (Actions → Run workflow) always work, for example to fill the staging bucket.
+# --alert-after 2: a source that can't be reached for one run (FIRMS was unreachable from the runner for one run
+# on 2026-10-30) doesn't fail the job; the second miss in a row does. Other errors fail it at once.
 
 on:
   schedule:
@@ -61,6 +63,7 @@ jobs:
           --target "${{ inputs.target || 'production' }}"
           ${{ inputs.force && '--force' || '' }}
           --summary "$GITHUB_STEP_SUMMARY"
+          --alert-after 2
       - name: Ping tickharbor (result)
         if: always() && env.HC_URL != ''
         run: curl -fsS -m 10 --retry 3 "$HC_URL/${{ job.status == 'success' && '0' || '1' }}" || true

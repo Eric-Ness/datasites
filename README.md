@@ -77,6 +77,8 @@ In local development, `?site=<id>` picks the site. `wrangler dev` rewrites every
 
 If validation fails, the version is quarantined, the old one keeps serving, and the command exits with code 2.
 
+If a source can't be reached (connection errors, timeouts, or 429/5xx after every retry), the command exits with code 1 and the old version keeps serving. With `--alert-after N` it exits 0 and reports the dataset as `upstream-down` until the dataset has failed N runs in a row. ingest-wildfire uses `--alert-after 2`, so one unreachable run doesn't page.
+
 Other commands:
 
 ```powershell
