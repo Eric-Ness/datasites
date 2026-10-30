@@ -1,6 +1,10 @@
 """datasites run climatedata/co2-monthly --target local
 
 Exit codes: 0 published or unchanged, 2 blocked by validation, 1 error.
+
+With --alert-after N, a dataset whose source can't be reached (connection errors, timeouts, or 429/5xx after
+every retry) counts as an error only once it has failed N runs in a row; until then the run reports it as
+"upstream-down" and keeps serving the last version. Any other error fails the run at once.
 """
 
 from __future__ import annotations
@@ -14,9 +18,12 @@ from pathlib import Path
 
 from datetime import datetime, timedelta, timezone
 
+import httpx
+
 from . import durations
 from .contracts import ContractError, all_contracts, load_contract, site_contracts
 from .publish import RunResult, load_state, run_dataset, set_current
+from .fetch import RETRY_STATUSES
 from .store import TARGETS, open_store
 
 
@@ -35,7 +42,7 @@ def _run_url() -> str | None:
     return f"{server}/{repo}/actions/runs/{run_id}" if server and repo and run_id else None
 
 
-def _summary(results: list[RunResult], failures: list[tuple[str, str]], path: str) -> None:
+def _summary(results: list[RunResult], failures: list[tuple[str, str]], path: str, down: list[tuple[str, str]] = ()) -> None:
     lines = ["| Dataset | Outcome | Version | New blobs | Notes |", "|---|---|---|---|---|"]
     for r in results:
         notes = ""
@@ -44,6 +51,8 @@ def _summary(results: list[RunResult], failures: list[tuple[str, str]], path: st
         lines.append(f"| {r.ref} | {r.outcome} | {r.version or ''} | {r.blobs_written} | {notes} |")
     for ref, error in failures:
         lines.append(f"| {ref} | error | | | {error} |")
+    for ref, error in down:
+        lines.append(f"| {ref} | upstream down (not alerting yet) | | | {error} |")
     with Path(path).open("a", encoding="utf-8") as fh:
         fh.write("\n".join(lines) + "\n")
 
@@ -61,6 +70,20 @@ def due_slack(check_every: timedelta) -> timedelta:
     return min(max(check_every * DUE_FRACTION, DUE_MIN_SLACK), check_every / 2)
 
 
+def upstream_down(err: BaseException) -> bool:
+    """True when err, or an error it was raised from, is the source being unreachable rather than a bug or bad data."""
+    seen: set[int] = set()
+    e: BaseException | None = err
+    while e is not None and id(e) not in seen:
+        seen.add(id(e))
+        if isinstance(e, httpx.TransportError):
+            return True
+        if isinstance(e, httpx.HTTPStatusError) and e.response.status_code in RETRY_STATUSES:
+            return True
+        e = e.__cause__ or e.__context__
+    return False
+
+
 def not_due(contract, store, now: datetime) -> bool:
     """True when the last successful check is more recent than the contract's check_every allows."""
     checked = load_state(store, contract).get("checked_at")
@@ -76,6 +99,7 @@ def cmd_run(args: argparse.Namespace) -> int:
     results: list[RunResult] = []
     failures: list[tuple[str, str]] = []
     skipped = 0
+    down: list[tuple[str, str]] = []
     needs_credentials: list[str] = []
     now = datetime.now(timezone.utc)
     for ref in _refs(args.dataset):
@@ -94,19 +118,25 @@ def cmd_run(args: argparse.Namespace) -> int:
             results.append(result)
             print(json.dumps(result.as_dict()))
         except Exception as err:  # keep going so one broken source doesn't stop the others
-            failures.append((ref, f"{type(err).__name__}: {err}"))
+            message = f"{type(err).__name__}: {err}"
+            misses = load_state(store, contract).get("consecutive_failures", 0) if upstream_down(err) else None
+            if misses is not None and misses < args.alert_after:
+                down.append((ref, message))
+                print(json.dumps({"dataset": ref, "outcome": "upstream-down", "error": str(err), "misses": misses, "alert_after": args.alert_after}))
+                continue
+            failures.append((ref, message))
             print(json.dumps({"dataset": ref, "outcome": "error", "error": str(err)}), file=sys.stderr)
     if args.summary:
-        _summary(results, failures, args.summary)
+        _summary(results, failures, args.summary, down)
     if failures:
         return 1
     if any(r.outcome == "blocked" for r in results):
         return 2
     counts = {o: sum(1 for r in results if r.outcome == o) for o in ("published", "unchanged")}
     print(
-        f"RUN OK {len(results) + skipped + len(needs_credentials)} datasets "
+        f"RUN OK {len(results) + skipped + len(needs_credentials) + len(down)} datasets "
         f"(published {counts['published']}, unchanged {counts['unchanged']}, not due {skipped}, "
-        f"needs credentials {len(needs_credentials)})"
+        f"needs credentials {len(needs_credentials)}{f', upstream down {len(down)}' if down else ''})"
     )
     return 0
 
@@ -167,6 +197,10 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--target", choices=TARGETS, default="local")
     run.add_argument("--summary", help="append a Markdown summary to this file (e.g. $GITHUB_STEP_SUMMARY)")
     run.add_argument("--force", action="store_true", help="run even if the dataset was checked within its check_every")
+    run.add_argument(
+        "--alert-after", type=int, default=1, metavar="N",
+        help="fail the run for an unreachable source only once the dataset has failed N runs in a row (default 1)",
+    )
 
     for name, text in (("rollback", "point a dataset back at a previous version"), ("promote", "publish a reviewed quarantined version")):
         p = sub.add_parser(name, help=text)

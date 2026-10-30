@@ -71,3 +71,57 @@ def test_a_late_scheduled_run_does_not_skip_a_three_hourly_dataset(contract, sto
     put_json(store, state_key(contract.site, contract.id), {"checked_at": "2026-10-26T07:12:40Z"})
     assert not cli.not_due(three_hourly, store, datetime(2026, 10, 26, 9, 53, 10, tzinfo=timezone.utc))  # 2h40m30s: due
     assert cli.not_due(three_hourly, store, datetime(2026, 10, 26, 8, 40, tzinfo=timezone.utc))  # 1h29m later: not yet
+
+
+def _failing_run(monkeypatch, contract, store, err):
+    """cmd_run over one dataset whose run raises err, counting misses the way publish.run_dataset does."""
+    from datasites_core.publish import load_state, save_state
+
+    def run_dataset(c, s, **_):
+        state = load_state(s, c)
+        state["consecutive_failures"] += 1
+        save_state(s, c, state)
+        raise err
+
+    monkeypatch.setattr(cli, "_refs", lambda target: [contract.ref])
+    monkeypatch.setattr(cli, "load_contract", lambda ref: contract)
+    monkeypatch.setattr(cli, "open_store", lambda target: store)
+    monkeypatch.setattr(cli, "run_dataset", run_dataset)
+
+
+def _connect_error():
+    import httpx
+
+    return httpx.ConnectError("[Errno 101] Network is unreachable", request=httpx.Request("GET", "https://firms.example/"))
+
+
+def test_one_unreachable_source_does_not_alert(monkeypatch, contract, store, capsys):
+    """FIRMS was unreachable from GitHub's runner for one run on 2026-10-30; the next run was fine."""
+    _failing_run(monkeypatch, contract, store, _connect_error())
+    assert cli.main(["run", contract.ref, "--alert-after", "2"]) == 0
+    out = capsys.readouterr().out
+    assert '"outcome": "upstream-down"' in out and "upstream down 1" in out
+    assert cli.main(["run", contract.ref, "--alert-after", "2"]) == 1  # the second miss in a row alerts
+    assert '"outcome": "error"' in capsys.readouterr().err
+
+
+def test_without_alert_after_every_miss_alerts(monkeypatch, contract, store):
+    _failing_run(monkeypatch, contract, store, _connect_error())
+    assert cli.main(["run", contract.ref]) == 1
+
+
+def test_a_wrapped_outage_counts_but_other_errors_alert_at_once(monkeypatch, contract, store):
+    import httpx
+
+    try:
+        try:
+            raise _connect_error()
+        except httpx.ConnectError as inner:
+            raise RuntimeError("FIRMS area CSV") from inner
+    except RuntimeError as wrapped:
+        assert cli.upstream_down(wrapped)
+    request = httpx.Request("GET", "https://x/")
+    assert cli.upstream_down(httpx.HTTPStatusError("503", request=request, response=httpx.Response(503, request=request)))
+    assert not cli.upstream_down(httpx.HTTPStatusError("404", request=request, response=httpx.Response(404, request=request)))
+    _failing_run(monkeypatch, contract, store, ValueError("bad column"))
+    assert cli.main(["run", contract.ref, "--alert-after", "2"]) == 1
