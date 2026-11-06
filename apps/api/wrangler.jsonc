@@ -23,6 +23,7 @@
     { "pattern": "api.climatedata.dev", "custom_domain": true },
     { "pattern": "api.economicdata.dev", "custom_domain": true },
     { "pattern": "api.electiondata.dev", "custom_domain": true },
+    { "pattern": "api.healthdata.dev", "custom_domain": true },
     { "pattern": "api.housingdata.dev", "custom_domain": true },
     { "pattern": "api.satellitedata.dev", "custom_domain": true },
     { "pattern": "api.visualizedata.dev", "custom_domain": true },
