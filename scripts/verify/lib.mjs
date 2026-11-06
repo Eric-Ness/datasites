@@ -4,6 +4,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { inflateRawSync } from "node:zlib";
 
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const WINDOWS = process.platform === "win32";
@@ -172,4 +173,65 @@ export function originRepo() {
   const m = /github\.com[/:]([^/]+)\/([^/.]+)(\.git)?$/.exec(url);
   if (!m) fail(`origin is not a GitHub repo: ${url}`);
   return `${m[1]}/${m[2]}`;
+}
+
+// --- parsers shared by the verification scripts (written independently of the pipelines) ----------------------
+
+/** RFC 4180 CSV (quoted fields, doubled quotes, commas and newlines inside quotes) -> array of objects. */
+export function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let field = "";
+  let quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (quoted) {
+      if (c === '"' && text[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else if (c === '"') quoted = false;
+      else field += c;
+    } else if (c === '"') quoted = true;
+    else if (c === ",") {
+      row.push(field);
+      field = "";
+    } else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(field);
+      rows.push(row);
+      row = [];
+      field = "";
+    } else field += c;
+  }
+  if (field !== "" || row.length) {
+    row.push(field);
+    rows.push(row);
+  }
+  const [header, ...body] = rows;
+  return body.map((cells) => Object.fromEntries(header.map((name, i) => [name, cells[i]])));
+}
+
+/** The files in a zip archive, by name, from its central directory. */
+export function unzip(buf) {
+  let eocd = buf.length - 22;
+  while (eocd >= 0 && buf.readUInt32LE(eocd) !== 0x06054b50) eocd--;
+  check(eocd >= 0, "xlsx: no zip end-of-directory record");
+  const count = buf.readUInt16LE(eocd + 10);
+  let p = buf.readUInt32LE(eocd + 16);
+  const files = new Map();
+  for (let i = 0; i < count; i++) {
+    check(buf.readUInt32LE(p) === 0x02014b50, "xlsx: bad central directory entry");
+    const method = buf.readUInt16LE(p + 10);
+    const size = buf.readUInt32LE(p + 20);
+    const nameLen = buf.readUInt16LE(p + 28);
+    const extraLen = buf.readUInt16LE(p + 30);
+    const commentLen = buf.readUInt16LE(p + 32);
+    const local = buf.readUInt32LE(p + 42);
+    const name = buf.toString("utf8", p + 46, p + 46 + nameLen);
+    const dataStart = local + 30 + buf.readUInt16LE(local + 26) + buf.readUInt16LE(local + 28);
+    const data = buf.subarray(dataStart, dataStart + size);
+    files.set(name, method === 8 ? inflateRawSync(data) : data);
+    p += 46 + nameLen + extraLen + commentLen;
+  }
+  return files;
 }

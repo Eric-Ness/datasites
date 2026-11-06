@@ -5,8 +5,7 @@
 //   node scripts/verify/housing.mjs                      prints HOUSING VERIFIED ... when everything matches
 //   node scripts/verify/housing.mjs --negative-control   corrupts one expected value, so it must FAIL
 import { createHash } from "node:crypto";
-import { inflateRawSync } from "node:zlib";
-import { check, localDataset } from "./lib.mjs";
+import { check, localDataset, unzip } from "./lib.mjs";
 
 const NEGATIVE = process.argv.includes("--negative-control");
 const UA = "datasites-verify/1 (+https://housingdata.dev)";
@@ -107,31 +106,6 @@ async function verifyPermits() {
 }
 
 // --- house-prices ----------------------------------------------------------------------------------------
-
-/** The files in a zip archive, by name, from its central directory. */
-function unzip(buf) {
-  let eocd = buf.length - 22;
-  while (eocd >= 0 && buf.readUInt32LE(eocd) !== 0x06054b50) eocd--;
-  check(eocd >= 0, "xlsx: no zip end-of-directory record");
-  const count = buf.readUInt16LE(eocd + 10);
-  let p = buf.readUInt32LE(eocd + 16);
-  const files = new Map();
-  for (let i = 0; i < count; i++) {
-    check(buf.readUInt32LE(p) === 0x02014b50, "xlsx: bad central directory entry");
-    const method = buf.readUInt16LE(p + 10);
-    const size = buf.readUInt32LE(p + 20);
-    const nameLen = buf.readUInt16LE(p + 28);
-    const extraLen = buf.readUInt16LE(p + 30);
-    const commentLen = buf.readUInt16LE(p + 32);
-    const local = buf.readUInt32LE(p + 42);
-    const name = buf.toString("utf8", p + 46, p + 46 + nameLen);
-    const dataStart = local + 30 + buf.readUInt16LE(local + 26) + buf.readUInt16LE(local + 28);
-    const data = buf.subarray(dataStart, dataStart + size);
-    files.set(name, method === 8 ? inflateRawSync(data) : data);
-    p += 46 + nameLen + extraLen + commentLen;
-  }
-  return files;
-}
 
 const unescapeXml = (s) =>
   s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&amp;/g, "&");

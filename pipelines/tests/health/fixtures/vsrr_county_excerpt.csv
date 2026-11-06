@@ -1,0 +1,12 @@
+# Lines copied verbatim from https://data.cdc.gov/api/views/gb4e-yj24/rows.csv?accessType=DOWNLOAD (the header line, then Los Angeles CA, Bedford VA (listed twice), Fairfield CT and Aleutians West AK for December 2024 and March 2026), captured 2026-11-06.
+Data as of,Year,Month,ST_ABBREV,STATE_NAME,COUNTYNAME,FIPS,STATEFIPS,COUNTYFIPS,CODE2013,Provisional Drug Overdose Deaths,Footnote,Percentage Of Records Pending Investigation,HistoricalDataCompletenessNote,MonthEndingDate,Start Date,End Date
+10/04/2026,2024,12,AK,Alaska,Aleutians West (CA),2016,2,16,6,,One or more data cells have counts between 1-9 and have been suppressed in accordance with NCHS confidentiality standards.,0.00,,12/31/2024,01/31/2020,03/31/2026
+10/04/2026,2026,3,AK,Alaska,Aleutians West (CA),2016,2,16,6,0,,0.00,,03/31/2026,01/31/2020,03/31/2026
+10/04/2026,2024,12,CA,California,Los Angeles,6037,6,37,1,1829,,0.29,,12/31/2024,01/31/2020,03/31/2026
+10/04/2026,2026,3,CA,California,Los Angeles,6037,6,37,1,1810,,0.26,,03/31/2026,01/31/2020,03/31/2026
+10/04/2026,2026,3,CT,Connecticut,Fairfield,9001,9,1,3,130,,0.00,Completeness of provisional 2019 data under 90% after 6 months.,03/31/2026,01/31/2020,03/31/2026
+10/04/2026,2024,12,CT,Connecticut,Fairfield,9001,9,1,3,172,,0.03,Completeness of provisional 2019 data under 90% after 6 months.,12/31/2024,01/31/2020,03/31/2026
+10/04/2026,2026,3,VA,Virginia,Bedford (city),51019,51,19,3,15,,0.00,,03/31/2026,01/31/2020,03/31/2026
+10/04/2026,2026,3,VA,Virginia,Bedford,51019,51,19,3,15,,0.00,,03/31/2026,01/31/2020,03/31/2026
+10/04/2026,2024,12,VA,Virginia,Bedford (city),51019,51,19,3,26,,0.00,,12/31/2024,01/31/2020,03/31/2026
+10/04/2026,2024,12,VA,Virginia,Bedford,51019,51,19,3,26,,0.00,,12/31/2024,01/31/2020,03/31/2026

@@ -45,6 +45,15 @@
     "phase": 2
   },
   {
+    "id": "healthdata",
+    "domain": "healthdata.dev",
+    "name": "Health Data",
+    "tagline": "Overdose deaths and health insurance for every US state and county.",
+    "description": "CDC's provisional drug overdose deaths for every state, by drug, and every county, updated monthly, and the Census Bureau's estimates of who lacks health insurance in every county and state since 2008.",
+    "status": "coming-soon",
+    "phase": 6
+  },
+  {
     "id": "housingdata",
     "domain": "housingdata.dev",
     "name": "Housing Data",

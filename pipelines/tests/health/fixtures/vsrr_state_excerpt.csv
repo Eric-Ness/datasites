@@ -1,0 +1,98 @@
+# Lines copied verbatim from https://data.cdc.gov/api/views/xkb8-kh2a/rows.csv?accessType=DOWNLOAD (the header line, then every indicator for the US, New York, New York City and Vermont in December 2024 and May 2026), captured 2026-11-06.
+State,Year,Month,Period,Indicator,Data Value,Percent Complete,Percent Pending Investigation,State Name,Footnote,Footnote Symbol,Predicted Value
+NY,2024,December,12 month-ending,Cocaine (T40.5),1204,100,0.20819615,New York,Numbers may differ from published reports using final data. See Technical Notes.,**,1222
+NY,2026,May,12 month-ending,Cocaine (T40.5),843,100,0.379194042,New York,Underreported due to incomplete data.,*,872
+NY,2024,December,12 month-ending,Heroin (T40.1),87,100,0.20819615,New York,Numbers may differ from published reports using final data. See Technical Notes.,**,89
+NY,2026,May,12 month-ending,Heroin (T40.1),52,100,0.379194042,New York,Underreported due to incomplete data.,*,54
+NY,2024,December,12 month-ending,Methadone (T40.3),141,100,0.20819615,New York,Numbers may differ from published reports using final data. See Technical Notes.,**,144
+NY,2026,May,12 month-ending,Methadone (T40.3),114,100,0.379194042,New York,Underreported due to incomplete data.,*,119
+NY,2024,December,12 month-ending,Natural & semi-synthetic opioids (T40.2),266,100,0.20819615,New York,Numbers may differ from published reports using final data. See Technical Notes.,**,271
+NY,2026,May,12 month-ending,Natural & semi-synthetic opioids (T40.2),236,100,0.379194042,New York,Underreported due to incomplete data.,*,246
+NY,2024,December,12 month-ending,"Natural & semi-synthetic opioids, incl. methadone (T40.2, T40.3)",392,100,0.20819615,New York,Numbers may differ from published reports using final data. See Technical Notes.,**,399
+NY,2026,May,12 month-ending,"Natural & semi-synthetic opioids, incl. methadone (T40.2, T40.3)",335,100,0.379194042,New York,Underreported due to incomplete data.,*,349
+NY,2024,December,12 month-ending,"Natural, semi-synthetic, & synthetic opioids, incl. methadone (T40.2-T40.4)",1737,100,0.20819615,New York,Numbers may differ from published reports using final data. See Technical Notes.,**,1762
+NY,2026,May,12 month-ending,"Natural, semi-synthetic, & synthetic opioids, incl. methadone (T40.2-T40.4)",1152,100,0.379194042,New York,Underreported due to incomplete data.,*,1190
+NY,2024,December,12 month-ending,Number of Deaths,103268,100,0.20819615,New York,Numbers may differ from published reports using final data. See Technical Notes.,**,
+NY,2026,May,12 month-ending,Number of Deaths,102586,100,0.379194042,New York,Underreported due to incomplete data.,*,
+NY,2024,December,12 month-ending,Number of Drug Overdose Deaths,2331,100,0.20819615,New York,Numbers may differ from published reports using final data. See Technical Notes.,**,2365
+NY,2026,May,12 month-ending,Number of Drug Overdose Deaths,1725,100,0.379194042,New York,Underreported due to incomplete data.,*,1783
+NY,2024,December,12 month-ending,"Opioids (T40.0-T40.4,T40.6)",1750,100,0.20819615,New York,Numbers may differ from published reports using final data. See Technical Notes.,**,1775
+NY,2026,May,12 month-ending,"Opioids (T40.0-T40.4,T40.6)",1160,100,0.379194042,New York,Underreported due to incomplete data.,*,1198
+NY,2024,December,12 month-ending,Percent with drugs specified,98.36979837,100,0.20819615,New York,Numbers may differ from published reports using final data. See Technical Notes.,**,
+NY,2026,May,12 month-ending,Percent with drugs specified,97.68115942,100,0.379194042,New York,Underreported due to incomplete data.,*,
+NY,2024,December,12 month-ending,Psychostimulants with abuse potential (T43.6),346,100,0.20819615,New York,Numbers may differ from published reports using final data. See Technical Notes.,**,352
+NY,2026,May,12 month-ending,Psychostimulants with abuse potential (T43.6),235,100,0.379194042,New York,Underreported due to incomplete data.,*,244
+NY,2024,December,12 month-ending,"Synthetic opioids, excl. methadone (T40.4)",1555,100,0.20819615,New York,Numbers may differ from published reports using final data. See Technical Notes.,**,1577
+NY,2026,May,12 month-ending,"Synthetic opioids, excl. methadone (T40.4)",952,100,0.379194042,New York,Underreported due to incomplete data.,*,982
+US,2024,December,12 month-ending,Cocaine (T40.5),22283,100,0.131031538,United States,Numbers may differ from published reports using final data. See Technical Notes.,**,22397
+US,2026,May,12 month-ending,Cocaine (T40.5),18911,100,0.244944684,United States,Underreported due to incomplete data.,*,19225
+US,2024,December,12 month-ending,Heroin (T40.1),2794,100,0.131031538,United States,Numbers may differ from published reports using final data. See Technical Notes.,**,2808
+US,2026,May,12 month-ending,Heroin (T40.1),1684,100,0.244944684,United States,Underreported due to incomplete data.,*,1714
+US,2024,December,12 month-ending,Methadone (T40.3),3264,100,0.131031538,United States,Numbers may differ from published reports using final data. See Technical Notes.,**,3285
+US,2026,May,12 month-ending,Methadone (T40.3),3327,100,0.244944684,United States,Underreported due to incomplete data.,*,3386
+US,2024,December,12 month-ending,Natural & semi-synthetic opioids (T40.2),8034,100,0.131031538,United States,Numbers may differ from published reports using final data. See Technical Notes.,**,8082
+US,2026,May,12 month-ending,Natural & semi-synthetic opioids (T40.2),6852,100,0.244944684,United States,Underreported due to incomplete data.,*,6996
+US,2024,December,12 month-ending,"Natural & semi-synthetic opioids, incl. methadone (T40.2, T40.3)",10928,100,0.131031538,United States,Numbers may differ from published reports using final data. See Technical Notes.,**,10990
+US,2026,May,12 month-ending,"Natural & semi-synthetic opioids, incl. methadone (T40.2, T40.3)",9828,100,0.244944684,United States,Underreported due to incomplete data.,*,10026
+US,2024,December,12 month-ending,"Natural, semi-synthetic, & synthetic opioids, incl. methadone (T40.2-T40.4)",54292,100,0.131031538,United States,Numbers may differ from published reports using final data. See Technical Notes.,**,54575
+US,2026,May,12 month-ending,"Natural, semi-synthetic, & synthetic opioids, incl. methadone (T40.2-T40.4)",40107,100,0.244944684,United States,Underreported due to incomplete data.,*,40772
+US,2024,December,12 month-ending,Number of Deaths,3082464,100,0.131031538,United States,Numbers may differ from published reports using final data. See Technical Notes.,**,
+US,2026,May,12 month-ending,Number of Deaths,3057425,100,0.244944684,United States,Underreported due to incomplete data.,*,
+US,2024,December,12 month-ending,Number of Drug Overdose Deaths,80860,100,0.131031538,United States,Numbers may differ from published reports using final data. See Technical Notes.,**,81313
+US,2026,May,12 month-ending,Number of Drug Overdose Deaths,65351,100,0.244944684,United States,Underreported due to incomplete data.,*,66478
+US,2024,December,12 month-ending,"Opioids (T40.0-T40.4,T40.6)",55007,100,0.131031538,United States,Numbers may differ from published reports using final data. See Technical Notes.,**,55296
+US,2026,May,12 month-ending,"Opioids (T40.0-T40.4,T40.6)",40641,100,0.244944684,United States,Underreported due to incomplete data.,*,41311
+US,2024,December,12 month-ending,Percent with drugs specified,96.09943112,100,0.131031538,United States,Numbers may differ from published reports using final data. See Technical Notes.,**,
+US,2026,May,12 month-ending,Percent with drugs specified,96.23112118,100,0.244944684,United States,Underreported due to incomplete data.,*,
+US,2024,December,12 month-ending,Psychostimulants with abuse potential (T43.6),29641,100,0.131031538,United States,Numbers may differ from published reports using final data. See Technical Notes.,**,29852
+US,2026,May,12 month-ending,Psychostimulants with abuse potential (T43.6),23939,100,0.244944684,United States,Underreported due to incomplete data.,*,24409
+US,2024,December,12 month-ending,"Synthetic opioids, excl. methadone (T40.4)",48662,100,0.131031538,United States,Numbers may differ from published reports using final data. See Technical Notes.,**,48913
+US,2026,May,12 month-ending,"Synthetic opioids, excl. methadone (T40.4)",33959,100,0.244944684,United States,Underreported due to incomplete data.,*,34507
+VT,2024,December,12 month-ending,Cocaine (T40.5),107,100,0,Vermont,Numbers may differ from published reports using final data. See Technical Notes.,**,107
+VT,2026,May,12 month-ending,Cocaine (T40.5),80,100,0.031520883,Vermont,Underreported due to incomplete data.,*,80
+VT,2024,December,12 month-ending,Heroin (T40.1),,100,0,Vermont,Numbers may differ from published reports using final data. See Technical Notes.  Data suppressed (<10).,**,
+VT,2026,May,12 month-ending,Heroin (T40.1),,100,0.031520883,Vermont,Underreported due to incomplete data.  Data suppressed (<10).,*,
+VT,2024,December,12 month-ending,Methadone (T40.3),20,100,0,Vermont,Numbers may differ from published reports using final data. See Technical Notes.,**,20
+VT,2026,May,12 month-ending,Methadone (T40.3),13,100,0.031520883,Vermont,Underreported due to incomplete data.,*,13
+VT,2024,December,12 month-ending,Natural & semi-synthetic opioids (T40.2),15,100,0,Vermont,Numbers may differ from published reports using final data. See Technical Notes.,**,15
+VT,2026,May,12 month-ending,Natural & semi-synthetic opioids (T40.2),10,100,0.031520883,Vermont,Underreported due to incomplete data.,*,10
+VT,2024,December,12 month-ending,"Natural & semi-synthetic opioids, incl. methadone (T40.2, T40.3)",32,100,0,Vermont,Numbers may differ from published reports using final data. See Technical Notes.,**,32
+VT,2026,May,12 month-ending,"Natural & semi-synthetic opioids, incl. methadone (T40.2, T40.3)",23,100,0.031520883,Vermont,Underreported due to incomplete data.,*,23
+VT,2024,December,12 month-ending,"Natural, semi-synthetic, & synthetic opioids, incl. methadone (T40.2-T40.4)",175,100,0,Vermont,Numbers may differ from published reports using final data. See Technical Notes.,**,175
+VT,2026,May,12 month-ending,"Natural, semi-synthetic, & synthetic opioids, incl. methadone (T40.2-T40.4)",118,100,0.031520883,Vermont,Underreported due to incomplete data.,*,118
+VT,2024,December,12 month-ending,Number of Deaths,6363,100,0,Vermont,Numbers may differ from published reports using final data. See Technical Notes.,**,
+VT,2026,May,12 month-ending,Number of Deaths,6345,100,0.031520883,Vermont,Underreported due to incomplete data.,*,
+VT,2024,December,12 month-ending,Number of Drug Overdose Deaths,205,100,0,Vermont,Numbers may differ from published reports using final data. See Technical Notes.,**,205
+VT,2026,May,12 month-ending,Number of Drug Overdose Deaths,155,100,0.031520883,Vermont,Underreported due to incomplete data.,*,155
+VT,2024,December,12 month-ending,"Opioids (T40.0-T40.4,T40.6)",175,100,0,Vermont,Numbers may differ from published reports using final data. See Technical Notes.,**,175
+VT,2026,May,12 month-ending,"Opioids (T40.0-T40.4,T40.6)",118,100,0.031520883,Vermont,Underreported due to incomplete data.,*,118
+VT,2024,December,12 month-ending,Percent with drugs specified,99.51219512,100,0,Vermont,Numbers may differ from published reports using final data. See Technical Notes.,**,
+VT,2026,May,12 month-ending,Percent with drugs specified,100,100,0.031520883,Vermont,Underreported due to incomplete data.,*,
+VT,2024,December,12 month-ending,Psychostimulants with abuse potential (T43.6),22,100,0,Vermont,Numbers may differ from published reports using final data. See Technical Notes.,**,22
+VT,2026,May,12 month-ending,Psychostimulants with abuse potential (T43.6),18,100,0.031520883,Vermont,Underreported due to incomplete data.,*,18
+VT,2024,December,12 month-ending,"Synthetic opioids, excl. methadone (T40.4)",165,100,0,Vermont,Numbers may differ from published reports using final data. See Technical Notes.,**,165
+VT,2026,May,12 month-ending,"Synthetic opioids, excl. methadone (T40.4)",103,100,0.031520883,Vermont,Underreported due to incomplete data.,*,103
+YC,2024,December,12 month-ending,Cocaine (T40.5),1215,100,0.285905579,New York City,Numbers may differ from published reports using final data. See Technical Notes.,**,1245
+YC,2026,May,12 month-ending,Cocaine (T40.5),1071,100,0.423005701,New York City,Underreported due to incomplete data.,*,1113
+YC,2024,December,12 month-ending,Heroin (T40.1),372,100,0.285905579,New York City,Numbers may differ from published reports using final data. See Technical Notes.,**,380
+YC,2026,May,12 month-ending,Heroin (T40.1),265,100,0.423005701,New York City,Underreported due to incomplete data.,*,275
+YC,2024,December,12 month-ending,Methadone (T40.3),241,100,0.285905579,New York City,Numbers may differ from published reports using final data. See Technical Notes.,**,248
+YC,2026,May,12 month-ending,Methadone (T40.3),246,100,0.423005701,New York City,Underreported due to incomplete data.,*,257
+YC,2024,December,12 month-ending,Natural & semi-synthetic opioids (T40.2),196,100,0.285905579,New York City,Numbers may differ from published reports using final data. See Technical Notes.,**,202
+YC,2026,May,12 month-ending,Natural & semi-synthetic opioids (T40.2),169,100,0.423005701,New York City,Underreported due to incomplete data.,*,178
+YC,2024,December,12 month-ending,"Natural & semi-synthetic opioids, incl. methadone (T40.2, T40.3)",401,100,0.285905579,New York City,Numbers may differ from published reports using final data. See Technical Notes.,**,413
+YC,2026,May,12 month-ending,"Natural & semi-synthetic opioids, incl. methadone (T40.2, T40.3)",387,100,0.423005701,New York City,Underreported due to incomplete data.,*,406
+YC,2024,December,12 month-ending,"Natural, semi-synthetic, & synthetic opioids, incl. methadone (T40.2-T40.4)",1736,100,0.285905579,New York City,Numbers may differ from published reports using final data. See Technical Notes.,**,1777
+YC,2026,May,12 month-ending,"Natural, semi-synthetic, & synthetic opioids, incl. methadone (T40.2-T40.4)",1263,100,0.423005701,New York City,Underreported due to incomplete data.,*,1311
+YC,2024,December,12 month-ending,Number of Deaths,55263,100,0.285905579,New York City,Numbers may differ from published reports using final data. See Technical Notes.,**,
+YC,2026,May,12 month-ending,Number of Deaths,55082,100,0.423005701,New York City,Underreported due to incomplete data.,*,
+YC,2024,December,12 month-ending,Number of Drug Overdose Deaths,2254,100,0.285905579,New York City,Numbers may differ from published reports using final data. See Technical Notes.,**,2308
+YC,2026,May,12 month-ending,Number of Drug Overdose Deaths,1799,100,0.423005701,New York City,Underreported due to incomplete data.,*,1869
+YC,2024,December,12 month-ending,"Opioids (T40.0-T40.4,T40.6)",1775,100,0.285905579,New York City,Numbers may differ from published reports using final data. See Technical Notes.,**,1816
+YC,2026,May,12 month-ending,"Opioids (T40.0-T40.4,T40.6)",1282,100,0.423005701,New York City,Underreported due to incomplete data.,*,1331
+YC,2024,December,12 month-ending,Percent with drugs specified,99.77817214,100,0.285905579,New York City,Numbers may differ from published reports using final data. See Technical Notes.,**,
+YC,2026,May,12 month-ending,Percent with drugs specified,99.77765425,100,0.423005701,New York City,Underreported due to incomplete data.,*,
+YC,2024,December,12 month-ending,Psychostimulants with abuse potential (T43.6),233,100,0.285905579,New York City,Numbers may differ from published reports using final data. See Technical Notes.,**,240
+YC,2026,May,12 month-ending,Psychostimulants with abuse potential (T43.6),174,100,0.423005701,New York City,Underreported due to incomplete data.,*,182
+YC,2024,December,12 month-ending,"Synthetic opioids, excl. methadone (T40.4)",1619,100,0.285905579,New York City,Numbers may differ from published reports using final data. See Technical Notes.,**,1656
+YC,2026,May,12 month-ending,"Synthetic opioids, excl. methadone (T40.4)",1169,100,0.423005701,New York City,Underreported due to incomplete data.,*,1212

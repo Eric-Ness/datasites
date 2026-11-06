@@ -1,0 +1,66 @@
+id: overdose-deaths
+version: 1                       # bump on any schema change; forces a rebuild
+kind: series
+title: Drug overdose deaths by state and drug
+description: >-
+  CDC's provisional count of drug overdose deaths in the 12 months ending each month, for every state and the
+  US since 2015, by drug: all drugs, opioids, synthetic opioids such as fentanyl, heroin, cocaine,
+  psychostimulants such as methamphetamine, and more, with CDC's prediction of the final count.
+pipeline: datasites_health.overdose_states
+check_every: P2D                 # ingest-health runs Mondays and Thursdays; an unchanged table costs a 304
+cadence: P1M                     # VSRR updates monthly (mid-month)
+sla: P2M
+source:
+  id: nchs-vsrr-overdose
+  name: NCHS Vital Statistics Rapid Release, Provisional Drug Overdose Death Counts (data.cdc.gov xkb8-kh2a)
+  publisher: CDC National Center for Health Statistics (NCHS)
+  url: https://www.cdc.gov/nchs/nvss/vsrr/drug-overdose-data.htm
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true            # data.cdc.gov metadata: "Public Domain U.S. Government"
+  attribution: >-
+    Ahmad FB, Cisewski JA, Rossen LM, Sutton P. Provisional drug overdose death counts. National Center for
+    Health Statistics. https://www.cdc.gov/nchs/nvss/vsrr/drug-overdose-data.htm
+series:
+  all-drugs: All drug overdose deaths
+  opioids: Opioids (T40.0-T40.4, T40.6)
+  synthetic-opioids: Synthetic opioids other than methadone, mainly fentanyl (T40.4)
+  heroin: Heroin (T40.1)
+  natural-opioids: Natural and semi-synthetic opioids, such as oxycodone (T40.2)
+  methadone: Methadone (T40.3)
+  natural-opioids-methadone: Natural and semi-synthetic opioids and methadone (T40.2, T40.3)
+  all-opioids-excl-heroin: Natural, semi-synthetic and synthetic opioids and methadone (T40.2-T40.4)
+  cocaine: Cocaine (T40.5)
+  psychostimulants: Psychostimulants with abuse potential, mainly methamphetamine (T43.6)
+  all-causes: Deaths from all causes
+locations:
+  registry: us-state
+  explicit:
+    usa: United States
+# Notes on VSRR's data, kept as published:
+# - Provisional: counts for recent months rise as death investigations finish. predicted_deaths is CDC's
+#   estimate of the final count; it is null where CDC doesn't predict (drug-specific series in some states).
+# - Deaths are counted where they occurred, not where the person lived.
+# - A death involving several drugs counts in each drug's series, so drug series don't add up to all-drugs.
+#   How many records name a drug differs by state (pct_drugs_specified); drug-specific counts are withheld
+#   where CDC judges the data quality too low.
+# - us-ny adds up VSRR's New York (excluding New York City) and New York City rows; its percentages are null.
+# - Puerto Rico is included but is not part of the US total.
+schema:
+  - { name: date, type: month, description: "Last month of the 12-month period" }
+  - { name: deaths, type: int, unit: deaths, nullable: true, description: "Reported deaths in the 12 months ending this month; null where CDC withholds the count" }
+  - { name: predicted_deaths, type: int, unit: deaths, nullable: true, description: "CDC's predicted final count, adjusting for reports still to come" }
+  - { name: percent_complete, type: float, unit: "%", nullable: true, description: "Percent of records CDC judges complete for the period" }
+  - { name: percent_pending, type: float, unit: "%", nullable: true, description: "Percent of records still pending investigation" }
+  - { name: pct_drugs_specified, type: float, unit: "%", nullable: true, description: "Percent of overdose death records that name at least one drug" }
+  - { name: suppressed, type: bool, description: "True where the count is under 10 and withheld" }
+  - { name: underreported, type: bool, description: "True where CDC flags the count as underreported because data are incomplete" }
+checks:
+  min_rows: 75000
+  rows_min_ratio: 0.99
+  ranges:
+    deaths: [0, 4000000]
+    predicted_deaths: [0, 4000000]
+    percent_complete: [0, 100]
+    percent_pending: [0, 100]
+    pct_drugs_specified: [0, 100]
+  newest_not_older: true

@@ -1853,6 +1853,278 @@
     "partition": "year"
   },
   {
+    "site": "healthdata",
+    "id": "overdose-deaths-county",
+    "kind": "series",
+    "title": "Drug overdose deaths by county",
+    "description": "CDC's provisional count of drug overdose deaths in the 12 months ending each month, for every US county since 2020. Counts from 1 to 9 are withheld by CDC.",
+    "cadence": "P1M",
+    "check_every": "P2D",
+    "sla": "P2M",
+    "discontinued": false,
+    "needs_credentials": false,
+    "source": {
+      "name": "NCHS Vital Statistics Rapid Release, Provisional County-Level Drug Overdose Death Counts (data.cdc.gov gb4e-yj24)",
+      "publisher": "CDC National Center for Health Statistics (NCHS)",
+      "url": "https://www.cdc.gov/nchs/nvss/vsrr/prov-county-drug-overdose.htm",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Ahmad FB, Cisewski JA, Anderson RN. Provisional county-level drug overdose death counts. National Center for Health Statistics. https://www.cdc.gov/nchs/nvss/vsrr/prov-county-drug-overdose.htm"
+    },
+    "series": {
+      "all-drugs": "All drug overdose deaths"
+    },
+    "locations": {
+      "explicit": {
+        "us-county-02261": "Valdez-Cordova Census Area, AK (until 2019)",
+        "us-county-09001": "Fairfield County, CT (former county)",
+        "us-county-09003": "Hartford County, CT (former county)",
+        "us-county-09005": "Litchfield County, CT (former county)",
+        "us-county-09007": "Middlesex County, CT (former county)",
+        "us-county-09009": "New Haven County, CT (former county)",
+        "us-county-09011": "New London County, CT (former county)",
+        "us-county-09013": "Tolland County, CT (former county)",
+        "us-county-09015": "Windham County, CT (former county)"
+      },
+      "registry": [
+        "us-county"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "month",
+        "unit": null,
+        "nullable": false,
+        "description": "Last month of the 12-month period"
+      },
+      {
+        "name": "deaths",
+        "type": "int",
+        "unit": "deaths",
+        "nullable": true,
+        "description": "Overdose deaths in the 12 months ending this month; null where withheld"
+      },
+      {
+        "name": "suppressed",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True where the count is between 1 and 9 and withheld"
+      },
+      {
+        "name": "percent_pending",
+        "type": "float",
+        "unit": "%",
+        "nullable": true,
+        "description": "Percent of records still pending investigation"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "healthdata",
+    "id": "overdose-deaths",
+    "kind": "series",
+    "title": "Drug overdose deaths by state and drug",
+    "description": "CDC's provisional count of drug overdose deaths in the 12 months ending each month, for every state and the US since 2015, by drug: all drugs, opioids, synthetic opioids such as fentanyl, heroin, cocaine, psychostimulants such as methamphetamine, and more, with CDC's prediction of the final count.",
+    "cadence": "P1M",
+    "check_every": "P2D",
+    "sla": "P2M",
+    "discontinued": false,
+    "needs_credentials": false,
+    "source": {
+      "name": "NCHS Vital Statistics Rapid Release, Provisional Drug Overdose Death Counts (data.cdc.gov xkb8-kh2a)",
+      "publisher": "CDC National Center for Health Statistics (NCHS)",
+      "url": "https://www.cdc.gov/nchs/nvss/vsrr/drug-overdose-data.htm",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Ahmad FB, Cisewski JA, Rossen LM, Sutton P. Provisional drug overdose death counts. National Center for Health Statistics. https://www.cdc.gov/nchs/nvss/vsrr/drug-overdose-data.htm"
+    },
+    "series": {
+      "all-drugs": "All drug overdose deaths",
+      "opioids": "Opioids (T40.0-T40.4, T40.6)",
+      "synthetic-opioids": "Synthetic opioids other than methadone, mainly fentanyl (T40.4)",
+      "heroin": "Heroin (T40.1)",
+      "natural-opioids": "Natural and semi-synthetic opioids, such as oxycodone (T40.2)",
+      "methadone": "Methadone (T40.3)",
+      "natural-opioids-methadone": "Natural and semi-synthetic opioids and methadone (T40.2, T40.3)",
+      "all-opioids-excl-heroin": "Natural, semi-synthetic and synthetic opioids and methadone (T40.2-T40.4)",
+      "cocaine": "Cocaine (T40.5)",
+      "psychostimulants": "Psychostimulants with abuse potential, mainly methamphetamine (T43.6)",
+      "all-causes": "Deaths from all causes"
+    },
+    "locations": {
+      "explicit": {
+        "usa": "United States"
+      },
+      "registry": [
+        "us-state"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "month",
+        "unit": null,
+        "nullable": false,
+        "description": "Last month of the 12-month period"
+      },
+      {
+        "name": "deaths",
+        "type": "int",
+        "unit": "deaths",
+        "nullable": true,
+        "description": "Reported deaths in the 12 months ending this month; null where CDC withholds the count"
+      },
+      {
+        "name": "predicted_deaths",
+        "type": "int",
+        "unit": "deaths",
+        "nullable": true,
+        "description": "CDC's predicted final count, adjusting for reports still to come"
+      },
+      {
+        "name": "percent_complete",
+        "type": "float",
+        "unit": "%",
+        "nullable": true,
+        "description": "Percent of records CDC judges complete for the period"
+      },
+      {
+        "name": "percent_pending",
+        "type": "float",
+        "unit": "%",
+        "nullable": true,
+        "description": "Percent of records still pending investigation"
+      },
+      {
+        "name": "pct_drugs_specified",
+        "type": "float",
+        "unit": "%",
+        "nullable": true,
+        "description": "Percent of overdose death records that name at least one drug"
+      },
+      {
+        "name": "suppressed",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True where the count is under 10 and withheld"
+      },
+      {
+        "name": "underreported",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True where CDC flags the count as underreported because data are incomplete"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "healthdata",
+    "id": "uninsured",
+    "kind": "series",
+    "title": "Health insurance coverage by county and state",
+    "description": "The share and number of people without health insurance in every US county and state each year since 2008, for people under 65, adults 18 to 64 and children under 19, from the Census Bureau's Small Area Health Insurance Estimates, with 90 percent margins of error.",
+    "cadence": "P1Y",
+    "check_every": "P7D",
+    "sla": "P15M",
+    "discontinued": false,
+    "needs_credentials": false,
+    "source": {
+      "name": "US Census Bureau, Small Area Health Insurance Estimates (SAHIE)",
+      "publisher": "US Census Bureau",
+      "url": "https://www.census.gov/programs-surveys/sahie.html",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "U.S. Census Bureau, Small Area Health Insurance Estimates (SAHIE) Program, https://www.census.gov/programs-surveys/sahie.html."
+    },
+    "series": {
+      "under-65": "People under 65",
+      "adults-18-64": "Adults 18 to 64",
+      "children-under-19": "Children under 19"
+    },
+    "locations": {
+      "explicit": {
+        "us-county-02201": "Prince of Wales-Outer Ketchikan Census Area, AK (2008)",
+        "us-county-02261": "Valdez-Cordova Census Area, AK (through 2019)",
+        "us-county-02270": "Wade Hampton Census Area, AK (through 2014; now Kusilvak, 02158)",
+        "us-county-02280": "Wrangell-Petersburg Census Area, AK (2008)",
+        "us-county-09001": "Fairfield County, CT (former county, through 2021)",
+        "us-county-09003": "Hartford County, CT (former county, through 2021)",
+        "us-county-09005": "Litchfield County, CT (former county, through 2021)",
+        "us-county-09007": "Middlesex County, CT (former county, through 2021)",
+        "us-county-09009": "New Haven County, CT (former county, through 2021)",
+        "us-county-09011": "New London County, CT (former county, through 2021)",
+        "us-county-09013": "Tolland County, CT (former county, through 2021)",
+        "us-county-09015": "Windham County, CT (former county, through 2021)",
+        "us-county-46113": "Shannon County, SD (through 2014; now Oglala Lakota, 46102)",
+        "us-county-51515": "Bedford city, VA (through 2013; now part of Bedford County)"
+      },
+      "registry": [
+        "us-county",
+        "us-state"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "year",
+        "unit": null,
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "uninsured_pct",
+        "type": "float",
+        "unit": "%",
+        "nullable": true,
+        "description": "Percent of the age group without health insurance"
+      },
+      {
+        "name": "uninsured_pct_moe",
+        "type": "float",
+        "unit": "%",
+        "nullable": true,
+        "description": "90% margin of error of uninsured_pct, in percentage points"
+      },
+      {
+        "name": "uninsured",
+        "type": "int",
+        "unit": "people",
+        "nullable": true,
+        "description": "People in the age group without health insurance"
+      },
+      {
+        "name": "uninsured_moe",
+        "type": "int",
+        "unit": "people",
+        "nullable": true,
+        "description": "90% margin of error of uninsured"
+      },
+      {
+        "name": "population",
+        "type": "int",
+        "unit": "people",
+        "nullable": true,
+        "description": "People in the age group (SAHIE's population for the estimate)"
+      },
+      {
+        "name": "population_moe",
+        "type": "int",
+        "unit": "people",
+        "nullable": true,
+        "description": "90% margin of error of population"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
     "site": "housingdata",
     "id": "building-permits",
     "kind": "series",

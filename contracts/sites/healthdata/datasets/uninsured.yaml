@@ -1,0 +1,70 @@
+id: uninsured
+version: 1                       # bump on any schema change; forces a rebuild
+kind: series
+title: Health insurance coverage by county and state
+description: >-
+  The share and number of people without health insurance in every US county and state each year since 2008,
+  for people under 65, adults 18 to 64 and children under 19, from the Census Bureau's Small Area Health
+  Insurance Estimates, with 90 percent margins of error.
+pipeline: datasites_health.sahie
+check_every: P7D                 # one directory listing plus conditional GETs: unchanged files cost a 304 each
+cadence: P1Y                     # a new year each summer (2024 came out in August 2026)
+sla: P15M
+raw_archive_max_mb: 20
+source:
+  id: census-sahie
+  name: US Census Bureau, Small Area Health Insurance Estimates (SAHIE)
+  publisher: US Census Bureau
+  url: https://www.census.gov/programs-surveys/sahie.html
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true            # work of a US federal agency (17 USC 105)
+  attribution: >-
+    U.S. Census Bureau, Small Area Health Insurance Estimates (SAHIE) Program,
+    https://www.census.gov/programs-surveys/sahie.html.
+series:
+  under-65: People under 65
+  adults-18-64: Adults 18 to 64
+  children-under-19: Children under 19
+locations:
+  registry: [us-county, us-state]
+  explicit:
+    us-county-02201: Prince of Wales-Outer Ketchikan Census Area, AK (2008)
+    us-county-02261: Valdez-Cordova Census Area, AK (through 2019)
+    us-county-02270: Wade Hampton Census Area, AK (through 2014; now Kusilvak, 02158)
+    us-county-02280: Wrangell-Petersburg Census Area, AK (2008)
+    us-county-09001: Fairfield County, CT (former county, through 2021)
+    us-county-09003: Hartford County, CT (former county, through 2021)
+    us-county-09005: Litchfield County, CT (former county, through 2021)
+    us-county-09007: Middlesex County, CT (former county, through 2021)
+    us-county-09009: New Haven County, CT (former county, through 2021)
+    us-county-09011: New London County, CT (former county, through 2021)
+    us-county-09013: Tolland County, CT (former county, through 2021)
+    us-county-09015: Windham County, CT (former county, through 2021)
+    us-county-46113: Shannon County, SD (through 2014; now Oglala Lakota, 46102)
+    us-county-51515: Bedford city, VA (through 2013; now part of Bedford County)
+# Notes on SAHIE's data, kept as published:
+# - Model-based estimates, combining the American Community Survey with administrative records; each has a 90
+#   percent margin of error. Compare places with the margins in mind.
+# - Coverage is for people under 65; Medicare covers almost everyone older, so they are left out.
+# - Kalawao County, HI (15005) is published but Census says its values are N/A; they are null here.
+# - 2013 uses the Updated estimates of May 2016.
+# - Census computes uninsured_pct from unrounded estimates, so it can differ from uninsured / population by more
+#   than rounding, mostly in 2008-2012 and in very small counties (Loving County, TX).
+schema:
+  - { name: date, type: year }
+  - { name: uninsured_pct, type: float, unit: "%", nullable: true, description: "Percent of the age group without health insurance" }
+  - { name: uninsured_pct_moe, type: float, unit: "%", nullable: true, description: "90% margin of error of uninsured_pct, in percentage points" }
+  - { name: uninsured, type: int, unit: people, nullable: true, description: "People in the age group without health insurance" }
+  - { name: uninsured_moe, type: int, unit: people, nullable: true, description: "90% margin of error of uninsured" }
+  - { name: population, type: int, unit: people, nullable: true, description: "People in the age group (SAHIE's population for the estimate)" }
+  - { name: population_moe, type: int, unit: people, nullable: true, description: "90% margin of error of population" }
+checks:
+  min_rows: 150000
+  rows_min_ratio: 0.99
+  ranges:
+    uninsured_pct: [0, 100]
+    uninsured: [0, 50000000]
+    population: [0, 400000000]
+  max_null_fraction:
+    uninsured_pct: 0.01
+  newest_not_older: true
