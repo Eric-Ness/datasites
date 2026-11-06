@@ -1,0 +1,54 @@
+id: overdose-deaths-county
+version: 1                       # bump on any schema change; forces a rebuild
+kind: series
+title: Drug overdose deaths by county
+description: >-
+  CDC's provisional count of drug overdose deaths in the 12 months ending each month, for every US county
+  since 2020. Counts from 1 to 9 are withheld by CDC.
+pipeline: datasites_health.overdose_counties
+check_every: P2D                 # ingest-health runs Mondays and Thursdays; an unchanged table costs a 304
+cadence: P1M
+sla: P2M
+source:
+  id: nchs-vsrr-overdose-county
+  name: NCHS Vital Statistics Rapid Release, Provisional County-Level Drug Overdose Death Counts (data.cdc.gov gb4e-yj24)
+  publisher: CDC National Center for Health Statistics (NCHS)
+  url: https://www.cdc.gov/nchs/nvss/vsrr/prov-county-drug-overdose.htm
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true            # data.cdc.gov metadata: "Public Domain U.S. Government"
+  attribution: >-
+    Ahmad FB, Cisewski JA, Anderson RN. Provisional county-level drug overdose death counts. National Center
+    for Health Statistics. https://www.cdc.gov/nchs/nvss/vsrr/prov-county-drug-overdose.htm
+series:
+  all-drugs: All drug overdose deaths
+locations:
+  registry: us-county
+  explicit:
+    us-county-02261: Valdez-Cordova Census Area, AK (until 2019)
+    us-county-09001: Fairfield County, CT (former county)
+    us-county-09003: Hartford County, CT (former county)
+    us-county-09005: Litchfield County, CT (former county)
+    us-county-09007: Middlesex County, CT (former county)
+    us-county-09009: New Haven County, CT (former county)
+    us-county-09011: New London County, CT (former county)
+    us-county-09013: Tolland County, CT (former county)
+    us-county-09015: Windham County, CT (former county)
+# Notes on VSRR's data, kept as published:
+# - Provisional: recent months rise as death investigations finish (percent_pending).
+# - Deaths are counted in the county of residence where known.
+# - Counts from 1 to 9 are withheld (suppressed = true, deaths null); never back-calculate them.
+# - Connecticut is reported by its eight former counties.
+schema:
+  - { name: date, type: month, description: "Last month of the 12-month period" }
+  - { name: deaths, type: int, unit: deaths, nullable: true, description: "Overdose deaths in the 12 months ending this month; null where withheld" }
+  - { name: suppressed, type: bool, description: "True where the count is between 1 and 9 and withheld" }
+  - { name: percent_pending, type: float, unit: "%", nullable: true, description: "Percent of records still pending investigation" }
+checks:
+  min_rows: 200000
+  rows_min_ratio: 0.99
+  ranges:
+    deaths: [0, 20000]
+    percent_pending: [0, 100]
+  max_null_fraction:
+    deaths: 0.6
+  newest_not_older: true

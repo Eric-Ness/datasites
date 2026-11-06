@@ -9,6 +9,7 @@ members = [
     "datasites-core",
     "datasites-economic",
     "datasites-election",
+    "datasites-health",
     "datasites-housing",
     "datasites-pipelines",
     "datasites-satellite",
@@ -177,6 +178,21 @@ requires-dist = [
 ]
 
 [[package]]
+name = "datasites-health"
+version = "0.1.0"
+source = { editable = "health" }
+dependencies = [
+    { name = "datasites-core" },
+    { name = "polars" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "datasites-core", editable = "core" },
+    { name = "polars", specifier = ">=1.0" },
+]
+
+[[package]]
 name = "datasites-housing"
 version = "0.1.0"
 source = { editable = "housing" }
@@ -204,6 +220,7 @@ dependencies = [
     { name = "datasites-core" },
     { name = "datasites-economic" },
     { name = "datasites-election" },
+    { name = "datasites-health" },
     { name = "datasites-housing" },
     { name = "datasites-satellite" },
     { name = "datasites-visualize" },
@@ -224,6 +241,7 @@ requires-dist = [
     { name = "datasites-core", editable = "core" },
     { name = "datasites-economic", editable = "economic" },
     { name = "datasites-election", editable = "election" },
+    { name = "datasites-health", editable = "health" },
     { name = "datasites-housing", editable = "housing" },
     { name = "datasites-satellite", editable = "satellite" },
     { name = "datasites-visualize", editable = "visualize" },

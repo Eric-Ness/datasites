@@ -1,0 +1,86 @@
+# Lines copied verbatim from sahie_2013.csv in https://www2.census.gov/programs-surveys/sahie/datasets/time-series/estimates-acs/sahie-2013-csv.zip (the layout notes and header, then Los Angeles County, all races, both sexes, all incomes, both the Original and Updated versions), captured 2026-11-06.
+Filename:  sahie_2013.csv          
+Created:   12AUG16  13:27
+Description:                   
+ 
+  Model-based Small Area Health Insurance Estimates (SAHIE) for Counties and States, 2013   
+ 
+  NOTE: VERY LONG .CSV FILES NOT ALWAYS IMPORTED INTO EXCEL CORRECTLY - CHECK FOR TRUNCATION
+ 
+File Layout and Definitions: 
+ 
+    Variable      Format      Description     
+       year            4      Year of Estimate
+       version         8      Release Version 
+                                 Blank   : YEAR other than 2013, Only Version   
+                                 Original: 2013 only, Original Version          
+                                 Updated : 2013 only, Updated Version (May 2016)
+       statefips       2      Unique FIPS code for each state                   
+       countyfips      3      Unique FIPS code for each county within a state   
+       geocat          2      Geography category             
+                                40 - State geographic identifier 
+                                50 - County geographic identifier
+       agecat          1      Age category        
+                                0 - Under 65 years
+                                1 - 18 to 64 years
+                                2 - 40 to 64 years
+                                3 - 50 to 64 years
+                                4 - Under 19 years
+                                5 - 21 to 64 years
+       racecat         1      Race category  
+                                0 - All races
+                                Only state estimates have racecat=1,2,3 values
+                                1 - White alone, not Hispanic
+                                2 - Black alone, not Hispanic
+                                3 - Hispanic (any race)      
+       sexcat          1      Sex category    
+                                0 - Both sexes
+                                1 - Male      
+                                2 - Female    
+       iprcat          1      Income category 
+                                0 - All income levels          
+                                1 - At or below 200% of poverty
+                                2 - At or below 250% of poverty
+                                3 - At or below 138% of poverty
+                                4 - At or below 400% of poverty
+                                5 - Between 138% - 400%  of poverty
+      NIPR             8      Number in demographic group for <income category>
+         nipr_moe      8           MOE  for NIPR
+      NUI              8      Number uninsured  
+         nui_moe       8           MOE  for NUI 
+      NIC              8      Number insured    
+         nic_moe       8           MOE  for NIC 
+      PCTUI            5.1    Percent uninsured in demographic group for <income category>
+         pctui_moe     5.1         MOE  for PCTUI                                 
+      PCTIC            5.1    Percent insured in demographic group for <income category>  
+         pctic_moe     5.1         MOE  for PCTIC                                 
+      PCTELIG          5.1    Percent uninsured in demographic group for all income levels
+         pctelig_moe   5.1         MOE  for PCTELIG                                
+      PCTLIIC          5.1    Percent insured in demographic group for all income levels  
+         pctliic_moe   5.1         MOE  for PCTLIIC                                
+      state_name       70     State Name
+      county_name      45     County Name
+ 
+  PRIMARY KEY: year version statefips countyfips agecat racecat sexcat iprcat         
+ 
+  Note 1:  A margin of error (MOE) is the difference between an estimate and its upper
+  or lower confidence bounds. Confidence bounds can be created by adding the margin   
+  of error to the estimate (for an upper bound) and subtracting the margin of error   
+  from the estimate (for a lower bound). All published margins of error for the Small 
+  Area Health Insurance Estimates program are based on a 90 percent confidence level. 
+ 
+  Note 2:  The number in a demographic group is the number of people in the poverty   
+  universe in that age, sex, and race/Hispanic origin group.                          
+ 
+  Note 3:  Values for Kalawao, HI (15-005) should be considered N/A or missing.       
+ 
+  Note 4:  MOEs of zero should be assumed to be <1 for counts and <0.1 for percentages.
+ 
+  General Note:  Details may not sum to totals because of rounding.                    
+ 
+year,version,statefips,countyfips,geocat,agecat,racecat,sexcat,iprcat,NIPR,nipr_moe,NUI,nui_moe,NIC,nic_moe,PCTUI,pctui_moe,PCTIC,pctic_moe,PCTELIG,pctelig_moe,PCTLIIC,pctliic_moe,state_name,county_name,
+2013,Updated ,06,037,50,0,0,0,0, 8701240,       0, 2059406,   30425, 6641834,   30425, 23.7,  0.3, 76.3,  0.3, 23.7,  0.3, 76.3,  0.3,California                                                            ,Los Angeles County                           ,
+2013,Updated ,06,037,50,1,0,0,0, 6419889,       0, 1880949,   28087, 4538940,   28087, 29.3,  0.4, 70.7,  0.4, 29.3,  0.4, 70.7,  0.4,California                                                            ,Los Angeles County                           ,
+2013,Updated ,06,037,50,2,0,0,0, 3192573,       0,  822204,   17390, 2370369,   17390, 25.8,  0.5, 74.2,  0.5, 25.8,  0.5, 74.2,  0.5,California                                                            ,Los Angeles County                           ,
+2013,Updated ,06,037,50,3,0,0,0, 1786186,       0,  428464,   12500, 1357722,   12500, 24.0,  0.7, 76.0,  0.7, 24.0,  0.7, 76.0,  0.7,California                                                            ,Los Angeles County                           ,
+2013,Updated ,06,037,50,4,0,0,0, 2419637,       0,  203990,   11903, 2215647,   11903,  8.4,  0.5, 91.6,  0.5,  8.4,  0.5, 91.6,  0.5,California                                                            ,Los Angeles County                           ,

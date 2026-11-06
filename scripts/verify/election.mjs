@@ -6,7 +6,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { ROOT, check, localDataset } from "./lib.mjs";
+import { ROOT, check, localDataset, parseCsv } from "./lib.mjs";
 
 const NEGATIVE = process.argv.includes("--negative-control");
 const UA = "datasites-verify/1 (+mailto:hello@climatedata.dev)";
@@ -50,40 +50,6 @@ async function download(url) {
   }
   check(res.ok, `${url} answered HTTP ${res.status}`);
   return Buffer.from(await res.arrayBuffer());
-}
-
-/** RFC 4180 CSV (quoted fields, doubled quotes, commas and newlines inside quotes) -> array of objects. */
-function parseCsv(text) {
-  const rows = [];
-  let row = [];
-  let field = "";
-  let quoted = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (quoted) {
-      if (c === '"' && text[i + 1] === '"') {
-        field += '"';
-        i++;
-      } else if (c === '"') quoted = false;
-      else field += c;
-    } else if (c === '"') quoted = true;
-    else if (c === ",") {
-      row.push(field);
-      field = "";
-    } else if (c === "\n" || c === "\r") {
-      if (c === "\r" && text[i + 1] === "\n") i++;
-      row.push(field);
-      rows.push(row);
-      row = [];
-      field = "";
-    } else field += c;
-  }
-  if (field !== "" || row.length) {
-    row.push(field);
-    rows.push(row);
-  }
-  const [header, ...body] = rows;
-  return body.map((cells) => Object.fromEntries(header.map((name, i) => [name, cells[i]])));
 }
 
 const count = (text) => (text === "" || text === undefined ? null : Math.round(Number(text)));

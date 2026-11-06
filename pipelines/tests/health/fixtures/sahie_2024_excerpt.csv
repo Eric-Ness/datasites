@@ -1,0 +1,165 @@
+# Lines copied verbatim from sahie_2024.csv in https://www2.census.gov/programs-surveys/sahie/datasets/time-series/estimates-acs/sahie-2024-csv.zip (the layout notes and header, then California, Los Angeles County and Kalawao County HI, all races, both sexes and men, all incomes and up to 138% of poverty), captured 2026-11-06.
+Filename:  sahie_2024.csv          
+Created:   23JUN26  10:11
+Description:                   
+ 
+  Model-based Small Area Health Insurance Estimates (SAHIE) for Counties and States, 2024   
+  Source: U.S. Census Bureau, Small Area Health Insurance Estimates (SAHIE) Program, August 2026, Project No. P-6000007 / Approval CBDRB-FY26-0241  
+ 
+  NOTE: VERY LONG .CSV FILES NOT ALWAYS IMPORTED INTO EXCEL CORRECTLY - CHECK FOR TRUNCATION
+ 
+File Layout and Definitions: 
+ 
+    Variable      Format      Description     
+       year            4      Year of Estimate
+       version         8      Release Version 
+                                 Blank   : YEAR other than 2013, Only Version   
+                                 Original: 2013 only, Original Version          
+                                 Updated : 2013 only, Updated Version (May 2016)
+       statefips       2      Unique FIPS code for each state                   
+       countyfips      3      Unique FIPS code for each county within a state   
+       geocat          2      Geography category             
+                                40 - State geographic identifier 
+                                50 - County geographic identifier
+       agecat          1      Age category        
+                                0 - Under 65 years
+                                1 - 18 to 64 years
+                                2 - 40 to 64 years
+                                3 - 50 to 64 years
+                                4 - Under 19 years
+                                5 - 21 to 64 years
+                                6 - 21 to 29 years
+       racecat         1      Race category  
+                                0 - All races
+                                Only state estimates have racecat=1,2,3,4,5,6,7 values
+                                1 - White alone, not Hispanic or Latino                                     
+                                2 - Black or African American alone, not Hispanic                           
+                                3 - Hispanic or Latino (any race)                                           
+                                4 - American Indian and Alaska Native alone, not Hispanic or Latino         
+                                5 - Asian alone, not Hispanic or Latino                                     
+                                6 - Native Hawaiian and Other Pacific Islander alone, not Hispanic or Latino
+                                7 - Two or More Races, not Hispanic or Latino                               
+       sexcat          1      Sex category    
+                                0 - Both sexes
+                                1 - Male      
+                                2 - Female    
+       iprcat          1      Income category 
+                                0 - All income levels          
+                                1 - At or below 200% of poverty
+                                2 - At or below 250% of poverty
+                                3 - At or below 138% of poverty
+                                4 - At or below 400% of poverty
+                                5 - Between 138% - 400%  of poverty
+      NIPR             8      Number in demographic group for <income category>
+         nipr_moe      8           MOE  for NIPR
+      NUI              8      Number uninsured  
+         nui_moe       8           MOE  for NUI 
+      NIC              8      Number insured    
+         nic_moe       8           MOE  for NIC 
+      PCTUI            5.1    Percent uninsured in demographic group for <income category>
+         pctui_moe     5.1         MOE  for PCTUI                                 
+      PCTIC            5.1    Percent insured in demographic group for <income category>  
+         pctic_moe     5.1         MOE  for PCTIC                                 
+      PCTELIG          5.1    Percent uninsured in demographic group for all income levels
+         pctelig_moe   5.1         MOE  for PCTELIG                                
+      PCTLIIC          5.1    Percent insured in demographic group for all income levels  
+         pctliic_moe   5.1         MOE  for PCTLIIC                                
+      state_name       70     State Name
+      county_name      70     County Name
+ 
+  PRIMARY KEY: year version statefips countyfips agecat racecat sexcat iprcat         
+ 
+  Note 1:  A margin of error (MOE) is the difference between an estimate and its upper
+  or lower confidence bounds. Confidence bounds can be created by adding the margin   
+  of error to the estimate (for an upper bound) and subtracting the margin of error   
+  from the estimate (for a lower bound). All published margins of error for the Small 
+  Area Health Insurance Estimates program are based on a 90 percent confidence level. 
+ 
+  Note 2:  The number in a demographic group is the number of people in the poverty   
+  universe in that age, sex, and race/Hispanic origin group.                          
+ 
+  Note 3:  Values for Kalawao, HI (15-005) should be considered N/A or missing.       
+ 
+  Note 4:  MOEs of zero should be assumed to be <1 for counts and <0.1 for percentages.
+ 
+  General Note:  Details may not sum to totals because of rounding.                    
+ 
+year,version,statefips,countyfips,geocat,agecat,racecat,sexcat,iprcat,NIPR,nipr_moe,NUI,nui_moe,NIC,nic_moe,PCTUI,pctui_moe,PCTIC,pctic_moe,PCTELIG,pctelig_moe,PCTLIIC,pctliic_moe,state_name,county_name,
+2024,        ,06,000,40,0,0,0,0,32354492,       0, 2247123,   42249,30107369,   42249,  6.9,  0.1, 93.1,  0.1,  6.9,  0.1, 93.1,  0.1,California                                                            ,                                                                      ,
+2024,        ,06,000,40,0,0,0,3, 5426606,   50016,  568337,   19163, 4858269,   47685, 10.5,  0.3, 89.5,  0.3,  1.8,  0.1, 15.0,  0.1,California                                                            ,                                                                      ,
+2024,        ,06,000,40,0,0,1,0,16356232,       0, 1313026,   30126,15043206,   30126,  8.0,  0.2, 92.0,  0.2,  8.0,  0.2, 92.0,  0.2,California                                                            ,                                                                      ,
+2024,        ,06,000,40,0,0,1,3, 2566901,   30735,  309917,   13231, 2256984,   29438, 12.1,  0.5, 87.9,  0.5,  1.9,  0.1, 13.8,  0.2,California                                                            ,                                                                      ,
+2024,        ,06,000,40,1,0,0,0,24074340,       0, 2003077,   38126,22071263,   38126,  8.3,  0.2, 91.7,  0.2,  8.3,  0.2, 91.7,  0.2,California                                                            ,                                                                      ,
+2024,        ,06,000,40,1,0,0,3, 3658508,   33021,  497849,   16915, 3160659,   31606, 13.6,  0.4, 86.4,  0.4,  2.1,  0.1, 13.1,  0.1,California                                                            ,                                                                      ,
+2024,        ,06,000,40,1,0,1,0,12112937,       0, 1190001,   27743,10922936,   27743,  9.8,  0.2, 90.2,  0.2,  9.8,  0.2, 90.2,  0.2,California                                                            ,                                                                      ,
+2024,        ,06,000,40,1,0,1,3, 1662851,   20933,  275296,   11885, 1387555,   20212, 16.6,  0.7, 83.4,  0.7,  2.3,  0.1, 11.5,  0.2,California                                                            ,                                                                      ,
+2024,        ,06,000,40,2,0,0,0,12226125,       0,  886071,   23917,11340054,   23917,  7.2,  0.2, 92.8,  0.2,  7.2,  0.2, 92.8,  0.2,California                                                            ,                                                                      ,
+2024,        ,06,000,40,2,0,0,3, 1681465,   20976,  215050,   10642, 1466415,   20550, 12.8,  0.6, 87.2,  0.6,  1.8,  0.1, 12.0,  0.2,California                                                            ,                                                                      ,
+2024,        ,06,000,40,2,0,1,0, 6076327,       0,  507861,   17594, 5568466,   17594,  8.4,  0.3, 91.6,  0.3,  8.4,  0.3, 91.6,  0.3,California                                                            ,                                                                      ,
+2024,        ,06,000,40,2,0,1,3,  779280,   13918,  116262,    7624,  663018,   13717, 14.9,  0.9, 85.1,  0.9,  1.9,  0.1, 10.9,  0.2,California                                                            ,                                                                      ,
+2024,        ,06,000,40,3,0,0,0, 7076458,       0,  465463,   16679, 6610995,   16679,  6.6,  0.2, 93.4,  0.2,  6.6,  0.2, 93.4,  0.2,California                                                            ,                                                                      ,
+2024,        ,06,000,40,3,0,0,3,  969713,   15221,  108244,    7277,  861469,   15167, 11.2,  0.7, 88.8,  0.7,  1.5,  0.1, 12.2,  0.2,California                                                            ,                                                                      ,
+2024,        ,06,000,40,3,0,1,0, 3494298,       0,  257473,   12299, 3236825,   12299,  7.4,  0.4, 92.6,  0.4,  7.4,  0.4, 92.6,  0.4,California                                                            ,                                                                      ,
+2024,        ,06,000,40,3,0,1,3,  459399,   10303,   57142,    5202,  402257,   10271, 12.4,  1.1, 87.6,  1.1,  1.6,  0.1, 11.5,  0.3,California                                                            ,                                                                      ,
+2024,        ,06,000,40,4,0,0,0, 8735694,       0,  271832,   16477, 8463862,   16477,  3.1,  0.2, 96.9,  0.2,  3.1,  0.2, 96.9,  0.2,California                                                            ,                                                                      ,
+2024,        ,06,000,40,4,0,0,3, 1865324,   32030,   79085,    8151, 1786239,   31647,  4.2,  0.4, 95.8,  0.4,  0.9,  0.1, 20.4,  0.4,California                                                            ,                                                                      ,
+2024,        ,06,000,40,5,0,0,0,22740615,       0, 1894168,   36990,20846447,   36990,  8.3,  0.2, 91.7,  0.2,  8.3,  0.2, 91.7,  0.2,California                                                            ,                                                                      ,
+2024,        ,06,000,40,5,0,0,3, 3341011,   31538,  465588,   16432, 2875423,   30273, 13.9,  0.5, 86.1,  0.5,  2.0,  0.1, 12.6,  0.1,California                                                            ,                                                                      ,
+2024,        ,06,000,40,5,0,1,0,11417143,       0, 1129452,   27116,10287691,   27116,  9.9,  0.2, 90.1,  0.2,  9.9,  0.2, 90.1,  0.2,California                                                            ,                                                                      ,
+2024,        ,06,000,40,5,0,1,3, 1507538,   20128,  257645,   11607, 1249893,   19485, 17.1,  0.7, 82.9,  0.7,  2.3,  0.1, 10.9,  0.2,California                                                            ,                                                                      ,
+2024,        ,06,000,40,6,0,0,0, 4638212,       0,  482614,   17196, 4155598,   17196, 10.4,  0.4, 89.6,  0.4, 10.4,  0.4, 89.6,  0.4,California                                                            ,                                                                      ,
+2024,        ,06,000,40,6,0,0,3,  824387,   14358,  114603,    7702,  709784,   14295, 13.9,  0.9, 86.1,  0.9,  2.5,  0.2, 15.3,  0.3,California                                                            ,                                                                      ,
+2024,        ,06,000,40,6,0,1,0, 2350364,       0,  293992,   13134, 2056372,   13134, 12.5,  0.6, 87.5,  0.6, 12.5,  0.6, 87.5,  0.6,California                                                            ,                                                                      ,
+2024,        ,06,000,40,6,0,1,3,  367049,    9320,   64497,    5605,  302552,    9305, 17.6,  1.5, 82.4,  1.5,  2.7,  0.2, 12.9,  0.4,California                                                            ,                                                                      ,
+2024,        ,06,037,50,0,0,0,0, 8039276,       0,  671007,   19221, 7368269,   19221,  8.3,  0.2, 91.7,  0.2,  8.3,  0.2, 91.7,  0.2,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,0,0,0,3, 1505246,   23041,  171546,    9883, 1333700,   22416, 11.4,  0.6, 88.6,  0.6,  2.1,  0.1, 16.6,  0.3,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,0,0,1,0, 4049593,       0,  401442,   14619, 3648151,   14619,  9.9,  0.4, 90.1,  0.4,  9.9,  0.4, 90.1,  0.4,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,0,0,1,3,  713750,   16192,   94945,    7119,  618805,   15633, 13.3,  1.0, 86.7,  1.0,  2.3,  0.2, 15.3,  0.4,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,1,0,0,0, 6143309,       0,  615141,   18089, 5528168,   18089, 10.0,  0.3, 90.0,  0.3, 10.0,  0.3, 90.0,  0.3,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,1,0,0,3, 1048666,   17195,  154264,    9121,  894402,   16615, 14.7,  0.8, 85.3,  0.8,  2.5,  0.1, 14.6,  0.3,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,1,0,1,0, 3076913,       0,  373392,   13895, 2703521,   13895, 12.1,  0.5, 87.9,  0.5, 12.1,  0.5, 87.9,  0.5,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,1,0,1,3,  480420,   11675,   86698,    6622,  393722,   11053, 18.0,  1.3, 82.0,  1.3,  2.8,  0.2, 12.8,  0.4,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,2,0,0,0, 3122482,       0,  279482,   12010, 2843000,   12010,  9.0,  0.4, 91.0,  0.4,  9.0,  0.4, 91.0,  0.4,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,2,0,0,3,  505267,   11827,   68807,    5966,  436460,   11386, 13.6,  1.1, 86.4,  1.1,  2.2,  0.2, 14.0,  0.4,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,2,0,1,0, 1546677,       0,  164561,    9180, 1382116,    9180, 10.6,  0.6, 89.4,  0.6, 10.6,  0.6, 89.4,  0.6,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,2,0,1,3,  233589,    8115,   37098,    4295,  196491,    7714, 15.9,  1.7, 84.1,  1.7,  2.4,  0.3, 12.7,  0.5,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,3,0,0,0, 1828027,       0,  154172,    8912, 1673855,    8912,  8.4,  0.5, 91.6,  0.5,  8.4,  0.5, 91.6,  0.5,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,3,0,0,3,  289581,    8162,   35921,    4254,  253660,    8018, 12.4,  1.4, 87.6,  1.4,  2.0,  0.2, 13.9,  0.4,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,3,0,1,0,  899850,       0,   86977,    6685,  812873,    6685,  9.7,  0.7, 90.3,  0.7,  9.7,  0.7, 90.3,  0.7,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,3,0,1,3,  136867,    5623,   18891,    3025,  117976,    5497, 13.8,  2.1, 86.2,  2.1,  2.1,  0.3, 13.1,  0.6,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,4,0,0,0, 2003351,       0,   63054,    6652, 1940297,    6652,  3.1,  0.3, 96.9,  0.3,  3.1,  0.3, 96.9,  0.3,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,4,0,0,3,  482638,   15465,   19502,    3860,  463136,   15202,  4.0,  0.8, 96.0,  0.8,  1.0,  0.2, 23.1,  0.8,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,5,0,0,0, 5830869,       0,  585787,   17776, 5245082,   17776, 10.0,  0.3, 90.0,  0.3, 10.0,  0.3, 90.0,  0.3,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,5,0,0,3,  968609,   16826,  145511,    8947,  823098,   16230, 15.0,  0.9, 85.0,  0.9,  2.5,  0.2, 14.1,  0.3,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,5,0,1,0, 2913492,       0,  357280,   13688, 2556212,   13688, 12.3,  0.5, 87.7,  0.5, 12.3,  0.5, 87.7,  0.5,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,5,0,1,3,  440095,   11408,   81903,    6501,  358192,   10782, 18.6,  1.4, 81.4,  1.4,  2.8,  0.2, 12.3,  0.4,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,6,0,0,0, 1178548,       0,  138145,    8527, 1040403,    8527, 11.7,  0.7, 88.3,  0.7, 11.7,  0.7, 88.3,  0.7,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,6,0,0,3,  225077,    8271,   32168,    4170,  192909,    7929, 14.3,  1.7, 85.7,  1.7,  2.7,  0.4, 16.4,  0.7,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,6,0,1,0,  591105,       0,   85235,    6629,  505870,    6629, 14.4,  1.1, 85.6,  1.1, 14.4,  1.1, 85.6,  1.1,California                                                            ,Los Angeles County                                                    ,
+2024,        ,06,037,50,6,0,1,3,  102540,    5420,   18595,    3076,   83945,    5165, 18.1,  2.8, 81.9,  2.8,  3.1,  0.5, 14.2,  0.9,California                                                            ,Los Angeles County                                                    ,
+2024,        ,15,005,50,0,0,0,0,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,0,0,0,3,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,0,0,1,0,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,0,0,1,3,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,1,0,0,0,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,1,0,0,3,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,1,0,1,0,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,1,0,1,3,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,2,0,0,0,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,2,0,0,3,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,2,0,1,0,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,2,0,1,3,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,3,0,0,0,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,3,0,0,3,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,3,0,1,0,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,3,0,1,3,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,4,0,0,0,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,4,0,0,3,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,5,0,0,0,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,5,0,0,3,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,5,0,1,0,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,5,0,1,3,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,6,0,0,0,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,6,0,0,3,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,6,0,1,0,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,
+2024,        ,15,005,50,6,0,1,3,       .,       .,       .,       .,       .,       .,   . ,   . ,   . ,   . ,   . ,   . ,   . ,   . ,Hawaii                                                                ,Kalawao County                                                        ,

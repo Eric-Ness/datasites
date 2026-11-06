@@ -72,6 +72,7 @@ const MINUTES_PER_RUN = {
   "ingest-climate.yml": 7, // 342 s, including the weekly world-capitals pass
   "ingest-economic.yml": 2, // 26 s with QCEW unreachable; the LAUS county file is 337 MB on days it changes
   "ingest-election.yml": 1, // 6 s with three MEDSL datasets (re-measured 2026-10-26)
+  "ingest-health.yml": 3, // 142 s forced with nothing changed (2026-11-06): two CDC tables and 17 SAHIE files answer 304
   "ingest-housing.yml": 3, // 61 s when nothing changed (2026-11-06); a yearly release republishes about 12,000 files
   "ingest-satellite.yml": 2, // 8 s keyless; Space-Track elements add a few requests
   "ingest-visualize.yml": 1, // 6 s
