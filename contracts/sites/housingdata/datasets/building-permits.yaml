@@ -1,0 +1,76 @@
+id: building-permits
+version: 1                       # bump on any schema change; forces a rebuild
+kind: series
+title: Building permits by county
+description: >-
+  New housing units authorized by building permits in every US county each year since 1990, from the Census
+  Bureau's Building Permits Survey: units by building size (single-family to 5+ units), buildings and
+  construction value, with state and national totals.
+pipeline: datasites_housing.census_bps
+check_every: P7D                 # one directory listing plus conditional GETs: unchanged files cost a 304 each
+cadence: P1Y                     # the final annual county file comes out each May
+sla: P15M
+source:
+  id: census-bps
+  name: US Census Bureau, Building Permits Survey, annual county files
+  publisher: US Census Bureau
+  url: https://www.census.gov/construction/bps/
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true            # work of a US federal agency (17 USC 105)
+  attribution: >-
+    U.S. Census Bureau, Building Permits Survey, annual county files (https://www2.census.gov/econ/bps/County/).
+series:
+  permits: Housing units authorized by building permits
+locations:
+  registry: [us-county, us-state]
+  explicit:
+    usa: United States
+    us-county-02201: Prince of Wales-Outer Ketchikan Census Area, AK (through 2012 in BPS)
+    us-county-02231: Skagway-Yakutat-Angoon Census Area, AK (through 1996)
+    us-county-02232: Skagway-Hoonah-Angoon Census Area, AK (through 2012 in BPS)
+    us-county-02261: Valdez-Cordova Census Area, AK (through 2022 in BPS)
+    us-county-02270: Wade Hampton Census Area, AK (through 2015)
+    us-county-02280: Wrangell-Petersburg Census Area, AK (through 2012 in BPS)
+    us-county-09001: Fairfield County, CT (former county, through 2022)
+    us-county-09003: Hartford County, CT (former county, through 2022)
+    us-county-09005: Litchfield County, CT (former county, through 2022)
+    us-county-09007: Middlesex County, CT (former county, through 2022)
+    us-county-09009: New Haven County, CT (former county, through 2022)
+    us-county-09011: New London County, CT (former county, through 2022)
+    us-county-09013: Tolland County, CT (former county, through 2022)
+    us-county-09015: Windham County, CT (former county, through 2022)
+    us-county-12025: Dade County, FL (through 1998; now Miami-Dade, 12086)
+    us-county-51515: Bedford city, VA (through 2012; now part of Bedford County)
+    us-county-51560: Clifton Forge city, VA (through 2001; now part of Alleghany County)
+    us-county-51780: South Boston city, VA (through 1994; now part of Halifax County)
+# Notes on BPS's data, kept as published:
+# - Estimates with imputation: offices that didn't report are imputed by the Census Bureau. The files also
+#   carry reported-only figures, which are left out.
+# - State and national rows add up the county file, including "Balance of State" rows (permits not assigned
+#   to a county); those rows aren't counties and have no county series of their own.
+# - From 2004 the state rows equal BPS's own state files for every state and DC (Alaska 2013 is 26 units
+#   short). Before 2004 the county files cover fewer permit offices than the state files: about 0.1% fewer
+#   units nationally in most years, 2.5-3% in 1991-1993, and much more in a few states, so compare early
+#   years with care.
+# - Puerto Rico and the Virgin Islands appear only in 1999-2000, under old codes, and are left out.
+# - Values are the construction cost on the permits, in nominal dollars.
+# - Permits are not starts or completions: some permitted units are never built.
+schema:
+  - { name: date, type: year }
+  - { name: units, type: int, unit: units, description: Housing units authorized, all building sizes }
+  - { name: units_1, type: int, unit: units, description: Units in single-unit buildings }
+  - { name: units_2, type: int, unit: units, description: Units in 2-unit buildings }
+  - { name: units_3_4, type: int, unit: units, description: Units in 3- and 4-unit buildings }
+  - { name: units_5_plus, type: int, unit: units, description: Units in buildings with 5 or more units }
+  - { name: buildings, type: int, unit: buildings, description: Residential buildings authorized }
+  - { name: value, type: int, unit: USD, description: "Construction cost on the permits, nominal dollars" }
+checks:
+  min_rows: 100000
+  rows_min_ratio: 0.99
+  ranges:
+    units: [0, 2500000]
+    units_1: [0, 2500000]
+    units_5_plus: [0, 2500000]
+    buildings: [0, 2500000]
+    value: [0, 1000000000000]
+  newest_not_older: true

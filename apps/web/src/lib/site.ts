@@ -29,6 +29,7 @@ export function apiBaseForSite(other: Pick<Site, "domain">): string {
 /** Where this site's pages fetch data from. */
 export const apiBase: string = apiBaseForSite(site);
 
-export const siblings: Site[] = sites.filter((s) => s.id !== site.id);
+/** The other launched sites (a coming-soon site has no pages to link to yet). */
+export const siblings: Site[] = sites.filter((s) => s.id !== site.id && s.status === "live");
 
 export { datasets, sites };

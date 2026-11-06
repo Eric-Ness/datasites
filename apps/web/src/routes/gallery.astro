@@ -9,7 +9,8 @@ import { licenseInfo } from "../lib/format";
 import { datasetPath } from "../lib/routes";
 import { siteUrl } from "../lib/urls";
 
-const items = galleryItems(sites, [...datasets], (id) => location(id)?.name).flatMap((item) => {
+// Only launched sites: a coming-soon site has no API to draw from yet.
+const items = galleryItems(sites.filter((s) => s.status === "live"), [...datasets], (id) => location(id)?.name).flatMap((item) => {
   const owner = sites.find((s) => s.id === item.site);
   const ds = datasets.find((d) => d.site === item.site && d.id === item.dataset);
   if (!owner || !ds) return [];

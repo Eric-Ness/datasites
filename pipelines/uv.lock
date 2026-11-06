@@ -9,6 +9,7 @@ members = [
     "datasites-core",
     "datasites-economic",
     "datasites-election",
+    "datasites-housing",
     "datasites-pipelines",
     "datasites-satellite",
     "datasites-visualize",
@@ -176,6 +177,23 @@ requires-dist = [
 ]
 
 [[package]]
+name = "datasites-housing"
+version = "0.1.0"
+source = { editable = "housing" }
+dependencies = [
+    { name = "datasites-core" },
+    { name = "fastexcel" },
+    { name = "polars" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "datasites-core", editable = "core" },
+    { name = "fastexcel", specifier = ">=0.11" },
+    { name = "polars", specifier = ">=1.0" },
+]
+
+[[package]]
 name = "datasites-pipelines"
 version = "0.1.0"
 source = { virtual = "." }
@@ -186,6 +204,7 @@ dependencies = [
     { name = "datasites-core" },
     { name = "datasites-economic" },
     { name = "datasites-election" },
+    { name = "datasites-housing" },
     { name = "datasites-satellite" },
     { name = "datasites-visualize" },
     { name = "datasites-water" },
@@ -205,6 +224,7 @@ requires-dist = [
     { name = "datasites-core", editable = "core" },
     { name = "datasites-economic", editable = "economic" },
     { name = "datasites-election", editable = "election" },
+    { name = "datasites-housing", editable = "housing" },
     { name = "datasites-satellite", editable = "satellite" },
     { name = "datasites-visualize", editable = "visualize" },
     { name = "datasites-water", editable = "water" },

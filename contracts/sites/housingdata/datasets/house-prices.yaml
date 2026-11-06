@@ -1,0 +1,49 @@
+id: house-prices
+version: 1                       # bump on any schema change; forces a rebuild
+kind: series
+title: House prices by county and state
+description: >-
+  FHFA's annual house price index for every US county and state with enough sales, from 1975: cumulative
+  growth in home values from the prices and appraisals of Fannie Mae and Freddie Mac mortgages, with the
+  yearly change and indexes based to 100 in 1990 and 2000 so places can be compared.
+pipeline: datasites_housing.fhfa_hpi
+check_every: P7D                 # FHFA reissues the annual files once a year (about March); no ETag, so each check downloads about 5 MB
+cadence: P1Y
+sla: P15M
+source:
+  id: fhfa-hpi
+  name: FHFA House Price Index, annual all-transactions indexes for counties and states
+  publisher: Federal Housing Finance Agency (FHFA)
+  url: https://www.fhfa.gov/data/hpi/datasets
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true            # work of a US federal agency (17 USC 105)
+  attribution: >-
+    Federal Housing Finance Agency, House Price Index (all-transactions, annual, developmental county and
+    state indexes), https://www.fhfa.gov/data/hpi.
+series:
+  all-transactions: House price index (all transactions)
+locations:
+  registry: [us-county, us-state]
+# Notes on FHFA's data, kept as published:
+# - "Developmental" indexes: FHFA revises past years with each release, so a new version can change history.
+# - All-transactions: appraisals for refinancing count as well as sales, and only conforming mortgages bought
+#   or guaranteed by Fannie Mae and Freddie Mac are included (no jumbo loans, few cash sales).
+# - hpi is 100 in each area's first year, so compare places with hpi_1990, hpi_2000 or annual_change.
+# - Values are nominal (not adjusted for inflation).
+schema:
+  - { name: date, type: year }
+  - { name: annual_change, type: float, unit: "%", nullable: true, description: "Change in the index from the year before, in percent; null in an area's first year" }
+  - { name: hpi, type: float, unit: index, nullable: true, description: "Index, 100 in the first year FHFA recorded the area; null where the sample was too small" }
+  - { name: hpi_1990, type: float, unit: index, nullable: true, description: "Index, 100 in 1990; null where the area had no 1990 value" }
+  - { name: hpi_2000, type: float, unit: index, nullable: true, description: "Index, 100 in 2000; null where the area had no 2000 value" }
+checks:
+  min_rows: 100000
+  rows_min_ratio: 0.99
+  ranges:
+    annual_change: [-60, 100]
+    hpi: [1, 100000]
+    hpi_1990: [1, 100000]
+    hpi_2000: [1, 100000]
+  max_null_fraction:
+    hpi: 0.02
+  newest_not_older: true
