@@ -70,6 +70,34 @@ def test_the_main_series_wins_over_a_series_adjusted_for_diversions():
     assert gage_rows()["usgs-01574500"]["time_series_id"] == "0a20842f14cd4b4ca2de9356128724de"
 
 
+POTOMAC_MAIN = "2cf409b0d9694c01828f5d4ff14586a5"  # 1930-03-01 to 2026-10-23
+POTOMAC_MAIN_LINE = POTOMAC_MAIN.encode() + b",USGS-01646500,ft^3/s,1930-03-01 05:00:00+00:00,2026-10-23 04:00:00+00:00,"
+SECOND = "ffff0000000000000000000000000000"
+
+
+def with_second_potomac_series(begin: str, end: str) -> dict[str, bytes]:
+    # A second Primary series at the same gage, like Louisville's two instruments (USGS-03292494).
+    raw = usgs_raw()
+    line = f",,{SECOND},USGS-01646500,ft^3/s,{begin},{end},Primary,,\n"
+    raw["time-series"] = raw["time-series"].rstrip(b"\r\n") + b"\n" + line.encode()
+    return raw
+
+
+@pytest.mark.parametrize("end", ["2026-10-24 04:00:00+00:00", "2026-10-22 04:00:00+00:00"])
+def test_two_current_series_choose_the_longest_record_whichever_ends_later(end):
+    # The choice must not flip as two live series overtake each other by a day: stream-gages and
+    # streamflow-daily are built in separate runs and have to name the same series.
+    raw = with_second_potomac_series("2023-11-06 05:00:00+00:00", end)
+    assert gage_rows(raw)["usgs-01646500"]["time_series_id"] == POTOMAC_MAIN
+
+
+def test_a_current_series_wins_over_a_longer_one_that_stopped_reporting():
+    raw = with_second_potomac_series("2023-11-06 05:00:00+00:00", "2026-10-23 04:00:00+00:00")
+    assert POTOMAC_MAIN_LINE in raw["time-series"]
+    raw["time-series"] = raw["time-series"].replace(POTOMAC_MAIN_LINE, POTOMAC_MAIN_LINE.replace(b"2026-10-23", b"2026-08-01"))
+    assert gage_rows(raw)["usgs-01646500"]["time_series_id"] == SECOND
+
+
 def test_gage_in_canada_has_no_us_state_or_county():
     row = gage_rows()["usgs-05102500"]
     assert (row["region"], row["country"], row["state"], row["county_fips"], row["county_name"]) == ("can", "can", None, None, None)

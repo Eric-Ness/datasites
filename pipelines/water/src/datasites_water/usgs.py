@@ -16,9 +16,13 @@ Stream gages are selected the same way for stream-gages and streamflow-daily:
     (ST, ST-CA canal, ST-DCH ditch, ST-TS tidal stream);
   - with a daily mean discharge time series (parameter 00060, statistic 00003, ft^3/s) whose latest value
     falls inside the rolling window (the last WINDOW_DAYS days).
-A few gages have more than one such series (a second record adjusted for diversions, or inflow and outflow
-sublocations). One is chosen per gage: the series flagged Primary, then the one without a sublocation, then
-the one without a special web description, then the most recent, then the longest record.
+A few gages have more than one such series (a second record adjusted for diversions, inflow and outflow
+sublocations, or two instruments both flagged Primary). One is chosen per gage: the series flagged Primary,
+then the one without a sublocation, then the one without a special web description, then a current one (its
+latest value within CURRENT_DAYS of the window's end), then the longest record, then the id. "Current" is a
+yes-or-no test, not the latest end date: two live series end a day apart in either order from one day to the
+next, and stream-gages and streamflow-daily are built in separate runs, so a latest-end rule let them choose
+different series for the same gage (USGS-03292494, Ohio River at Louisville, November 2026).
 """
 
 from __future__ import annotations
@@ -42,6 +46,7 @@ KEY_ENV = "USGS_WATERDATA_API_KEY"
 PAGE_LIMIT = 50_000  # the API's maximum page size
 ID_BATCH_CHARS = 5600  # monitoring-location ids per request, by URL length (about 400 ids; ~9.8 KB is rejected with 414)
 WINDOW_DAYS = 400
+CURRENT_DAYS = 30  # a series whose latest value is this recent counts as current when choosing among a gage's series
 ATTEMPTS = 8  # per request, for 429 and 5xx answers and dropped connections
 RETRY_STATUSES = {429, 500, 502, 503, 504}
 MAX_WAIT = 20 * 60  # seconds; a longer Retry-After is capped (the next answer brings a fresh one)
@@ -201,7 +206,9 @@ def _float(column: str) -> pl.Expr:
 
 def gages(raw: dict[str, bytes]) -> pl.DataFrame:
     """One row per USGS stream gage with a daily mean discharge series in the window (see the module doc)."""
-    start = read_query(raw)["window_start"]
+    query = read_query(raw)
+    start = query["window_start"]
+    current_from = (date.fromisoformat(query["window_end"]) - timedelta(days=CURRENT_DAYS)).isoformat()
     series = read_csv(raw["time-series"], SERIES_COLUMNS)
     units = set(series["unit_of_measure"].drop_nulls())
     if units - {UNIT}:
@@ -221,11 +228,10 @@ def gages(raw: dict[str, bytes]) -> pl.DataFrame:
                 pl.col("primary").fill_null("").ne("Primary"),
                 pl.col("sublocation_identifier").is_not_null(),
                 pl.col("web_description").is_not_null(),
-                "daily_end",
+                pl.col("daily_end") < current_from,
                 "daily_begin",
                 "id",
             ],
-            descending=[False, False, False, False, True, False, False],
             nulls_last=True,
         )
         .unique(subset="monitoring_location_id", keep="first", maintain_order=True)
