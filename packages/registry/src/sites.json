@@ -50,7 +50,7 @@
     "name": "Housing Data",
     "tagline": "Home prices and new construction for every US county.",
     "description": "FHFA's house price index for every county and state since 1975, and the Census Bureau's building permits for every county since 1990: how fast home values have risen and how much new housing is being built where you live.",
-    "status": "coming-soon",
+    "status": "live",
     "phase": 6
   },
   {
