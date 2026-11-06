@@ -1,8 +1,7 @@
 // healthdata.dev: an assets-only Worker (no script) serving the static site built into ../dist/healthdata.
 // Build first:  SITE=healthdata pnpm --filter @datasites/web run build
 // Deploy:       pnpm --filter @datasites/web exec wrangler deploy -c wrangler/healthdata.jsonc
-// Not deployed yet (status coming-soon): add the site to WEB_SITES in deploy.yml and api.healthdata.dev /
-// www.healthdata.dev routes, and set status: live, in the launch change.
+// Launched 2026-11-06.
 {
   "$schema": "../node_modules/wrangler/config-schema.json",
   "name": "web-healthdata",
