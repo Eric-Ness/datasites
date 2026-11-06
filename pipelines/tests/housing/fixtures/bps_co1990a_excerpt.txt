@@ -1,0 +1,9 @@
+# Lines copied verbatim from https://www2.census.gov/econ/bps/County/co1990a.txt (the header lines, then Autauga AL, Fairfield CT, Dade FL, Bedford city VA and Michigan's Balance of State), captured 2026-11-06.
+Survey , FIPS , FIPS , Region , Division , County ,   , 1-unit ,   ,   , 2-unit ,   ,   , 34unit ,   ,   , 5-unit ,   ,   , 1-unit rep ,   ,   , 2-unit rep ,   ,   , 34-unit rep ,   ,   , 5-unit rep ,   ,  
+Date , State , County , Code , Code , Name , Bldgs  , Units , Value  , Bldgs  , Units , Value  , Bldgs  , Units , Value  , Bldgs  ,  Units , Value  , Bldgs  , Units , Value  , Bldgs  , Units , Value  , Bldgs  , Units , Value  , Bldgs  , Units , Value 
+
+9099  ,     01  , 001  , 3  , 6  , Autauga County  , 87  , 87  , 4491772  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 87  , 87  , 4491772  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0
+9099  ,     09  , 001  , 1  , 1  , Fairfield County  , 746  , 746  , 107512415  , 16  , 32  , 1345850  , 14  , 46  , 1938000  , 32  , 637  , 39128900  , 739  , 739  , 106089975  , 16  , 32  , 1345850  , 14  , 46  , 1938000  , 32  , 637  , 39128900
+9099  ,     12  , 025  , 3  , 5  , Dade County  , 5073  , 5073  , 404345140  , 131  , 262  , 12845685  , 27  , 107  , 3385516  , 185  , 5413  , 240959021  , 5073  , 5073  , 404345140  , 131  , 262  , 12845685  , 27  , 107  , 3385516  , 185  , 5413  , 240959021
+9099  ,     26  , 999  , 2  , 3  , Balance of State  , 37  , 37  , 1993681  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 37  , 37  , 1993681  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0  , 0
+9099  ,     51  , 515  , 3  , 5  , Bedford City  , 8  , 8  , 357000  , 13  , 26  , 666000  , 0  , 0  , 0  , 0  , 0  , 0  , 8  , 8  , 357000  , 13  , 26  , 666000  , 0  , 0  , 0  , 0  , 0  , 0

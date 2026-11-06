@@ -10,7 +10,8 @@ const allSites = JSON.parse(readFileSync(join(ROOT, "packages", "registry", "src
 const mode = process.argv[2];
 const sitesArg = process.argv.indexOf("--sites");
 const only = sitesArg === -1 ? null : (process.argv[sitesArg + 1] ?? "").split(",").filter(Boolean);
-const sites = only ? allSites.filter((s) => only.includes(s.id)) : allSites;
+// By default only launched sites; a coming-soon site (status "coming-soon" in its site.yaml) has no domain yet.
+const sites = only ? allSites.filter((s) => only.includes(s.id)) : allSites.filter((s) => s.status === "live");
 if (only) check(only.length > 0 && sites.length === only.length, `unknown site in --sites ${only.join(",")}`);
 // Statuses that are fine at launch: unpublished means a dataset waits on credentials (BEA, Census, Space-Track).
 const HEALTHY = new Set(["ok", "discontinued", "unpublished"]);

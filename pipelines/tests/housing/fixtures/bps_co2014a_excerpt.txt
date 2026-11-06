@@ -1,0 +1,10 @@
+# Lines copied verbatim from https://www2.census.gov/econ/bps/County/co2014a.txt (the header lines, then St. Mary's MD and Anchorage AK, each listed twice, Maine's Balance of State and Autauga AL), captured 2026-11-06.
+Survey,FIPS,FIPS,Region,Division,County,,1-unit,,,2-units,,,3-4 units,,,5+ units,,,1-unit rep,,,2-units rep,,,3-4 units rep,,, 5+units rep
+Date,State,County,Code,Code,Name,Bldgs,Units,Value,Bldgs,Units,Value,Bldgs,Units,Value,Bldgs,Units,Value,Bldgs,Units,Value,Bldgs,Units,Value,Bldgs,Units,Value,Bldgs,Units,Value
+ 
+2014,01,001,3,6,Autauga County                ,131,131,34659564,0,0,0,0,0,0,0,0,0,131,131,34659564,0,0,0,0,0,0,0,0,0
+2014,02,020,4,9,Anchorage Borough             ,572,572,179917040,0,0,0,7,22,3775666,19,176,27824818,502,502,158507174,0,0,0,5,16,2683398,19,176,27824818
+2014,02,020,4,9,Anchorage Municipality        ,572,572,179917040,0,0,0,7,22,3775666,19,176,27824818,502,502,158507174,0,0,0,5,16,2683398,19,176,27824818
+2014,23,000,1,1,Maine Unorganized Territory   ,78,78,10358418,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+2014,24,037,3,5,St. Mary's County             ,451,451,101387229,0,0,0,0,0,0,1,6,1094000,451,451,101387229,0,0,0,0,0,0,1,6,1094000
+2014,24,037,3,5,St. Marys County              ,451,451,101387229,0,0,0,0,0,0,1,6,1094000,451,451,101387229,0,0,0,0,0,0,1,6,1094000

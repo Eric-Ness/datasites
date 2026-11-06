@@ -1,0 +1,20 @@
+// housingdata.dev: an assets-only Worker (no script) serving the static site built into ../dist/housingdata.
+// Build first:  SITE=housingdata pnpm --filter @datasites/web run build
+// Deploy:       pnpm --filter @datasites/web exec wrangler deploy -c wrangler/housingdata.jsonc
+// Not deployed yet: housingdata.dev is still on DirectNIC. To launch, move the domain to Cloudflare, add the site to
+// WEB_SITES in deploy.yml and api.housingdata.dev / www.housingdata.dev routes (docs/SETUP.md), and set status: live.
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "web-housingdata",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "preview_urls": true,
+  "assets": {
+    "directory": "../dist/housingdata",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  },
+  "routes": [
+    { "pattern": "housingdata.dev", "custom_domain": true }
+  ]
+}
