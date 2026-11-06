@@ -1,4 +1,4 @@
-// One Astro project, nine static sites. SITE=<id> picks the site; the output goes to dist/<id>/.
+// One Astro project, one static site per registry site. SITE=<id> picks the site; the output goes to dist/<id>/.
 //   SITE=waterdata astro build                         -> dist/waterdata/
 //   PUBLIC_API_BASE=http://localhost:8787 SITE=...      -> pages fetch from the local API (?site=<id> is added)
 //   WEB_REGISTRY=test/fixtures/registry/index.ts       -> build from a fixture registry instead (tests only)
