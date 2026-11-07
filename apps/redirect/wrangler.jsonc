@@ -18,6 +18,7 @@
     { "pattern": "www.electiondata.dev", "custom_domain": true },
     { "pattern": "www.healthdata.dev", "custom_domain": true },
     { "pattern": "www.housingdata.dev", "custom_domain": true },
+    { "pattern": "www.justicedata.dev", "custom_domain": true },
     { "pattern": "www.satellitedata.dev", "custom_domain": true },
     { "pattern": "www.visualizedata.dev", "custom_domain": true },
     { "pattern": "www.waterdata.dev", "custom_domain": true },

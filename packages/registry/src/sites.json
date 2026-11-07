@@ -68,7 +68,7 @@
     "name": "Justice Data",
     "tagline": "Crime in every US state, from the FBI's national statistics.",
     "description": "The crimes reported by police in every state each month since 2018, from the FBI's Crime Data Explorer: violent and property offenses, how many were cleared, and how much of each state's population those reports cover.",
-    "status": "coming-soon",
+    "status": "live",
     "phase": 6
   },
   {
