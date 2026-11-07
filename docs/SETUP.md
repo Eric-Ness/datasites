@@ -114,6 +114,7 @@ Each ingest workflow pings `$HC_URL/start` and then `$HC_URL/0` or `$HC_URL/1`. 
 | `datasites-ingest-election` | `41 15 * * 1` | 6 hours | `gh secret set HC_INGEST_ELECTION --env production` |
 | `datasites-ingest-health` | `13 12 * * 1,4` | 6 hours | `gh secret set HC_INGEST_HEALTH --env production` |
 | `datasites-ingest-housing` | `29 10 * * 3` | 6 hours | `gh secret set HC_INGEST_HOUSING --env production` |
+| `datasites-ingest-justice` | `17 3 * * 2` | 6 hours | `gh secret set HC_INGEST_JUSTICE --env production` |
 | `datasites-ingest-satellite` | `19 3 * * *` | 3 hours | `gh secret set HC_INGEST_SATELLITE --env production` |
 | `datasites-ingest-visualize` | `53 5 * * 4` | 6 hours | `gh secret set HC_INGEST_VISUALIZE --env production` |
 | `datasites-ingest-water` | `41 11 * * *` | 3 hours | `gh secret set HC_INGEST_WATER --env production` |
@@ -187,6 +188,7 @@ Every dataset works without these except the ones named. Until a dataset's crede
 |---|---|---|
 | Census API key (free) | economicdata `census-acs-income` | Sign up at https://api.census.gov/data/key_signup.html, then `gh secret set CENSUS_API_KEY --env production` |
 | Space-Track account (free; one per person, never shared) | satellitedata `gp-current` | Register at https://www.space-track.org, then `gh secret set SPACETRACK_USERNAME --env production` and `gh secret set SPACETRACK_PASSWORD --env production` |
+| api.data.gov key for the FBI Crime Data Explorer | justicedata `crime-monthly` | The USGS key below is an api.data.gov key and works for the FBI API too; ingest-justice uses it unless a separate `DATA_GOV_API_KEY` secret is set (`gh secret set DATA_GOV_API_KEY --env production`) |
 | USGS Water Data API key (free; needed while the repo is private) | waterdata `stream-gages`, `streamflow-daily` | Works without it, but the anonymous rate limit can stretch a daily run to an hour of Actions minutes (see section 3). It is an api.data.gov key: sign up at https://api.data.gov/signup/, then `gh secret set USGS_WATERDATA_API_KEY --env production` |
 | MIT Election Lab files | electiondata `county-president`, `house-results` | Done 2026-10-26: V20 and V15 are committed in `data/sources/medsl/`. When MEDSL publishes a new version the weekly run stops with an error; download the files again in your browser (Dataverse guestbook) as that folder's README describes |
 

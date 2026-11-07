@@ -10,6 +10,7 @@ export const ACCENT: Record<string, string> = {
   electiondata: "#b23a6b",
   healthdata: "#c0577f",
   housingdata: "#6b7a1f",
+  justicedata: "#4a5a8c",
   satellitedata: "#2b6f8f",
   visualizedata: "#b5761f",
   waterdata: "#1f8a9a",

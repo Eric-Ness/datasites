@@ -2303,6 +2303,98 @@
     "partition": null
   },
   {
+    "site": "justicedata",
+    "id": "crime-monthly",
+    "kind": "series",
+    "title": "Crimes reported each month, by state",
+    "description": "Violent and property crimes reported to the FBI by police in every state each month since 2018, with how many were cleared and how much of the state's population the reporting agencies cover. Reported figures, not estimates: the coverage columns say how complete each month is.",
+    "cadence": "P1M",
+    "check_every": "P7D",
+    "sla": "P3M",
+    "discontinued": false,
+    "needs_credentials": true,
+    "source": {
+      "name": "FBI Crime Data Explorer, summarized reported offenses by state (CDE API)",
+      "publisher": "Federal Bureau of Investigation (FBI), Uniform Crime Reporting Program",
+      "url": "https://cde.ucr.cjis.gov/",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Federal Bureau of Investigation, Crime Data Explorer, https://cde.ucr.cjis.gov/ (summarized offenses, via the CDE API on api.data.gov)."
+    },
+    "series": {
+      "violent-crime": "Violent crime (murder and nonnegligent manslaughter, rape, robbery, aggravated assault)",
+      "property-crime": "Property crime (burglary, larceny-theft, motor vehicle theft)"
+    },
+    "locations": {
+      "explicit": {
+        "usa": "United States"
+      },
+      "registry": [
+        "us-state"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "month",
+        "unit": null,
+        "nullable": false,
+        "description": null
+      },
+      {
+        "name": "offenses",
+        "type": "int",
+        "unit": "offenses",
+        "nullable": true,
+        "description": "Offenses reported by the state's agencies; null for the US"
+      },
+      {
+        "name": "clearances",
+        "type": "int",
+        "unit": "offenses",
+        "nullable": true,
+        "description": "Offenses cleared by arrest or exceptional means; null for the US"
+      },
+      {
+        "name": "offense_rate",
+        "type": "float",
+        "unit": "per 100k",
+        "nullable": true,
+        "description": "Offenses per 100,000 people covered by the reporting agencies"
+      },
+      {
+        "name": "clearance_rate",
+        "type": "float",
+        "unit": "per 100k",
+        "nullable": true,
+        "description": "Clearances per 100,000 people covered by the reporting agencies"
+      },
+      {
+        "name": "coverage_pct",
+        "type": "float",
+        "unit": "%",
+        "nullable": true,
+        "description": "Percent of the population covered by agencies that reported that month"
+      },
+      {
+        "name": "population",
+        "type": "int",
+        "unit": "people",
+        "nullable": true,
+        "description": "Population of the state (or US) used by the FBI"
+      },
+      {
+        "name": "covered_population",
+        "type": "int",
+        "unit": "people",
+        "nullable": true,
+        "description": "Population covered by the agencies that reported"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
     "site": "satellitedata",
     "id": "gp-current",
     "kind": "table",
