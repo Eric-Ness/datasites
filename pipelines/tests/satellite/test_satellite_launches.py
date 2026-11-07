@@ -89,6 +89,16 @@ def test_launch_codes(tag, launch_class, outcome, percent):
     assert (row["launch_class"], row["outcome"], row["success_percent"]) == (launch_class, outcome, percent)
 
 
+def test_not_a_launch_coded_zz():
+    # GCAT recoded its placeholder entries from '!' to 'ZZ' in November 2026 ("Z means the entry is not a launch").
+    raw = gcat_raw(gcat_launches)
+    old = b"	UNK	!	"
+    assert old in raw["launch"]
+    raw["launch"] = raw["launch"].replace(old, b"	UNK	ZZ  	")
+    row = launches(raw)["1971-000"]
+    assert (row["launch_class"], row["outcome"], row["success_percent"]) == ("not-a-launch", None, None)
+
+
 def test_undocumented_launch_code_stops_the_run():
     raw = gcat_raw(gcat_launches)
     assert b"\tOS80  \t" in raw["launch"]
