@@ -1,6 +1,6 @@
 """justicedata/crime-monthly: FBI CDE summarized offenses by state.
 
-The fixtures are verbatim CDE answers for /summarized/state/{XX}/{V|P}?from=01-2024&to=03-2024, captured
+The fixtures are verbatim CDE answers for /summarized/state/{XX}/{V|P} (01-2024 to 03-2024; Oregon 08-2026 to 10-2026), captured
 2026-11-06 from the backend the CDE API on api.data.gov forwards to (JSON has no room for a comment header).
 """
 
@@ -139,3 +139,23 @@ def test_api_errors_are_raised():
     )
     with pytest.raises(RuntimeError, match="OVER_RATE_LIMIT"):
         cde.get(ctx, "summarized/state/MN/V", {})
+
+
+def test_months_nobody_reported_yet_have_no_figures():
+    # Oregon, 08-2026 to 10-2026: no agency had reported September or October yet, and the CDE answers
+    # rate -1 and offenses 0 for them.
+    table = crime_monthly.transform(raw("OR-V"))
+    aug = at(table, "violent-crime", "us-or", "2026-08")
+    assert aug["offenses"] == 638 and aug["offense_rate"] == 23.89
+    for date in ("2026-09", "2026-10"):
+        row = at(table, "violent-crime", "us-or", date)
+        assert (row["coverage_pct"], row["covered_population"]) == (0.0, 0)
+        assert row["offenses"] is None and row["offense_rate"] is None
+        assert row["clearances"] is None and row["clearance_rate"] is None
+
+
+def test_other_negative_values_are_refused():
+    doc = json.loads(raw("MN-V")["MN-V"])
+    doc["offenses"]["rates"]["Minnesota Offenses"]["02-2024"] = -1
+    with pytest.raises(ValueError, match="negative"):
+        crime_monthly.transform({"MN-V": json.dumps(doc).encode()})

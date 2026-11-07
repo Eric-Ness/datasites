@@ -77,9 +77,10 @@ for (const [code, series] of Object.entries(SERIES)) {
     const part = doc.populations.participated_population;
     const expect = new Map();
     for (const key of new Set([...Object.keys(rate[`${name} Offenses`] ?? {}), ...Object.keys(act[`${name} Offenses`] ?? {})])) {
+      const none = part[name]?.[key] === 0; // nobody reported yet: the CDE's -1 rates and 0 counts aren't figures
       expect.set(month(key), {
-        offenses: act[`${name} Offenses`]?.[key], clearances: act[`${name} Clearances`]?.[key],
-        offense_rate: rate[`${name} Offenses`]?.[key], clearance_rate: rate[`${name} Clearances`]?.[key],
+        offenses: none ? null : act[`${name} Offenses`]?.[key], clearances: none ? null : act[`${name} Clearances`]?.[key],
+        offense_rate: none ? null : rate[`${name} Offenses`]?.[key], clearance_rate: none ? null : rate[`${name} Clearances`]?.[key],
         coverage_pct: cov[name]?.[key], population: pop[name]?.[key], covered_population: part[name]?.[key],
       });
     }
