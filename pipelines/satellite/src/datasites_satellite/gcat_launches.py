@@ -30,6 +30,7 @@ LAUNCH_CLASSES = {  # LaunchCode letter 1
     "X": "off-earth",
     "Y": "crewed-suborbital",
     "!": "not-a-launch",  # placeholder entries GCAT lists as 'Not real' (unknown launches of debris, cargo)
+    "Z": "not-a-launch",  # the same placeholders, coded 'ZZ' since November 2026 ("Z means the entry is not a launch")
 }
 OUTCOMES = {"S": "success", "F": "failure", "U": "unknown", "E": "pad-explosion", "A": "pad-abort"}
 
@@ -68,7 +69,7 @@ def transform(raw: dict[str, bytes]) -> pl.DataFrame:
     unknown = letters - set(LAUNCH_CLASSES)
     if unknown:
         raise ValueError(f"undocumented GCAT launch categories: {sorted(unknown)}")
-    shapes = launches.filter(~code.str.contains(r"^(!|[A-Z][SFUEA](\d{2})?)$"))
+    shapes = launches.filter(~code.str.contains(r"^(!|ZZ|[A-Z][SFUEA](\d{2})?)$"))
     if len(shapes):
         raise ValueError(f"undocumented LaunchCode {shapes['LaunchCode'][0]!r} for {shapes['Launch_Tag'][0]}")
 
