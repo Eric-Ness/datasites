@@ -30,7 +30,7 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       # Sites whose apex domain serves the real website (apps/web/wrangler/<id>.jsonc) and whose API answers
       # at api.<id>.dev. Every id here needs its zone Active in Cloudflare.
-      WEB_SITES: airdata carbondata climatedata economicdata electiondata healthdata housingdata satellitedata visualizedata waterdata wildfiredata
+      WEB_SITES: airdata carbondata climatedata economicdata electiondata healthdata housingdata justicedata satellitedata visualizedata waterdata wildfiredata
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7

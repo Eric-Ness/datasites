@@ -1,8 +1,7 @@
 // justicedata.dev: an assets-only Worker (no script) serving the static site built into ../dist/justicedata.
 // Build first:  SITE=justicedata pnpm --filter @datasites/web run build
 // Deploy:       pnpm --filter @datasites/web exec wrangler deploy -c wrangler/justicedata.jsonc
-// Not deployed yet (status coming-soon): add the site to WEB_SITES in deploy.yml and api.justicedata.dev /
-// www.justicedata.dev routes, and set status: live, in the launch change.
+// Launched 2026-11-07.
 {
   "$schema": "../node_modules/wrangler/config-schema.json",
   "name": "web-justicedata",
