@@ -58,18 +58,28 @@ def _place(doc: dict, place: str, with_counts: bool, what: str) -> list[dict]:
     )
     rows = []
     for key in sorted(set(off_rate) | set(offenses)):
-        rows.append(
-            {
-                "date": _month(key, what),
-                "offenses": offenses.get(key),
-                "clearances": clearances.get(key),
-                "offense_rate": off_rate.get(key),
-                "clearance_rate": clr_rate.get(key),
-                "coverage_pct": coverage.get(key),
-                "population": population.get(key),
-                "covered_population": covered.get(key),
-            }
-        )
+        row = {
+            "date": _month(key, what),
+            "offenses": offenses.get(key),
+            "clearances": clearances.get(key),
+            "offense_rate": off_rate.get(key),
+            "clearance_rate": clr_rate.get(key),
+            "coverage_pct": coverage.get(key),
+            "population": population.get(key),
+            "covered_population": covered.get(key),
+        }
+        if row["covered_population"] == 0:
+            # No agency has reported the month yet: the CDE answers rate -1 and count 0, neither of which
+            # is a figure. Keep the zero coverage, publish no counts or rates.
+            row.update(
+                offenses=None, clearances=None, offense_rate=None, clearance_rate=None
+            )
+        negative = [k for k, v in row.items() if isinstance(v, (int, float)) and v < 0]
+        if negative:
+            raise ValueError(
+                f"{what}: negative {negative} for {place} {key} with agencies reporting"
+            )
+        rows.append(row)
     return rows
 
 
