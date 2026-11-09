@@ -67,13 +67,11 @@ Nothing to do by hand. The same `apps/redirect` Worker answers `www.<domain>` fo
 
 ## 3. GitHub settings
 
-The repo is private, so GitHub Actions minutes count against your plan: 2,000 a month on Free, 3,000 on Pro. GitHub rounds each job up to a whole minute. Measured on 2026-10-24:
+The repo is public (since 2026-11-09), so GitHub Actions minutes on GitHub-hosted runners are free. While it was private they counted against the plan's 3,000 a month, rounded up to a whole minute per job. Measured on 2026-10-24, for reference:
 
 - **CI:** about 2 billed minutes per push.
 - **Ingest:** about 1,380 minutes a month across the nine schedules. The biggest are wildfire every 3 hours (480), water (330) and air and climate (210 each). `node scripts/verify/workflows.mjs` keeps the schedules under 1,500 and prints the breakdown.
-- **Water needs its API key** (section 6) while the repo is private: without one, USGS throttling can stretch a run to its 60-minute limit, about 1,800 minutes a month on its own.
-
-Making the repository public removes the limit: Actions minutes are free for public repositories.
+- **Water still wants its API key** (section 6): without one, USGS throttling can stretch a run to its 60-minute limit. That no longer costs money, but it delays the update.
 
 1. Create an Actions **environment** named `production`: **Settings → Environments → New environment**.
 2. In it, add the **variables** and **secrets**:
