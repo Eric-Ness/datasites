@@ -1819,11 +1819,11 @@ input:focus-visible {
 }
 
 /* Page titles and the text under them run the full width of the page: no measure cap, and no balanced wrapping
-   (balance splits a two-line title into equal halves, which leaves a ragged gap on the right). */
+   (balance, and pretty on a short title, split it into near-equal lines, which leaves a gap on the right). */
 .home-head h1,
 .hero h1 {
   max-width: none;
-  text-wrap: pretty;
+  text-wrap: wrap;
 }
 .home-head .lede,
 .hero .lede,
