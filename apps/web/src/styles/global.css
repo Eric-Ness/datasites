@@ -1817,3 +1817,16 @@ input:focus-visible {
 .file-list li {
   padding-inline: 0;
 }
+
+/* Page titles and the text under them run the full width of the page: no measure cap, and no balanced wrapping
+   (balance splits a two-line title into equal halves, which leaves a ragged gap on the right). */
+.home-head h1,
+.hero h1 {
+  max-width: none;
+  text-wrap: pretty;
+}
+.home-head .lede,
+.hero .lede,
+.hero p.muted {
+  max-width: none;
+}
