@@ -1,6 +1,6 @@
 name: ingest-wildfire
 
-# Every 3 hours, the most often the private repo's Actions minutes allow (docs/PIPELINES.md): FIRMS
+# Every 3 hours (docs/PIPELINES.md): FIRMS
 # near-real-time detections arrive ~3 h after each satellite pass, so a faster schedule would mostly
 # re-fetch the same files. Each run is short (~2 min): conditional GETs make the unchanged FIRMS and
 # HMS files and the 15 MB Natural Earth boundaries 304s, and WFIGS is a few paged queries.
