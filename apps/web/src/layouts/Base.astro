@@ -1,9 +1,12 @@
 ---
+// Every page: the shared visualizedata.org frame. A strip naming the sites in the collection, a one-row sticky header with
+// this site's five-bar mark, and a tinted footer in columns. Public Sans is served from /fonts/; nothing loads
+// from another origin. One light theme; colors come from src/lib/theme.ts.
 import "../styles/global.css";
 import { isCurrent, navItems } from "../lib/routes";
 import { faviconSvg, themeCss } from "../lib/theme";
 import { apiUrl, siteUrl } from "../lib/urls";
-import { apiBase, datasets, siblings, site } from "../lib/site";
+import { apiBase, datasets, site, sites } from "../lib/site";
 import { jsonLdScript } from "../lib/jsonld";
 import { VISUALIZEDATA_ORG } from "../lib/visualizedata";
 
@@ -25,6 +28,12 @@ const canonical = siteUrl(site.domain, canonicalPath ?? pathname);
 const fullTitle = pathname === "/" && !canonicalPath ? `${site.name}: ${site.tagline}` : `${title} | ${site.name}`;
 const nav = navItems(site.id, datasets);
 const mark = faviconSvg(site.id).replace("<svg ", '<svg aria-hidden="true" focusable="false" ');
+// The wordmark is the domain's first label, lowercase, the way visualizedata.org writes its own name.
+const word = site.domain.split(".")[0] ?? site.domain;
+const tld = site.domain.slice(word.length);
+// The collection strip: every launched site, this one included, in a fixed order.
+const collection = sites.filter((s) => s.status === "live" || s.id === site.id).sort((a, b) => a.domain.localeCompare(b.domain));
+const apiRoot = apiUrl(apiBase, site.id, "/v1");
 ---
 
 <!doctype html>
@@ -38,9 +47,10 @@ const mark = faviconSvg(site.id).replace("<svg ", '<svg aria-hidden="true" focus
     {noindex && <meta name="robots" content="noindex" />}
     <meta name="datasites:api-base" content={apiBase} />
     <meta name="datasites:site" content={site.id} />
-    <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="color-scheme" content="light" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/public-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="sitemap" href="/sitemap.xml" type="application/xml" />
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={site.name} />
@@ -54,14 +64,30 @@ const mark = faviconSvg(site.id).replace("<svg ", '<svg aria-hidden="true" focus
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
+    <nav class="collection" aria-label="Open data collection">
+      <div class="wrap">
+        <span class="collection-label">Open data collection</span>
+        <ul>
+          {
+            collection.map((s) => (
+              <li>
+                <a href={`https://${s.domain}/`} aria-current={s.id === site.id ? "true" : undefined}>
+                  {s.domain.split(".")[0]}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <a class="collection-viz" href={`${VISUALIZEDATA_ORG}/`}>visualizedata.org <span aria-hidden="true">↗</span></a>
+      </div>
+    </nav>
     <header class="site-header">
       <div class="wrap">
-        <a class="brand" href="/">
+        <a class="brand" href="/" aria-label={`${site.domain}, home`}>
           <Fragment set:html={mark} />
-          <span>{site.name}</span>
-          <span class="domain">{site.domain}</span>
+          <span class="word">{word}<span class="tld">{tld}</span></span>
         </a>
-        <nav class="site-nav" aria-label="Main">
+        <nav class="site-nav" id="site-nav" aria-label="Main">
           <ul>
             {
               nav.map((item) => (
@@ -77,6 +103,7 @@ const mark = faviconSvg(site.id).replace("<svg ", '<svg aria-hidden="true" focus
             }
           </ul>
         </nav>
+        <a class="api-pill mono" href={apiRoot}>api.{site.domain}</a>
       </div>
     </header>
     <main id="main" tabindex="-1">
@@ -86,36 +113,72 @@ const mark = faviconSvg(site.id).replace("<svg ", '<svg aria-hidden="true" focus
     </main>
     <footer class="site-footer">
       <div class="wrap">
-        <div>
-          <h2>{site.name}</h2>
-          <ul>
-            <li><a href="/datasets/">Datasets</a></li>
-            <li><a href="/docs/">Docs</a></li>
-            <li><a href="/docs/reference/">API reference</a></li>
-            <li><a href="/status/">Status</a></li>
-            <li><a href="/sources/">Sources and licenses</a></li>
-            <li><a href="/privacy/">Privacy</a></li>
-          </ul>
-          <p class="small" style="margin:12px 0 0">
-            API: <a href={apiUrl(apiBase, site.id, "/v1")} class="mono">{apiBase.replace(/^https?:\/\//, "")}</a>
+        <div class="footer-about">
+          <h2>{site.domain}</h2>
+          <p>{site.tagline} Plain files and a versioned API, checked against the publishers' own data before every update.</p>
+          <p class="footer-api">
+            API: <a href={apiRoot} class="mono">{apiBase.replace(/^https?:\/\//, "")}</a>
           </p>
         </div>
         <div>
-          <h2>The data family</h2>
+          <h2>Data</h2>
           <ul>
+            <li><a href="/datasets/">Datasets</a></li>
+            {nav.some((n) => n.href === "/indicators/") && <li><a href="/indicators/">Indicators</a></li>}
+            <li><a href="/status/">Status</a></li>
+            <li><a href="/sources/">Sources and licenses</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Use the API</h2>
+          <ul>
+            <li><a href="/docs/">Docs</a></li>
+            <li><a href="/docs/reference/">API reference</a></li>
+            <li><a href="/docs/errors/">Errors</a></li>
+            <li><a href="/privacy/">Privacy</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>The collection</h2>
+          <ul>
+            <li><a href={`${VISUALIZEDATA_ORG}/`}>visualizedata.org</a></li>
             {
-              siblings.map((s) => (
-                <li>
-                  <a href={`https://${s.domain}/`}>{s.domain}</a>
-                </li>
-              ))
+              collection
+                .filter((s) => s.id !== site.id)
+                .map((s) => (
+                  <li>
+                    <a href={`https://${s.domain}/`}>{s.domain}</a>
+                  </li>
+                ))
             }
           </ul>
-          <p class="small" style="margin:12px 0 0">
-            Charts and maps from all of this data: <a href={`${VISUALIZEDATA_ORG}/`}>visualizedata.org</a>
-          </p>
         </div>
       </div>
     </footer>
+    <button class="to-top" type="button" data-to-top aria-label="Back to top" title="Back to top" hidden>
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 15V3M3.5 8.5 9 3l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2"></path></svg>
+    </button>
   </body>
 </html>
+
+<script>
+  // Where the nav swipes sideways, the current section starts in view.
+  const nav = document.getElementById("site-nav");
+  const on = nav?.querySelector<HTMLElement>("[aria-current]");
+  if (nav && on && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = on.offsetLeft - nav.offsetLeft - 16;
+
+  // Past one screen, a button back to the top.
+  const toTop = document.querySelector<HTMLButtonElement>("[data-to-top]");
+  if (toTop) {
+    const show = () => {
+      toTop.hidden = window.scrollY < window.innerHeight;
+    };
+    addEventListener("scroll", show, { passive: true });
+    addEventListener("resize", show, { passive: true });
+    show();
+    toTop.addEventListener("click", () => {
+      document.querySelector<HTMLElement>("a.brand")?.focus({ preventScroll: true });
+      scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    });
+  }
+</script>

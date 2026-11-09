@@ -2,7 +2,9 @@
 import Base from "../layouts/Base.astro";
 import CodeBlock from "../components/CodeBlock.astro";
 import DatasetCard from "../components/DatasetCard.astro";
-import { apiBase, site, siteDatasets } from "../lib/site";
+import IndicatorCard from "../components/IndicatorCard.astro";
+import { apiBase, datasets, site, siteDatasets } from "../lib/site";
+import { indicatorsForSite, VISUALIZEDATA_ORG } from "../lib/visualizedata";
 import { defaultSelection, formatsOffered } from "../lib/datasets";
 import { quickstart } from "../lib/snippets";
 import { apiUrl, paths } from "../lib/urls";
@@ -14,28 +16,84 @@ const lines = quickstart({
   first: first ? { siteId: site.id, base: apiBase, id: first.id, kind: first.kind, ...defaultSelection(first) } : null,
 });
 const kinds = new Set(siteDatasets.map((d) => d.kind));
+const indicators = indicatorsForSite(site.id, datasets);
+const shown = indicators.slice(0, 6);
 ---
 
 <Base title="Home" description={`${site.tagline} ${site.description}`}>
-  <section class="hero">
-    <p class="eyebrow">{site.domain}</p>
-    <h1>{site.name}</h1>
-    <p class="lede">{site.tagline}</p>
-    <p class="muted">{site.description}</p>
+  <header class="home-head">
+    <p class="eyebrow">{site.name} · {site.domain}</p>
+    <h1>{site.tagline}</h1>
+    <p class="lede">{site.description}</p>
     <div class="actions">
       <a class="btn" href="/datasets/">Browse the datasets</a>
       <a class="btn btn-quiet" href="/docs/">Read the docs</a>
     </div>
-  </section>
+  </header>
+
+  <div class="home-grid">
+    <div>
+      <section class="section" aria-labelledby="datasets-h">
+        <div class="section-head">
+          <h2 id="datasets-h">Datasets</h2>
+          {siteDatasets.length > 0 && <a href="/datasets/">{siteDatasets.length === 1 ? "The dataset" : `All ${siteDatasets.length} datasets`}</a>}
+        </div>
+        {
+          siteDatasets.length ? (
+            <ul class="card-grid">
+              {siteDatasets.map((d) => (
+                <DatasetCard dataset={d} />
+              ))}
+            </ul>
+          ) : (
+            <div class="notice">
+              <p>
+                The first {site.name} datasets are being built now. They will appear here, with charts and downloads, as soon as
+                they are published. The <a href="/status/">status page</a> shows when.
+              </p>
+            </div>
+          )
+        }
+      </section>
+
+      {
+        shown.length > 0 && (
+          <section class="section" aria-labelledby="indicators-h">
+            <div class="section-head">
+              <h2 id="indicators-h">Indicators</h2>
+              <a href="/indicators/">{indicators.length === 1 ? "The indicator" : `All ${indicators.length} indicators`}</a>
+            </div>
+            <p class="small muted prose">
+              One number per place and year, built from these datasets and charted on{" "}
+              <a href={`${VISUALIZEDATA_ORG}/indicators/`}>visualizedata.org</a>.
+            </p>
+            <ul class="card-grid">
+              {shown.map((ind) => (
+                <IndicatorCard indicator={ind} />
+              ))}
+            </ul>
+          </section>
+        )
+      }
+    </div>
+
+    <aside class="section home-side" aria-labelledby="quickstart-h">
+      <h2 id="quickstart-h">Quickstart</h2>
+      <p class="muted">Three requests: the catalog, {first ? "one dataset's metadata and one data file" : "the status and the API index"}. No key or signup.</p>
+      <CodeBlock code={lines.join("\n")} label="Quickstart commands" id="quickstart" />
+      <p class="small muted">
+        Base URL: <a class="mono" href={apiUrl(apiBase, site.id, paths.root())}>{apiBase.replace(/^https?:\/\//, "")}</a>. Next: the
+        <a href="/docs/">docs</a> and the <a href="/docs/reference/">API reference</a>.
+      </p>
+    </aside>
+  </div>
 
   <section class="section" aria-labelledby="offer-h">
     <h2 id="offer-h">What you get</h2>
     <ul class="features">
       <li>
         <h3>Plain files over HTTPS</h3>
-        <p>
-          {formatsOffered(kinds)} No key or signup.
-        </p>
+        <p>{formatsOffered(kinds)} No key or signup.</p>
       </li>
       <li>
         <h3>Versions you can cite</h3>
@@ -50,39 +108,6 @@ const kinds = new Set(siteDatasets.map((d) => d.kind));
         <p>Every dataset names its source, its license, the exact credit line and whether commercial use is allowed.</p>
       </li>
     </ul>
-  </section>
-
-  <section class="section" aria-labelledby="datasets-h">
-    <div class="section-head">
-      <h2 id="datasets-h">Datasets</h2>
-      {siteDatasets.length > 0 && <a href="/datasets/">{siteDatasets.length === 1 ? "The dataset" : `All ${siteDatasets.length} datasets`}</a>}
-    </div>
-    {
-      siteDatasets.length ? (
-        <ul class="card-grid">
-          {siteDatasets.map((d) => (
-            <DatasetCard dataset={d} />
-          ))}
-        </ul>
-      ) : (
-        <div class="notice">
-          <p>
-            The first {site.name} datasets are being built now. They will appear here, with charts and downloads, as soon as
-            they are published. The <a href="/status/">status page</a> shows when.
-          </p>
-        </div>
-      )
-    }
-  </section>
-
-  <section class="section" aria-labelledby="quickstart-h">
-    <h2 id="quickstart-h">Quickstart</h2>
-    <p class="muted prose">Three requests: the catalog, {first ? "one dataset's metadata and one data file" : "the status and the API index"}.</p>
-    <CodeBlock code={lines.join("\n")} label="Quickstart commands" id="quickstart" />
-    <p class="small muted">
-      Base URL: <a class="mono" href={apiUrl(apiBase, site.id, paths.root())}>{apiBase}</a>. Next: the
-      <a href="/docs/">docs</a> and the <a href="/docs/reference/">API reference</a>.
-    </p>
   </section>
 </Base>
 

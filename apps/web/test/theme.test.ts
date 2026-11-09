@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { sites } from "@datasites/registry";
-import { ACCENT, DARK, LIGHT, accentPalette, contrast, ensureContrast, faviconSvg, hexToRgb, themeCss } from "../src/lib/theme";
+import { ACCENT, DARK, SHARED, LIGHT, accentPalette, contrast, ensureContrast, faviconSvg, hexToRgb, luminance, markColors, themeCss } from "../src/lib/theme";
 
 describe("accents", () => {
   it("match the coming-soon page exactly", () => {
@@ -48,15 +48,21 @@ describe("contrast helpers", () => {
 });
 
 describe("theme CSS and favicon", () => {
-  it("defines light and dark custom properties", () => {
+  it("defines one light theme with visualizedata.org's shared tokens", () => {
     const css = themeCss("waterdata");
     expect(css).toContain("--accent:");
-    expect(css).toContain("@media (prefers-color-scheme:dark)");
-    expect(css).toContain(`--bg:${DARK.bg}`);
-    expect(css).toContain("color-scheme:light dark");
+    expect(css).toContain(`--bg:${LIGHT.bg}`);
+    expect(css).toContain(`--link:${SHARED.link}`);
+    expect(css).toContain("color-scheme:light");
+    expect(css).not.toContain("prefers-color-scheme:dark");
   });
 
-  it("draws the favicon in the brand accent", () => {
-    expect(faviconSvg("airdata")).toContain(`fill="${ACCENT.airdata}"`);
+  it("draws the five-bar mark in the brand accent, from a pale tint to a deep shade", () => {
+    const svg = faviconSvg("airdata");
+    expect(svg).toContain(`fill="${ACCENT.airdata}"`);
+    expect(svg.match(/<rect /g)).toHaveLength(5);
+    const colors = markColors("airdata");
+    expect(colors[2]).toBe(ACCENT.airdata);
+    expect(luminance(colors[0]!)).toBeGreaterThan(luminance(colors[4]!));
   });
 });

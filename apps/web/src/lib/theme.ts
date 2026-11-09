@@ -1,5 +1,6 @@
-// Colors. Each site keeps the accent hue of its coming-soon page; the text and fill variants are
-// derived from it so that every use meets WCAG AA contrast in both the light and dark themes.
+// Colors. The sites share visualizedata.org's palette: a white page, blue-black ink and one link blue, in one
+// light theme. Each site keeps the accent hue of its coming-soon page for its own mark and its charts; the text
+// and fill variants are derived from it so that every use meets WCAG AA contrast.
 
 /** Copied from apps/coming-soon/src/page.ts so the real site matches its placeholder. */
 export const ACCENT: Record<string, string> = {
@@ -19,14 +20,24 @@ export const ACCENT: Record<string, string> = {
 
 export const DEFAULT_ACCENT = "#c4532d";
 
-/** Surfaces, matching the coming-soon page. "Lowest contrast" surfaces are the ones accent text sits on. */
+/** Surfaces, matching visualizedata.org's tokens. "Lowest contrast" surfaces are the ones accent text sits on. */
 export const LIGHT = {
-  bg: "#fbfaf7",
-  fg: "#1d1d1b",
-  muted: "#5d5b55",
-  line: "#dedbd2",
+  bg: "#ffffff",
+  fg: "#1e2833",
+  muted: "#4f5b68",
+  line: "#dfe3e8",
   card: "#ffffff",
-  code: "#f3f1ec",
+  code: "#f5f6f8",
+} as const;
+
+/** visualizedata.org's shared tokens: the same on every site in the collection. */
+export const SHARED = {
+  link: "#23588c",
+  linkHover: "#2f5f8e",
+  faint: "#76808c",
+  axis: "#c5cbd3",
+  grid: "#eef0f3",
+  tint: "#f5f6f8",
 } as const;
 
 export const DARK = {
@@ -135,20 +146,34 @@ function vars(surface: typeof LIGHT | typeof DARK, accent: ThemeAccent, chart2: 
   ].join(";");
 }
 
-/** The per-site custom properties, for a <style> tag in the page head. */
+/** The per-site custom properties, for a <style> tag in the page head. One light theme, as on visualizedata.org. */
 export function themeCss(siteId: string): string {
   const p = accentPalette(siteId);
   // A neutral second line color that stays distinguishable from every accent (>= 3:1 on the background).
   const lightChart2 = ensureContrast("#5b6b7a", [LIGHT.bg, LIGHT.card], 3, "#000000");
-  const darkChart2 = ensureContrast("#9aa8b5", [DARK.bg, DARK.card], 3, "#ffffff");
-  return (
-    `:root{color-scheme:light dark;--brand:${p.brand};${vars(LIGHT, p.light, lightChart2)}}` +
-    `@media (prefers-color-scheme:dark){:root{${vars(DARK, p.dark, darkChart2)}}}`
-  );
+  const shared = [
+    `--link:${SHARED.link}`,
+    `--link-hover:${SHARED.linkHover}`,
+    `--faint:${SHARED.faint}`,
+    `--axis:${SHARED.axis}`,
+    `--grid:${SHARED.grid}`,
+    `--tint:${SHARED.tint}`,
+  ].join(";");
+  return `:root{color-scheme:light;--brand:${p.brand};${vars(LIGHT, p.light, lightChart2)};${shared}}`;
 }
 
-/** The favicon: the coming-soon bar-chart mark in the site's brand accent. */
-export function faviconSvg(siteId: string): string {
+/**
+ * The site mark: visualizedata.org's five bars, drawn in this site's accent from a pale tint to a deep shade, so
+ * the sites in the collection share one shape and differ only in hue. Also the favicon.
+ */
+export function markColors(siteId: string): string[] {
   const accent = ACCENT[siteId] ?? DEFAULT_ACCENT;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="${accent}"/><path d="M8 22V14M14 22V9M20 22V17M26 22V12" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>`;
+  return [mix(accent, "#ffffff", 0.72), mix(accent, "#ffffff", 0.45), accent, mix(accent, "#000000", 0.2), mix(accent, "#000000", 0.4)];
+}
+
+export function faviconSvg(siteId: string): string {
+  const bars = markColors(siteId)
+    .map((c, i) => `<rect x="${i * 5.5}" width="4" height="20" fill="${c}"/>`)
+    .join("");
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="20" viewBox="0 0 26 20">${bars}</svg>`;
 }
