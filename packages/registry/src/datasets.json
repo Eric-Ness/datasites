@@ -1854,6 +1854,107 @@
   },
   {
     "site": "healthdata",
+    "id": "kindergarten-vaccination",
+    "kind": "series",
+    "title": "Kindergarten vaccination and exemptions by state",
+    "description": "CDC's share of kindergartners vaccinated against measles (MMR), polio, DTaP, hepatitis B and chickenpox, and the share with a medical or nonmedical exemption, for every state and the US each school year since 2009-10.",
+    "cadence": "P1Y",
+    "check_every": "P2D",
+    "sla": "P18M",
+    "discontinued": false,
+    "needs_credentials": false,
+    "source": {
+      "name": "CDC SchoolVaxView, Vaccination Coverage and Exemptions among Kindergartners (data.cdc.gov ijqb-a7ye)",
+      "publisher": "CDC National Center for Immunization and Respiratory Diseases (NCIRD)",
+      "url": "https://www.cdc.gov/schoolvaxview/",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Centers for Disease Control and Prevention. Vaccination Coverage and Exemptions among Kindergartners (SchoolVaxView). https://www.cdc.gov/schoolvaxview/"
+    },
+    "series": {
+      "mmr": "Measles, mumps and rubella (MMR), doses the state requires",
+      "mmr-pac": "MMR potentially achievable coverage (vaccinated or not exempt)",
+      "dtap": "DTP, DTaP or DT",
+      "polio": "Polio",
+      "hepb": "Hepatitis B",
+      "varicella-1-dose": "Varicella (chickenpox), 1 dose or disease history",
+      "varicella-2-doses": "Varicella (chickenpox), 2 doses or disease history",
+      "varicella-utd": "Varicella (chickenpox), up to date with the state's requirement or disease history",
+      "exemption-any": "Any exemption from one or more vaccines",
+      "exemption-medical": "Medical exemption",
+      "exemption-nonmedical": "Nonmedical exemption (religious or personal belief)"
+    },
+    "locations": {
+      "explicit": {
+        "usa": "United States"
+      },
+      "registry": [
+        "us-state"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "year",
+        "unit": null,
+        "nullable": false,
+        "description": "First year of the school year (2025 = 2025-26)"
+      },
+      {
+        "name": "school_year",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "School year as CDC writes it, such as 2025-26"
+      },
+      {
+        "name": "estimate",
+        "type": "float",
+        "unit": "%",
+        "nullable": true,
+        "description": "Percent of kindergartners vaccinated, or with the exemption; null where the state reports none"
+      },
+      {
+        "name": "status",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "reported, not-required, not-reported or not-available"
+      },
+      {
+        "name": "kindergartners",
+        "type": "int",
+        "unit": "children",
+        "nullable": true,
+        "description": "Kindergarten population the estimate covers"
+      },
+      {
+        "name": "percent_surveyed",
+        "type": "float",
+        "unit": "%",
+        "nullable": true,
+        "description": "Percent of kindergartners included in the count"
+      },
+      {
+        "name": "exemptions",
+        "type": "int",
+        "unit": "children",
+        "nullable": true,
+        "description": "Number of kindergartners with the exemption (exemption series only)"
+      },
+      {
+        "name": "survey_type",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "How the state counted, as CDC records it"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "healthdata",
     "id": "overdose-deaths-county",
     "kind": "series",
     "title": "Drug overdose deaths by county",

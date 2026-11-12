@@ -1,0 +1,32 @@
+# Verbatim lines from https://data.cdc.gov/api/views/ijqb-a7ye/rows.csv?accessType=DOWNLOAD
+# captured 2026-11-12 (table last modified 2026-08-28). The U+FFFD characters in Footnotes are CDC's own.
+Vaccine/Exemption,Dose,Geography Type,Geography,School Year,Estimate (%),Population Size,Percent Surveyed,Footnotes,Number of Exemptions,Survey Type
+MMR,,National,United States,2025-26,92.4,3692432,96,,,
+MMR,,National,U.S. Median,2025-26,91.5,3692432,96,,,
+MMR,,States,Idaho,2024-25,78.5,22242,99.5,,,Census
+MMR,,States,Idaho,2025-26,75.2,21728,100,*,,Census
+MMR,,States,Kansas,2025-26,NA,,,,,Stratified 2-stage cluster sample
+MMR,,States,New York,2025-26,97.7,203514,95.8,,,"Census (pub.), vol. response (prv.)"
+MMR,,States,NY-City of New York,2025-26,97.1,82534,98.1,,,Census
+MMR (PAC),MMR (PAC),States,NY-Rest of state,2023-24,99.0,,,,,
+MMR,,States,TX-City of Houston,2025-26,92.1,36071,94.6,�. �,,"Census (pub.), vol. response (prv.)"
+MMR,,States,Oregon,2025-26,89.6,37309,100,*. �,,Census
+Exemption,Medical Exemption,National,United States,2025-26,0.2,3725852,97,,7737,
+Exemption,Non-Medical Exemption,National,United States,2025-26,4.0,3725852,97,,148608,
+Exemption,Any Exemption,National,United States,2025-26,4.2,3725852,97,,157029,
+Exemption,Medical Exemption,States,Idaho,2025-26,0.4,21728,100,||,92,Census
+Exemption,Non-Medical Exemption,States,Idaho,2025-26,17.0,21728,100,||,3704,Census
+Exemption,Any Exemption,States,Idaho,2025-26,17.5,21728,100,||,3796,Census
+MMR (PAC),MMR (PAC),States,Idaho,2025-26,83.4,21728,100,,,Census
+Varicella,1 Dose (or disease history),States,Arkansas,2022-23,NReq,38358,95.8,,,"Census (pub.), vol. response (pvt.)"
+Hepatitis B,,States,Maine,2023-24,Nreq,12087,93,,,Census
+MMR,,States,Alaska,2019-20,NR,10381,82.7,§,,Voluntary response
+Varicella,1 Dose (or disease history),States,Idaho,2025-26,NReq,21728,100,,,Census
+Varicella,2 Doses (or disease history),States,Idaho,2025-26,74.6,21728,100,,,Census
+Varicella,UTD (or disease history),States,Idaho,2025-26,74.6,21728,100,,,Census
+"DTP, DTaP, or DT",,States,Idaho,2025-26,74.8,21728,100,*,,Census
+Polio,,States,Idaho,2025-26,75.5,21728,100,*,,Census
+Hepatitis B,,States,Idaho,2025-26,82.1,21728,100,*,,Census
+MMR,,States,District of Columbia,2009-10,NA,6092,100,*,,Census
+MMR,,States,Alabama,2010-11,NA,,,,,NA
+MMR,,States,Kansas,2009-10,90.9,39073,39.1,†,,Stratified 1-stage sample  (Public);  Census (Private)

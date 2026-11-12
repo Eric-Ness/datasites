@@ -28,8 +28,11 @@ const SERIES = {
 const EXPECTED = {
   usOverdose2024Dec: 80860, // VSRR: US, 12 months ending December 2024, reported
   laUninsured2024: 8.3, // SAHIE 2024: Los Angeles County, under 65, % uninsured
+  usMmr2025: 92.4, // SchoolVaxView: United States, MMR, 2025-26
+  lowestMmr2025: "us-id", // SchoolVaxView: lowest state MMR coverage in 2025-26 (Idaho, 75.2%)
 };
 if (NEGATIVE) EXPECTED.usOverdose2024Dec += 1;
+if (process.argv.includes("--negative-control-kindergarten")) EXPECTED.usMmr2025 += 0.1;
 
 const sha256 = (buf) => createHash("sha256").update(buf).digest("hex");
 const num = (s) => (s === undefined || s === null || s.trim() === "" ? null : Number(s.replace(/,/g, "")));
@@ -191,5 +194,70 @@ async function verifyUninsured() {
   return `uninsured ${ds.doc.version}: ${checked} place-age-years re-derived from ${years.length} SAHIE files (${years[0]}-${years.at(-1)}); ${consistent} have a rate within 0.1 point of count / population; Los Angeles 2024 = ${la}%`;
 }
 
-const results = [await verifyStates(), await verifyCounties(), await verifyUninsured()];
+// --- kindergarten-vaccination ------------------------------------------------------------------------------
+
+const KV_SERIES = {
+  "MMR|": "mmr", "MMR (PAC)|MMR (PAC)": "mmr-pac", "DTP, DTaP, or DT|": "dtap", "Polio|": "polio", "Hepatitis B|": "hepb",
+  "Varicella|1 Dose (or disease history)": "varicella-1-dose", "Varicella|2 Doses (or disease history)": "varicella-2-doses",
+  "Varicella|UTD (or disease history)": "varicella-utd", "Exemption|Any Exemption": "exemption-any",
+  "Exemption|Medical Exemption": "exemption-medical", "Exemption|Non-Medical Exemption": "exemption-nonmedical",
+};
+const KV_STATUS = { NA: "not-available", NREQ: "not-required", NR: "not-reported" };
+
+async function verifyKindergarten() {
+  const ds = localDataset("healthdata", "kindergarten-vaccination");
+  const body = await source(ds, "kindergarten", "https://data.cdc.gov/api/views/ijqb-a7ye/rows.csv?accessType=DOWNLOAD");
+  const rows = parseCsv(body.toString("utf8"));
+  const pub = publishedSeries(ds, "kindergarten-vaccination");
+  const geo = JSON.parse(readFileSync(join(ROOT, "packages", "geo", "src", "locations.json"), "utf8"));
+  const byName = new Map(Object.values(geo.locations ?? geo).filter((l) => l.level === "us-state").map((l) => [l.name, l.id]));
+  byName.set("United States", "usa");
+  const skipped = new Set(["NY-City of New York", "NY-Rest of state", "TX-City of Houston", "U.S. Median"]);
+  let checked = 0;
+  let dropped = 0;
+  for (const r of rows) {
+    const g = r.Geography.trim();
+    if (skipped.has(g)) { dropped++; continue; }
+    const loc = byName.get(g);
+    check(loc, `kindergarten-vaccination: unknown place ${g}`);
+    const series = KV_SERIES[`${r["Vaccine/Exemption"].trim()}|${r.Dose.trim()}`];
+    check(series, `kindergarten-vaccination: unknown vaccine ${r["Vaccine/Exemption"]} ${r.Dose}`);
+    const year = r["School Year"].trim().slice(0, 4);
+    const got = pub.get(`${series}|${loc}`)?.get(year);
+    check(got, `${series} ${loc} ${year}: not published`);
+    const est = r["Estimate (%)"].trim();
+    const want = /^[\d.]+$/.test(est) ? { estimate: Number(est), status: "reported" } : { estimate: null, status: KV_STATUS[est.toUpperCase()] };
+    check(got.estimate === want.estimate && got.status === want.status, `${series} ${loc} ${year}: published ${got.estimate} ${got.status}, CDC ${est}`);
+    check(got.kindergartners === num(r["Population Size"]) && got.percent_surveyed === num(r["Percent Surveyed"]) && got.exemptions === num(r["Number of Exemptions"]),
+      `${series} ${loc} ${year}: counts differ from CDC (${r["Population Size"]}, ${r["Percent Surveyed"]}, ${r["Number of Exemptions"]})`);
+    checked++;
+  }
+  // CDC's own counts don't add up exactly: "any exemption" equals medical + nonmedical in most place-years, is
+  // smaller where a child holds both, and larger where a state reports a total without the full split. Reported,
+  // not asserted.
+  let equal = 0;
+  let pairs = 0;
+  for (const [key, any] of pub) {
+    if (!key.startsWith("exemption-any|")) continue;
+    const loc = key.split("|")[1];
+    for (const [year, row] of any) {
+      const med = pub.get(`exemption-medical|${loc}`)?.get(year)?.exemptions;
+      const non = pub.get(`exemption-nonmedical|${loc}`)?.get(year)?.exemptions;
+      if ([row.exemptions, med, non].some((v) => v === null || v === undefined)) continue;
+      pairs++;
+      if (row.exemptions === med + non) equal++;
+    }
+  }
+  const newest = String(Math.max(...[...pub.get("mmr|usa").keys()].map(Number)));
+  const states = [...pub].filter(([k]) => k.startsWith("mmr|us-")).map(([k, s]) => [k.slice(4), s.get(newest)?.estimate]).filter(([, v]) => v !== null && v !== undefined);
+  const lowest = states.reduce((a, b) => (b[1] < a[1] ? b : a));
+  check(states.length >= 45, `only ${states.length} states have a ${newest} MMR figure`);
+  check(lowest[0] === EXPECTED.lowestMmr2025, `lowest state MMR ${newest}: ${lowest[0]}, expected ${EXPECTED.lowestMmr2025}`);
+  const us = pub.get("mmr|usa").get("2025").estimate;
+  check(us === EXPECTED.usMmr2025, `US kindergarten MMR 2025-26: published ${us}, expected ${EXPECTED.usMmr2025}`);
+  check(pub.get("mmr|us-mt").get("2025") === undefined, "Montana has a 2025-26 MMR row; CDC had none on 2026-11-12");
+  return `kindergarten-vaccination ${ds.doc.version}: ${checked} rows re-derived (${dropped} city and median rows left out); any-exemption count equals medical + nonmedical in ${equal} of ${pairs} place-years; ${states.length} states with ${newest} MMR, lowest ${lowest[0]} ${lowest[1]}%; US 2025-26 = ${us}%`;
+}
+
+const results = [await verifyStates(), await verifyCounties(), await verifyUninsured(), await verifyKindergarten()];
 console.log(`HEALTH VERIFIED (${results.join("; ")})`);
