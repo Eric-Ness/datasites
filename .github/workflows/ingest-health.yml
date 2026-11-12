@@ -1,8 +1,8 @@
 name: ingest-health
 
 # Twice-weekly look at every healthdata.dev dataset. CDC refreshes the VSRR overdose tables once a month (around
-# mid-month) and the Census Bureau adds a SAHIE year each summer; both answer conditional GETs, so most runs end
-# with every source unchanged. Twice a week keeps a new overdose month within 3-4 days of its release while
+# mid-month), the Census Bureau adds a SAHIE year each summer and CDC a SchoolVaxView school year each summer or
+# fall; all answer conditional GETs, so most runs end with every source unchanged. Twice a week keeps a new overdose month within 3-4 days of its release while
 # staying inside the Actions minutes budget (scripts/verify/workflows.mjs).
 # The schedule stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md); manual runs
 # (Actions → Run workflow) always work, for example to fill the staging bucket.

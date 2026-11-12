@@ -1,0 +1,69 @@
+id: kindergarten-vaccination
+version: 1                       # bump on any schema change; forces a rebuild
+kind: series
+title: Kindergarten vaccination and exemptions by state
+description: >-
+  CDC's share of kindergartners vaccinated against measles (MMR), polio, DTaP, hepatitis B and chickenpox, and
+  the share with a medical or nonmedical exemption, for every state and the US each school year since 2009-10.
+pipeline: datasites_health.kindergarten_vaccination
+check_every: P2D                 # ingest-health runs Mondays and Thursdays; an unchanged table costs a 304
+cadence: P1Y                     # CDC adds a school year once a year (2025-26 arrived in August 2026)
+sla: P18M
+source:
+  id: cdc-schoolvaxview
+  name: CDC SchoolVaxView, Vaccination Coverage and Exemptions among Kindergartners (data.cdc.gov ijqb-a7ye)
+  publisher: CDC National Center for Immunization and Respiratory Diseases (NCIRD)
+  url: https://www.cdc.gov/schoolvaxview/
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true            # data.cdc.gov metadata: "Public Domain U.S. Government"
+  attribution: >-
+    Centers for Disease Control and Prevention. Vaccination Coverage and Exemptions among Kindergartners
+    (SchoolVaxView). https://www.cdc.gov/schoolvaxview/
+series:
+  mmr: Measles, mumps and rubella (MMR), doses the state requires
+  mmr-pac: MMR potentially achievable coverage (vaccinated or not exempt)
+  dtap: DTP, DTaP or DT
+  polio: Polio
+  hepb: Hepatitis B
+  varicella-1-dose: Varicella (chickenpox), 1 dose or disease history
+  varicella-2-doses: Varicella (chickenpox), 2 doses or disease history
+  varicella-utd: Varicella (chickenpox), up to date with the state's requirement or disease history
+  exemption-any: Any exemption from one or more vaccines
+  exemption-medical: Medical exemption
+  exemption-nonmedical: Nonmedical exemption (religious or personal belief)
+locations:
+  registry: us-state
+  explicit:
+    usa: United States
+# Notes on SchoolVaxView, kept as published:
+# - Each state's immunization program reports its own kindergartners; methods differ (a census of every
+#   kindergartner, a sample, or voluntary reports from private schools), and survey_type says which. Some
+#   states count few: percent_surveyed is the share of kindergartners in the count.
+# - "New York" and "Texas" are whole states. CDC also lists New York City and Houston on their own; those two
+#   city rows, and CDC's "U.S. Median" of the states, are left out. usa is CDC's national estimate.
+# - Where a state reports no figure, estimate is null and status says why: not-required (the state doesn't
+#   require that vaccine), not-reported, or not-available.
+# - CDC's Footnotes column is left out. It holds only marks (*, †, §) whose key is on CDC's SchoolVaxView pages,
+#   not in the table, and in about 200 rows the export has replaced a mark with U+FFFD.
+# - CDC's counts are not always consistent with each other: the "any exemption" count equals medical plus
+#   nonmedical in most place-years, but is smaller where a child holds both and larger where a state reports a
+#   total without the full split; and some rates (2011-12 especially) come from a sample, not count / population.
+# - School years are dated by the year they start: 2025 is the 2025-26 school year (school_year says so too).
+schema:
+  - { name: date, type: year, description: "First year of the school year (2025 = 2025-26)" }
+  - { name: school_year, type: str, description: "School year as CDC writes it, such as 2025-26" }
+  - { name: estimate, type: float, unit: "%", nullable: true, description: "Percent of kindergartners vaccinated, or with the exemption; null where the state reports none" }
+  - { name: status, type: str, description: "reported, not-required, not-reported or not-available" }
+  - { name: kindergartners, type: int, unit: children, nullable: true, description: "Kindergarten population the estimate covers" }
+  - { name: percent_surveyed, type: float, unit: "%", nullable: true, description: "Percent of kindergartners included in the count" }
+  - { name: exemptions, type: int, unit: children, nullable: true, description: "Number of kindergartners with the exemption (exemption series only)" }
+  - { name: survey_type, type: str, nullable: true, description: "How the state counted, as CDC records it" }
+checks:
+  min_rows: 7000
+  rows_min_ratio: 0.99
+  ranges:
+    estimate: [0, 100]
+    percent_surveyed: [0, 100]
+    kindergartners: [0, 5000000]
+    exemptions: [0, 500000]
+  newest_not_older: true
