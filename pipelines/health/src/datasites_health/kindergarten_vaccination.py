@@ -11,7 +11,9 @@ What the transform changes:
   Median". Any other unknown place stops the run.
 - Estimate codes become a status: NA, NReq (the state doesn't require the vaccine) and NR (not reported); the
   estimate is null for all three. Any other text stops the run.
-- Footnotes are dropped: they are marks (*, †, §) keyed only on CDC's pages, some already turned into U+FFFD.
+- Footnotes are dropped except one mark: "≥" (or ">=" from 2020-21) says the state counts a child up to date only with
+  all doses of every vaccine required for school entry, so the figure is that all-vaccines rate (CDC MMWR 66(40),
+  2017). It becomes all_vaccines. The other marks (*, †, §) are keyed only on CDC's pages, some already U+FFFD.
 - Survey type: spaces collapsed; "NA", "NaN" and blanks become null.
 """
 
@@ -111,7 +113,8 @@ def transform(raw: dict[str, bytes]) -> pl.DataFrame:
         number(df, "Percent Surveyed").alias("percent_surveyed"),
         whole(df, "Number of Exemptions").alias("exemptions"),
         pl.when(survey.is_in(["", "NA", "NaN"])).then(None).otherwise(survey).alias("survey_type"),
-    ).select("series", "location", "date", "school_year", "estimate", "status", "kindergartners", "percent_surveyed", "exemptions", "survey_type")
+        (pl.col("Footnotes").str.contains("≥", literal=True) | pl.col("Footnotes").str.contains(">=", literal=True)).alias("all_vaccines"),
+    ).select("series", "location", "date", "school_year", "estimate", "status", "kindergartners", "percent_surveyed", "exemptions", "survey_type", "all_vaccines")
 
     dupes = out.select("series", "location", "date").is_duplicated().sum()
     if dupes:

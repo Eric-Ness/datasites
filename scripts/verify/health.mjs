@@ -215,6 +215,7 @@ async function verifyKindergarten() {
   const skipped = new Set(["NY-City of New York", "NY-Rest of state", "TX-City of Houston", "U.S. Median"]);
   let checked = 0;
   let dropped = 0;
+  const marked = new Set();
   for (const r of rows) {
     const g = r.Geography.trim();
     if (skipped.has(g)) { dropped++; continue; }
@@ -230,6 +231,9 @@ async function verifyKindergarten() {
     check(got.estimate === want.estimate && got.status === want.status, `${series} ${loc} ${year}: published ${got.estimate} ${got.status}, CDC ${est}`);
     check(got.kindergartners === num(r["Population Size"]) && got.percent_surveyed === num(r["Percent Surveyed"]) && got.exemptions === num(r["Number of Exemptions"]),
       `${series} ${loc} ${year}: counts differ from CDC (${r["Population Size"]}, ${r["Percent Surveyed"]}, ${r["Number of Exemptions"]})`);
+    const allVaccines = /≥|>=/.test(r.Footnotes ?? "");
+    check(got.all_vaccines === allVaccines, `${series} ${loc} ${year}: all_vaccines ${got.all_vaccines}, CDC's footnote "${r.Footnotes}"`);
+    if (allVaccines && series === "mmr") marked.add(`${loc} ${year}`);
     checked++;
   }
   // CDC's own counts don't add up exactly: "any exemption" equals medical + nonmedical in most place-years, is
@@ -255,8 +259,11 @@ async function verifyKindergarten() {
   check(lowest[0] === EXPECTED.lowestMmr2025, `lowest state MMR ${newest}: ${lowest[0]}, expected ${EXPECTED.lowestMmr2025}`);
   const us = pub.get("mmr|usa").get("2025").estimate;
   check(us === EXPECTED.usMmr2025, `US kindergarten MMR 2025-26: published ${us}, expected ${EXPECTED.usMmr2025}`);
+  // CDC MMWR 66(40), 2017: these seven states counted a child up to date only with every required vaccine in 2017-18.
+  const seven = ["us-al", "us-fl", "us-ga", "us-ia", "us-ms", "us-nh", "us-nj"];
+  for (const loc of seven) check(marked.has(`${loc} 2017`), `${loc} 2017-18 MMR is not marked all-vaccines, though CDC's MMWR names it`);
   check(pub.get("mmr|us-mt").get("2025") === undefined, "Montana has a 2025-26 MMR row; CDC had none on 2026-11-12");
-  return `kindergarten-vaccination ${ds.doc.version}: ${checked} rows re-derived (${dropped} city and median rows left out); any-exemption count equals medical + nonmedical in ${equal} of ${pairs} place-years; ${states.length} states with ${newest} MMR, lowest ${lowest[0]} ${lowest[1]}%; US 2025-26 = ${us}%`;
+  return `kindergarten-vaccination ${ds.doc.version}: ${checked} rows re-derived (${dropped} city and median rows left out; ${marked.size} MMR state-years on the all-vaccines rule, the seven MMWR names for 2017-18 among them); any-exemption count equals medical + nonmedical in ${equal} of ${pairs} place-years; ${states.length} states with ${newest} MMR, lowest ${lowest[0]} ${lowest[1]}%; US 2025-26 = ${us}%`;
 }
 
 const results = [await verifyStates(), await verifyCounties(), await verifyUninsured(), await verifyKindergarten()];

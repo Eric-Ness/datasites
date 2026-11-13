@@ -1,6 +1,6 @@
 [project]
 name = "datasites-health"
-version = "0.1.0"
+version = "0.1.1"
 description = "Pipelines for healthdata.dev"
 requires-python = ">=3.12"
 license = "Apache-2.0"

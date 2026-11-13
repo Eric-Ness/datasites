@@ -1,5 +1,5 @@
 id: kindergarten-vaccination
-version: 1                       # bump on any schema change; forces a rebuild
+version: 2                       # bump on any schema change; forces a rebuild
 kind: series
 title: Kindergarten vaccination and exemptions by state
 description: >-
@@ -43,8 +43,11 @@ locations:
 #   city rows, and CDC's "U.S. Median" of the states, are left out. usa is CDC's national estimate.
 # - Where a state reports no figure, estimate is null and status says why: not-required (the state doesn't
 #   require that vaccine), not-reported, or not-available.
-# - CDC's Footnotes column is left out. It holds only marks (*, †, §) whose key is on CDC's SchoolVaxView pages,
-#   not in the table, and in about 200 rows the export has replaced a mark with U+FFFD.
+# - CDC's Footnotes column is left out but for one mark, kept as all_vaccines: "≥" (">=" from 2020-21) marks states
+#   that count a child up to date only with every required vaccine (CDC MMWR 66(40), 2017: Alabama, Florida,
+#   Georgia, Iowa, Mississippi, New Hampshire and New Jersey). Their MMR figure is the all-vaccines rate, so a state
+#   that changes method (Alabama, from 2024-25) has a break in its series. The other marks are keyed only on CDC's
+#   pages, and in about 200 rows the export has replaced a mark with U+FFFD.
 # - CDC's counts are not always consistent with each other: the "any exemption" count equals medical plus
 #   nonmedical in most place-years, but is smaller where a child holds both and larger where a state reports a
 #   total without the full split; and some rates (2011-12 especially) come from a sample, not count / population.
@@ -58,6 +61,7 @@ schema:
   - { name: percent_surveyed, type: float, unit: "%", nullable: true, description: "Percent of kindergartners included in the count" }
   - { name: exemptions, type: int, unit: children, nullable: true, description: "Number of kindergartners with the exemption (exemption series only)" }
   - { name: survey_type, type: str, nullable: true, description: "How the state counted, as CDC records it" }
+  - { name: all_vaccines, type: bool, description: "True where CDC marks the state as counting a child up to date only with all doses of every vaccine required for school entry (≥ or >=), so a vaccine's figure is that all-vaccines rate, a lower bound for the vaccine itself" }
 checks:
   min_rows: 7000
   rows_min_ratio: 0.99

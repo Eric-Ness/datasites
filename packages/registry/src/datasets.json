@@ -1948,6 +1948,13 @@
         "unit": null,
         "nullable": true,
         "description": "How the state counted, as CDC records it"
+      },
+      {
+        "name": "all_vaccines",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True where CDC marks the state as counting a child up to date only with all doses of every vaccine required for school entry (≥ or >=), so a vaccine's figure is that all-vaccines rate, a lower bound for the vaccine itself"
       }
     ],
     "key": [],
