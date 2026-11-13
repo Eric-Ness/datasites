@@ -72,10 +72,18 @@ def test_codes_become_a_status_with_no_estimate(table):
 
 
 def test_cities_and_median_are_dropped_and_survey_type_cleaned(table):
-    assert set(table["location"]) == {"usa", "us-id", "us-ks", "us-ny", "us-or", "us-ar", "us-me", "us-ak", "us-dc", "us-al"}
+    assert set(table["location"]) == {"usa", "us-id", "us-ks", "us-ny", "us-or", "us-ar", "us-me", "us-ak", "us-dc", "us-al", "us-ia"}
     assert at(table, "mmr", "us-ny", "2025")["estimate"] == 97.7  # the whole state, not New York City's 97.1
     assert at(table, "mmr", "us-al", "2010")["survey_type"] is None  # "NA"
     assert at(table, "mmr", "us-ks", "2009")["survey_type"] == "Stratified 1-stage sample (Public); Census (Private)"
+
+
+def test_the_all_vaccines_mark_becomes_a_flag(table):
+    # Alabama counted a child up to date only with every required vaccine until 2024-25 ("≥"); Iowa still does (">=").
+    assert at(table, "mmr", "us-al", "2019")["all_vaccines"] is True
+    assert at(table, "mmr", "us-al", "2025")["all_vaccines"] is False
+    assert at(table, "mmr", "us-ia", "2025")["all_vaccines"] is True
+    assert at(table, "mmr", "us-id", "2025")["all_vaccines"] is False  # "*" is another mark
 
 
 @pytest.mark.parametrize(
