@@ -80,3 +80,38 @@ def test_rides_out_a_short_outage_with_the_default_retries(monkeypatch):
     assert fetch.request("https://firms.example.test/x").content == b"ok"
     assert waits == [2.0, 6.0, 18.0, 54.0]
     assert calls[0].connect == fetch.CONNECT_TIMEOUT and calls[0].read == 120  # fail fast connecting, read slowly
+
+
+def test_a_client_error_after_a_timeout_is_chained_to_it(monkeypatch):
+    """World Bank, 2026-11-14: two read timeouts, then a 400 for a URL that worked the day before and after."""
+    from datasites_core import cli
+
+    waits, queue = [], [httpx.ReadTimeout("slow"), httpx.ReadTimeout("slow"), 400]
+    monkeypatch.setattr(fetch.time, "sleep", waits.append)
+
+    def fake_get(url, **_kwargs):
+        answer = queue.pop(0)
+        if isinstance(answer, Exception):
+            raise answer
+        return httpx.Response(answer, request=httpx.Request("GET", url))
+
+    monkeypatch.setattr(fetch.httpx, "get", fake_get)
+    with pytest.raises(httpx.HTTPStatusError) as caught:
+        fetch.request("https://api.example.test/x")
+    assert waits == [2.0, 6.0]  # the 400 itself is not retried
+    assert isinstance(caught.value.__cause__, httpx.ReadTimeout)
+    assert cli.upstream_down(caught.value)
+
+
+def test_a_client_error_after_a_server_error_is_chained_but_a_first_one_is_not(monkeypatch):
+    from datasites_core import cli
+
+    _answers(monkeypatch, [(503, {}), (400, {})])
+    with pytest.raises(httpx.HTTPStatusError) as caught:
+        fetch.request("https://api.example.test/x")
+    assert cli.upstream_down(caught.value)
+    _answers(monkeypatch, [(400, {})])
+    with pytest.raises(httpx.HTTPStatusError) as caught:
+        fetch.request("https://api.example.test/x")
+    assert caught.value.__cause__ is None
+    assert not cli.upstream_down(caught.value)  # a 400 out of the blue is our bug or a changed API: fail at once

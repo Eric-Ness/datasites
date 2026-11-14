@@ -4,6 +4,8 @@ name: ingest-economic
 # The schedule stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md); manual runs
 # (Actions → Run workflow) always work, for example to fill the staging bucket.
 # CENSUS_API_KEY is optional: without it census-acs-income reports needs-credentials. BEA is read from its keyless bulk zip.
+# --alert-after 2: a source that is down for one run (the World Bank API timed out and then answered 400 on
+# 2026-11-14) keeps its last version without failing the job; the second miss in a row does. Other errors fail it at once.
 
 on:
   schedule:
@@ -60,6 +62,7 @@ jobs:
           --target "${{ inputs.target || 'production' }}"
           ${{ inputs.force && '--force' || '' }}
           --summary "$GITHUB_STEP_SUMMARY"
+          --alert-after 2
       - name: Ping tickharbor (result)
         if: always() && env.HC_URL != ''
         run: curl -fsS -m 10 --retry 3 "$HC_URL/${{ job.status == 'success' && '0' || '1' }}" || true

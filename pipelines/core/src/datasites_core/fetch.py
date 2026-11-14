@@ -77,9 +77,14 @@ def request(
     so a ten-minute rate limit stays ten minutes instead of growing into hours. Without one, waits back off
     from 2 seconds, tripling up to 5 minutes. `timeout` bounds reading a response; connecting gets
     CONNECT_TIMEOUT, so an unreachable host costs seconds per attempt, not minutes.
+
+    A client error (4xx) is never retried, but one that follows a timeout or 5xx on the same request is raised
+    from that earlier failure: a source under strain can answer a request it served the day before with a 400
+    (the World Bank API did on 2026-11-14), and the chain lets the CLI count it as the source being down.
     """
     all_headers = {"User-Agent": user_agent(), **(headers or {})}
     backoff = BACKOFF_START
+    trouble: BaseException | None = None  # the last timeout or 5xx/429 seen on this request
     for attempt in range(retries + 1):
         try:
             res = httpx.get(
@@ -92,13 +97,20 @@ def request(
         except httpx.TransportError as err:
             if attempt == retries:
                 raise
+            trouble = err
             wait, reason = backoff, type(err).__name__
         else:
             if res.status_code == 304:
                 return res
             if res.status_code not in RETRY_STATUSES or attempt == retries:
-                res.raise_for_status()
+                try:
+                    res.raise_for_status()
+                except httpx.HTTPStatusError as err:
+                    if trouble is not None:
+                        raise err from trouble
+                    raise
                 return res
+            trouble = httpx.HTTPStatusError(f"HTTP {res.status_code}", request=res.request, response=res)
             asked = retry_after_seconds(res.headers.get("retry-after"))
             wait = backoff if asked is None else asked
             reason = f"HTTP {res.status_code}"
