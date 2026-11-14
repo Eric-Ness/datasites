@@ -1677,6 +1677,9 @@ input:focus-visible {
 .site-footer ul {
   display: block;
 }
+.site-footer h2.footer-sub {
+  margin-top: 16px;
+}
 .site-footer li a {
   display: block;
   padding: 2px 0;

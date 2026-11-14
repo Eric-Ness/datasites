@@ -178,6 +178,18 @@ export function index(c: C): Response {
   );
 }
 
+/**
+ * The files a "files" dataset lists in its metadata: everything up to one folder deep, so the current files,
+ * their indexes and per-day files show (fire-perimeters' current.geojson and perimeters/index.json, smoke's
+ * days/<date>.geojson), but not deep archives such as perimeters/<incident>/<shape>.geojson, which the indexes
+ * describe. Bulk downloads are listed separately, under `downloads`.
+ */
+export function listedFiles(files: Record<string, FileEntry>): [string, FileEntry][] {
+  return Object.entries(files)
+    .filter(([path]) => !path.startsWith("download/") && path.split("/").length <= 2)
+    .sort(([a], [b]) => a.localeCompare(b));
+}
+
 export async function catalog(c: C): Promise<Response> {
   const site = c.get("site");
   const doc = await readJson<Catalog>(c.env.DATA, keys.catalog(site.id), TTL.catalog);
@@ -208,6 +220,9 @@ export async function datasetMeta(c: C, ref: string): Promise<Response> {
       series: Object.entries(doc.series).map(([id, name]) => ({ id, name })),
       ...(doc.kind === "table" ? { key: doc.key ?? [], partition: doc.partition ?? null } : {}),
       downloads,
+      ...(doc.kind === "files"
+        ? { files: listedFiles(doc.files).map(([path, entry]) => ({ path, bytes: entry.bytes, url: siteLink(c, `/v1/${dataset}/${path}`) })) }
+        : {}),
       links: {
         locations: siteLink(c, `/v1/${dataset}/locations`),
         versions: siteLink(c, `/v1/${dataset}/versions`),

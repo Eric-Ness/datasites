@@ -9,6 +9,7 @@ import { apiUrl, siteUrl } from "../lib/urls";
 import { apiBase, datasets, site, sites } from "../lib/site";
 import { jsonLdScript } from "../lib/jsonld";
 import { VISUALIZEDATA_ORG } from "../lib/visualizedata";
+import { RELATED_SITES } from "../lib/related";
 
 interface Props {
   /** The page's own title; the site name is appended. */
@@ -150,6 +151,16 @@ const apiRoot = apiUrl(apiBase, site.id, "/v1");
                     <a href={`https://${s.domain}/`}>{s.domain}</a>
                   </li>
                 ))
+            }
+          </ul>
+          <h2 class="footer-sub">Related sites</h2>
+          <ul>
+            {
+              RELATED_SITES.map((r) => (
+                <li>
+                  <a href={`https://${r.domain}/`}>{r.label}</a>
+                </li>
+              ))
             }
           </ul>
         </div>
