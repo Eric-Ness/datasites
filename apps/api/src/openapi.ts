@@ -452,6 +452,16 @@ function commonSchemas(): Obj {
             properties: { name: { type: "string" }, bytes: { type: "integer" }, url: { type: "string" } },
           },
         },
+        files: {
+          type: "array",
+          description:
+            'Only for kind "files": the files in this version up to one folder deep (current files, indexes, per-day files). Deeper archive files are listed in the indexes.',
+          items: {
+            type: "object",
+            required: ["path", "bytes", "url"],
+            properties: { path: { type: "string" }, bytes: { type: "integer" }, url: { type: "string" } },
+          },
+        },
         links: { type: "object", additionalProperties: { type: "string" } },
       },
     },
