@@ -34,6 +34,14 @@ export interface SiteStatus {
 /** Statuses that are our problem and should page someone. "stale-upstream" is the source's problem. */
 const ALERTING = new Set<DatasetStatusValue>(["late", "failing", "blocked"]);
 
+/**
+ * How far past twice check_every a dataset may go before it counts as late. GitHub starts scheduled workflows
+ * minutes to an hour after their cron time, and a run takes up to an hour more, so a schedule whose longest gap is
+ * exactly twice check_every (healthdata: Mondays and Thursdays with P2D, a 4-day weekend gap) would page every
+ * week the run started a little later than the one before (it did on 2026-11-16, for 15 minutes).
+ */
+export const LATE_GRACE_MS = 6 * 60 * 60 * 1000;
+
 function ageMs(iso: string | null, now: number): number {
   return iso ? now - Date.parse(iso) : Number.POSITIVE_INFINITY;
 }
@@ -46,7 +54,7 @@ function classify(entry: CatalogEntry, state: PipelineState | null, now: number)
   if (!state?.checked_at) return "pending";
   if (state.consecutive_failures >= 3) return "failing";
   if (state.blocked_version) return "blocked";
-  if (ageMs(state.checked_at, now) > 2 * durationMs(entry.check_every)) return "late";
+  if (ageMs(state.checked_at, now) > 2 * durationMs(entry.check_every) + LATE_GRACE_MS) return "late";
   if (state.source_updated_at && ageMs(state.source_updated_at, now) > durationMs(entry.sla)) return "stale-upstream";
   return "ok";
 }
