@@ -40,7 +40,7 @@ describe("datasetStatus", () => {
     ["pending", entry, null],
     ["failing", entry, state({ consecutive_failures: 3, last_error: "HTTP 503" })],
     ["blocked", entry, state({ blocked_version: "2026-10-10.cccccccccc" })],
-    ["late", entry, state({ checked_at: "2026-10-21T14:00:00Z" })],
+    ["late", entry, state({ checked_at: "2026-10-21T08:00:00Z" })],
     ["stale-upstream", entry, state({ source_updated_at: "2026-08-01T00:00:00Z" })],
     ["discontinued", { ...entry, discontinued: true }, state()],
     ["unpublished", { ...entry, current: null }, null],
@@ -48,6 +48,16 @@ describe("datasetStatus", () => {
     ["failing", { ...entry, current: null }, state({ checked_at: null, consecutive_failures: 3 })],
   ] as const)("classifies %s", (expected, e, s) => {
     expect(datasetStatus(e, s, now).status).toBe(expected);
+  });
+
+  it("gives a check a few hours past twice check_every before calling it late", () => {
+    // healthdata on 2026-11-16: checked Thursday 12:26, P2D, and Monday's run started 17 minutes late
+    const checked = "2026-11-12T12:26:44Z";
+    const p2d = { ...entry, check_every: "P2D" };
+    const monday = (t: string) => datasetStatus(p2d, state({ checked_at: checked }), Date.parse(`2026-11-16T${t}Z`)).status;
+    expect(monday("12:30:00")).toBe("ok");
+    expect(monday("18:26:00")).toBe("ok");
+    expect(monday("18:30:00")).toBe("late");
   });
 
   it("does not count one or two failures as failing", () => {
