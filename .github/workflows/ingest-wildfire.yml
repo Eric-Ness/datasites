@@ -2,8 +2,9 @@ name: ingest-wildfire
 
 # Every 3 hours (docs/PIPELINES.md): FIRMS
 # near-real-time detections arrive ~3 h after each satellite pass, so a faster schedule would mostly
-# re-fetch the same files. Each run is short (~2 min): conditional GETs make the unchanged FIRMS and
-# HMS files and the 15 MB Natural Earth boundaries 304s, and WFIGS is a few paged queries.
+# re-fetch the same files. Runs take 3 to 12 minutes, depending on how much fire data changed: conditional GETs make
+# the unchanged FIRMS and HMS files and the 15 MB Natural Earth boundaries 304s, and WFIGS is a few paged queries.
+# The tickharbor slow-run limit is 20 minutes, matching timeout-minutes below (docs/SETUP.md section 4).
 # The schedule stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md); manual runs
 # (Actions → Run workflow) always work, for example to fill the staging bucket.
 # --alert-after 2: a source that can't be reached for one run (FIRMS was unreachable from the runner for one run

@@ -120,7 +120,7 @@ Each ingest workflow pings `$HC_URL/start` and then `$HC_URL/0` or `$HC_URL/1`. 
 | `datasites-api-freshness` | `*/15 * * * *` | 30 minutes | `pnpm --filter @datasites/api exec wrangler secret put HEALTHCHECK_URL` |
 
 **Optional settings:**
-- A run time limit for the slow-run alert. Water can take up to 60 minutes; the others take under 10.
+- A run time limit for the slow-run alert: 60 minutes for water (runs can take that long), 20 minutes for wildfire (runs take 3 to 12, depending on how much fire data changed, and the workflow stops at 20) and 10 minutes for the others (they take under 10).
 - A `datasites` tag on the checks, so `https://ping.tickharbor.net/api/v1/status?tag=datasites` shows them together.
 
 The project's email and ntfy channels deliver the alerts.
