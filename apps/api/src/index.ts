@@ -50,9 +50,12 @@ export default {
       return;
     }
     ctx.waitUntil(
-      runFreshnessCheck(env).then((problems) => {
-        if (problems.length) console.warn(`freshness problems:\n${problems.join("\n")}`);
-      }),
+      runFreshnessCheck(env).then(
+        (problems) => {
+          if (problems.length) console.warn(`freshness problems:\n${problems.join("\n")}`);
+        },
+        (err) => console.error("freshness check failed", err),
+      ),
     );
   },
 } satisfies ExportedHandler<Env>;
