@@ -21,6 +21,7 @@ import io
 import os
 import subprocess
 import threading
+import warnings
 from collections.abc import Iterable
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass
@@ -38,7 +39,7 @@ from .layout import blob_key, catalog_key, manifest_key, raw_key, state_key, ver
 from .outputs import Output, build_table_outputs, content_type_for, coverage, iter_series_outputs
 from .retention import load_candidates
 from .store import PreconditionFailed, Store, dumps, get_json, put_json
-from .validate import Report, validate_files, validate_series, validate_table
+from .validate import DataWarning, Report, validate_files, validate_series, validate_table
 
 KEEP_PREVIOUS = 10
 SHARD_THRESHOLD = 2_000  # file maps larger than this are split into one blob per series
@@ -394,13 +395,20 @@ def run_dataset(
         known: dict[str, str] = {}
         locations: dict[str, str] = {}
         stats: dict[str, Any] = {}
+        notes: list[str] = []  # DataWarnings a transform raised while repairing upstream slips
         outputs: Iterable[tuple[str, Output]]
         if contract.kind == "files":
             takes_ctx = len(inspect.signature(module.build).parameters) >= 2
             built, stats = module.build(raw, CollectContext(contract, now, store)) if takes_ctx else module.build(raw)
             outputs = [(path, Output(body, content_type_for(path), 0)) for path, body in built.items()]
         else:
-            frame: pl.DataFrame = module.transform(raw)
+            with warnings.catch_warnings(record=True) as caught:
+                warnings.simplefilter("always", DataWarning)
+                frame: pl.DataFrame = module.transform(raw)
+            notes = [str(w.message) for w in caught if issubclass(w.category, DataWarning)]
+            for w in caught:  # anything else (library deprecations, ...) is passed on as before
+                if not issubclass(w.category, DataWarning):
+                    warnings.showwarning(w.message, w.category, w.filename, w.lineno)
             if contract.kind == "series":
                 known = contract.locations.names()
                 dynamic: dict[str, str] = {}
@@ -438,6 +446,8 @@ def run_dataset(
                 report = validate_series(contract, table, previous_table, known)
             else:
                 report = validate_table(contract, table, previous_table)
+
+        report.warnings.extend(notes)
 
         # The same bad content seen again on a later day: keep the existing quarantined version.
         already_quarantined = next((v for v in (manifest or {}).get("quarantined", []) if v.endswith(f".{tree[:10]}")), None)

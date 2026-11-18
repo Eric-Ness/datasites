@@ -7,6 +7,7 @@ from datasites_core.contracts import load_contract
 from datasites_core.layout import blob_key, version_key
 from datasites_core.publish import run_dataset
 from datasites_core.store import get_json
+from datasites_core.validate import DataWarning
 from datasites_satellite import gcat_catalog
 from datasites_satellite.gcat import URLS
 from satellite_helpers import NOW, FakeGCAT, fixture, gcat_raw, relaxed, rows_by
@@ -252,8 +253,52 @@ def test_object_in_two_catalogs_is_rejected():
     raw = gcat_raw(gcat_catalog)
     s100000 = next(line for line in raw["satcat100k"].split(b"\n") if line.startswith(b"S100000"))
     raw["satcat"] = raw["satcat"].rstrip(b"\n") + b"\n" + s100000 + b"\n"
-    with pytest.raises(ValueError, match="more than one catalog"):
+    with pytest.raises(ValueError, match="'S100000' appears in more than one catalog: satcat, satcat100k"):
         gcat_catalog.transform(raw)
+
+
+def ftocat_line(jcat: bytes) -> bytes:
+    return next(line for line in fixture("gcat_ftocat.tsv").split(b"\n") if line.startswith(jcat))
+
+
+def with_ftocat_lines(raw: dict[str, bytes], *extra: bytes) -> dict[str, bytes]:
+    raw["ftocat"] = raw["ftocat"].rstrip(b"\n") + b"\n" + b"\n".join(extra) + b"\n"
+    return raw
+
+
+def test_a_record_repeated_verbatim_in_one_catalog_collapses_silently(recwarn):
+    table = gcat_catalog.transform(with_ftocat_lines(gcat_raw(gcat_catalog), ftocat_line(b"F00002")))
+    assert len(table) == len(catalog()) and table.filter(pl.col("jcat") == "F00002")["name"].to_list() == ["Vanguard"]
+    assert not [w for w in recwarn if issubclass(w.category, DataWarning)]
+
+
+def test_a_jcat_listed_twice_with_different_fields_keeps_the_first_row_and_warns():
+    revised = ftocat_line(b"F00002").replace(b"\tVanguard\t", b"\tVanguard TV-3\t", 1)
+    with pytest.warns(DataWarning, match="ftocat: F00002 listed more than once with different fields; kept the first row"):
+        rows = catalog(with_ftocat_lines(gcat_raw(gcat_catalog), revised))
+    assert rows["F00002"]["name"] == "Vanguard"
+
+
+def test_many_conflicting_repeats_in_one_catalog_stop_the_run():
+    line = ftocat_line(b"F00002")
+    copies = [line.replace(b"F00002", b"F9%04d" % i, 1) for i in range(gcat_catalog.MAX_CONFLICTING_REPEATS + 1)]
+    revised = [c.replace(b"\tVanguard\t", b"\tOther\t", 1) for c in copies]
+    with pytest.raises(ValueError, match="ftocat: 11 JCATs are listed more than once with different fields"):
+        gcat_catalog.transform(with_ftocat_lines(gcat_raw(gcat_catalog), *copies, *revised))
+
+
+def test_a_repaired_repeat_publishes_with_a_validation_warning(store):
+    contract = relaxed(REF)
+    upstream = FakeGCAT()
+    url = URLS["ftocat"]
+    revised = ftocat_line(b"F00002").replace(b"\tVanguard\t", b"\tVanguard TV-3\t", 1)
+    upstream.bodies[url] = upstream.bodies[url].rstrip(b"\n") + b"\n" + revised + b"\n"
+    result = run_dataset(contract, store, fetcher=upstream, now=NOW)
+    assert result.outcome == "published", result.report and result.report.errors
+    assert result.report.status == "warn"
+    assert [w for w in result.report.warnings if w.startswith("ftocat: F00002 listed more than once")]
+    doc = get_json(store, version_key(contract.site, contract.id, result.version))[0]
+    assert doc["validation"]["status"] == "warn"
 
 
 def test_normalize_drops_only_the_updated_line():

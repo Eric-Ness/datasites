@@ -22,6 +22,10 @@ NUMERIC = {
 SERIES_KEYS = ["series", "location", "date"]
 
 
+class DataWarning(UserWarning):
+    """Raised (with warnings.warn) by a transform that repaired an upstream slip; the engine adds it to the report."""
+
+
 @dataclass
 class Report:
     errors: list[str] = field(default_factory=list)
