@@ -20,8 +20,11 @@ Orbit classes come only from GCAT's OpOrbit categories (https://planet4589.org/s
 from __future__ import annotations
 
 import re
+import warnings
 
 import polars as pl
+
+from datasites_core.validate import DataWarning
 
 from .gcat import URLS, lookup, missing, normalize, number, org_name, org_names, read_tsv, updated_at  # noqa: F401  (normalize is part of the module interface)
 from .vague import iso_day
@@ -35,6 +38,12 @@ MAIN_CATALOGS = {  # catalog file -> the JCAT prefix its objects carry
     "ftocat": "F",
 }
 RESOURCES = {name: URLS[name] for name in (*MAIN_CATALOGS, "ecat", "currentcat", "orgs")}
+# A JCAT listed twice in one catalog with different fields is an upstream editing slip. On 2026-11-18 ftocat listed
+# F01824 and F01834 twice each, for four different Kuiper satellites of the failed Vulcan launch 2026-F07: each slip
+# repeated the previous number and skipped the next (F01825, F01835). So the first row, which carries its own number,
+# is kept, the run warns, and the other object waits for GCAT's fix. More than this many such JCATs means the file
+# itself is broken.
+MAX_CONFLICTING_REPEATS = 10
 
 OBJECT_TYPES = {  # SatType byte 1 (https://planet4589.org/space/gcat/web/intro/type.html)
     "P": "payload",
@@ -100,6 +109,20 @@ COLUMNS = [
 ]
 
 
+def _one_row_per_jcat(frame: pl.DataFrame, name: str) -> pl.DataFrame:
+    """A catalog's rows with each JCAT once: identical repeats collapse silently, differing ones keep the first."""
+    frame = frame.unique(maintain_order=True)  # the same record pasted twice
+    repeated = frame.filter(pl.col("JCAT").is_duplicated())["JCAT"].unique(maintain_order=True).to_list()
+    if not repeated:
+        return frame
+    if len(repeated) > MAX_CONFLICTING_REPEATS:
+        raise ValueError(f"{name}: {len(repeated)} JCATs are listed more than once with different fields (e.g. {repeated[:5]})")
+    warnings.warn(
+        DataWarning(f"{name}: {', '.join(repeated)} listed more than once with different fields; kept the first row of each")
+    )
+    return frame.unique(subset="JCAT", keep="first", maintain_order=True)
+
+
 def _main(raw: dict[str, bytes]) -> pl.DataFrame:
     frames = []
     for name, prefix in MAIN_CATALOGS.items():
@@ -108,11 +131,13 @@ def _main(raw: dict[str, bytes]) -> pl.DataFrame:
         wrong = frame.filter(~pl.col("JCAT").str.starts_with(prefix))
         if len(wrong):
             raise ValueError(f"{name}: JCAT {wrong['JCAT'][0]!r} does not carry the {prefix} prefix of this catalog")
-        frames.append(frame.with_columns(pl.lit(name).alias("catalog")))
+        frames.append(_one_row_per_jcat(frame, name).with_columns(pl.lit(name).alias("catalog")))
     main = pl.concat(frames, how="vertical")
     dupes = main.filter(pl.col("JCAT").is_duplicated())
-    if len(dupes):
-        raise ValueError(f"JCAT {dupes['JCAT'][0]!r} appears in more than one catalog")
+    if len(dupes):  # each catalog is one row per JCAT by now, so this is the same object in two catalogs
+        jcat = dupes["JCAT"][0]
+        where = dupes.filter(pl.col("JCAT") == jcat)["catalog"].to_list()
+        raise ValueError(f"JCAT {jcat!r} appears in more than one catalog: {', '.join(where)}")
     return main
 
 
