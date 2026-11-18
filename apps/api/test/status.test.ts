@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { durationMs } from "../src/duration";
-import { datasetStatus, runFreshnessCheck } from "../src/status";
+import { datasetStatus, PING_ATTEMPTS, runFreshnessCheck } from "../src/status";
 import { clearMemo } from "../src/store";
 import { keys, type CatalogEntry, type PipelineState } from "../src/types";
 import { seededBucket } from "./fixtures";
@@ -69,8 +69,12 @@ describe("runFreshnessCheck (the 15-minute cron)", () => {
   const HC = "https://hc-ping.com/test-uuid";
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.restoreAllMocks();
     clearMemo();
   });
+
+  /** The URLs pinged, in order. */
+  const urls = (ping: { mock: { calls: unknown[][] } }) => ping.mock.calls.map((c) => c[0]);
 
   function envWith(stateOverrides: Partial<PipelineState>) {
     const r2 = seededBucket();
@@ -83,7 +87,8 @@ describe("runFreshnessCheck (the 15-minute cron)", () => {
     vi.stubGlobal("fetch", ping);
     const problems = await runFreshnessCheck(envWith({}), now);
     expect(problems).toEqual([]);
-    expect(ping).toHaveBeenCalledWith(HC, expect.objectContaining({ method: "POST" }));
+    expect(urls(ping)).toEqual([`${HC}/start`, HC]);
+    expect(ping).toHaveBeenLastCalledWith(HC, expect.objectContaining({ method: "POST", body: "all datasets ok" }));
   });
 
   it("pings /fail with the problems when a dataset is failing", async () => {
@@ -91,7 +96,7 @@ describe("runFreshnessCheck (the 15-minute cron)", () => {
     vi.stubGlobal("fetch", ping);
     const problems = await runFreshnessCheck(envWith({ consecutive_failures: 3, last_error: "HTTP 503" }), now);
     expect(problems).toEqual(["climatedata/co2-monthly: failing (HTTP 503)"]);
-    const [url, init] = ping.mock.calls[0] as unknown as [string, RequestInit];
+    const [url, init] = ping.mock.calls.at(-1) as unknown as [string, RequestInit];
     expect(url).toBe(`${HC}/fail`);
     expect(init.body).toContain("climatedata/co2-monthly: failing");
   });
@@ -101,7 +106,52 @@ describe("runFreshnessCheck (the 15-minute cron)", () => {
     vi.stubGlobal("fetch", ping);
     const problems = await runFreshnessCheck(envWith({ source_updated_at: "2026-08-01T00:00:00Z" }), now);
     expect(problems).toEqual([]);
-    expect(ping).toHaveBeenCalledWith(HC, expect.anything());
+    expect(ping).toHaveBeenLastCalledWith(HC, expect.anything());
+  });
+
+  it("still pings /fail when reading a site throws", async () => {
+    const ping = vi.fn(async () => new Response("OK"));
+    vi.stubGlobal("fetch", ping);
+    const env = envWith({});
+    const get = env.DATA.get.bind(env.DATA);
+    vi.spyOn(env.DATA, "get").mockImplementation(((key: string) =>
+      key === keys.catalog("airdata") ? Promise.reject(new Error("R2 503")) : get(key)) as R2Bucket["get"]);
+    const problems = await runFreshnessCheck(env, now);
+    expect(problems).toEqual(["airdata: check failed (R2 503)"]);
+    expect(urls(ping)).toEqual([`${HC}/start`, `${HC}/fail`]);
+  });
+
+  it("retries a final ping that fails, then stops", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const ping = vi
+      .fn()
+      .mockResolvedValueOnce(new Response("OK")) // /start
+      .mockRejectedValueOnce(new TypeError("network"))
+      .mockResolvedValueOnce(new Response("", { status: 502 }))
+      .mockResolvedValueOnce(new Response("OK"));
+    vi.stubGlobal("fetch", ping);
+    expect(await runFreshnessCheck(envWith({}), now)).toEqual([]);
+    expect(urls(ping)).toEqual([`${HC}/start`, HC, HC, HC]);
+  });
+
+  it("gives up on a ping after a few attempts without throwing or logging the URL", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const ping = vi.fn(async () => {
+      throw new TypeError("network");
+    });
+    vi.stubGlobal("fetch", ping);
+    expect(await runFreshnessCheck(envWith({}), now)).toEqual([]);
+    expect(ping).toHaveBeenCalledTimes(2 * PING_ATTEMPTS);
+    expect(error.mock.calls.flat().join(" ")).not.toContain("test-uuid");
+  });
+
+  it("does not retry a 4xx (a wrong ping URL will not fix itself)", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const ping = vi.fn(async () => new Response("not found", { status: 404 }));
+    vi.stubGlobal("fetch", ping);
+    await runFreshnessCheck(envWith({}), now);
+    expect(ping).toHaveBeenCalledTimes(2);
   });
 
   it("works without a ping URL configured", async () => {
