@@ -17,13 +17,33 @@ interface Memo {
 
 const memo = new Map<string, Memo>();
 
+/**
+ * Waits before each retry of a failed R2 read. R2 sometimes answers "We encountered an internal error. Please try
+ * again. (10001)" for a moment: on 2026-11-20 at 13:00 UTC six sites' reads failed at once and the freshness check
+ * paged, then the next run 15 minutes later was fine. A missing object (null) is an answer, not an error, and isn't
+ * retried. If every try fails, the last error is thrown as before.
+ */
+export const R2_RETRY_DELAYS_MS = [250, 1_000];
+
+async function getJsonWithRetry<T>(bucket: R2Bucket, key: string): Promise<T | null> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const obj = await bucket.get(key);
+      return obj ? ((await obj.json()) as T) : null;
+    } catch (err) {
+      const delay = R2_RETRY_DELAYS_MS[attempt];
+      if (delay === undefined) throw err;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+}
+
 export async function readJson<T>(bucket: R2Bucket, key: string, ttlMs: number): Promise<T | null> {
   const now = Date.now();
   const hit = memo.get(key);
   if (hit && hit.expires > now) return hit.value as T | null;
 
-  const obj = await bucket.get(key);
-  const value = obj ? ((await obj.json()) as T) : null;
+  const value = await getJsonWithRetry<T>(bucket, key);
 
   if (memo.size >= MAX_ENTRIES) {
     const oldest = memo.keys().next().value;
