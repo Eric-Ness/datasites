@@ -126,7 +126,7 @@ def test_live_files_with_crlf_and_trailing_spaces(table):
 
 def test_modes_that_do_not_add_up_are_rejected():
     files = md_files(FIXTURE_2024)
-    line = next(l for l in files["05"].split(b"\n") if l.startswith(b'"U.S. Senator","","Angela Alsobrooks"'))
+    line = next(ln for ln in files["05"].split(b"\n") if ln.startswith(b'"U.S. Senator","","Angela Alsobrooks"'))
     cells = line.split(b",")
     cells[16] = b'"' + str(int(cells[16].strip(b'"')) + 1).encode() + b'"'
     files["05"] = files["05"].replace(line, b",".join(cells))
@@ -155,6 +155,6 @@ def test_2022_gubernatorial_offices():
 
 def test_statewide_office_in_only_some_counties_is_rejected():
     files = md_files(FIXTURE_2022)
-    files["05"] = b"\n".join(l for l in files["05"].split(b"\n") if not l.startswith(b'"Comptroller"'))
+    files["05"] = b"\n".join(ln for ln in files["05"].split(b"\n") if not ln.startswith(b'"Comptroller"'))
     with pytest.raises(ValueError, match="'Comptroller' appears in only 23 county files"):
         build(files, certified_2026.Release("MD", election_date="2022-11-08"))

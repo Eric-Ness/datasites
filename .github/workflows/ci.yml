@@ -89,4 +89,8 @@ jobs:
       - run: uv sync --frozen
       - name: Every dataset contract is valid
         run: uv run datasites lint
+      # Lint only (ruff's default rules: syntax errors, undefined names, unused imports, ambiguous names, ...).
+      # ruff format is not enforced: it would rewrite most files for no behaviour change.
+      - name: Python lint
+        run: uv run ruff check --output-format github .
       - run: uv run pytest -q
