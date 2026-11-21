@@ -142,8 +142,10 @@ export class FakeContext {
 export class FakeCache {
   readonly entries = new Map<string, { body: Uint8Array; headers: Headers }>();
   matches = 0;
+  readonly matched: string[] = [];
   async match(request: Request): Promise<Response | undefined> {
     this.matches += 1;
+    this.matched.push(request.url);
     const hit = this.entries.get(request.url);
     return hit ? new Response(hit.body.slice(), { headers: hit.headers }) : undefined;
   }

@@ -9,7 +9,7 @@
 /** Bodies above this go straight from R2: they are bulk downloads, mostly read with Range anyway. */
 export const MAX_CACHED_BYTES = 100 * 1024 * 1024;
 
-function edgeCache(): Cache | null {
+export function edgeCache(): Cache | null {
   try {
     return typeof caches !== "undefined" && caches?.default ? caches.default : null;
   } catch {
