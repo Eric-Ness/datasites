@@ -84,7 +84,7 @@ def test_geography_codes():
 def test_validation_blocks_a_partial_table():
     # Line 3 only: personal income and population are entirely null, so the contract's null limits stop it.
     lines = fixture(EXCERPT).split(b"\n")
-    only_line3 = b"\n".join(l for l in lines if b",CAINC1," not in l or b",CAINC1,3," in l)
+    only_line3 = b"\n".join(ln for ln in lines if b",CAINC1," not in ln or b",CAINC1,3," in ln)
     table = bea_cainc1.transform({"cainc1": only_line3})
     report = validate(contract("bea-county-income", min_rows=None), table.drop("location_name"), None)
     assert report.errors == ["personal_income: 100.0% null, limit 5.0%", "population: 100.0% null, limit 5.0%"]

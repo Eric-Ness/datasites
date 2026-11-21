@@ -255,7 +255,7 @@ def transform(raw: dict[str, bytes]) -> pl.DataFrame:
     # no epoch and no category until their orbit is known.
     has_latest = pl.col("c_present") & (missing("c_OpOrbit").is_not_null() | missing("c_ODate").is_not_null())
     has_canonical = missing("l_OpOrbit").is_not_null() | missing("l_ODate").is_not_null()
-    pick = lambda c, l: pl.when(has_latest).then(pl.col(c)).when(has_canonical).then(pl.col(l)).otherwise(None)  # noqa: E731
+    pick = lambda latest, canonical: pl.when(has_latest).then(pl.col(latest)).when(has_canonical).then(pl.col(canonical)).otherwise(None)  # noqa: E731
     table = table.with_columns(
         pl.when(has_latest).then(pl.lit("latest")).when(has_canonical).then(pl.lit("canonical")).otherwise(None).alias("orbit_source"),
         pick("c_ODate", "l_ODate").alias("_odate"),
