@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { durationMs } from "../src/duration";
 import { datasetStatus, PING_ATTEMPTS, runFreshnessCheck } from "../src/status";
-import { clearMemo } from "../src/store";
+import { clearMemo, R2_RETRY_DELAYS_MS } from "../src/store";
 import { keys, type CatalogEntry, type PipelineState } from "../src/types";
 import { seededBucket } from "./fixtures";
 
@@ -119,6 +119,26 @@ describe("runFreshnessCheck (the 15-minute cron)", () => {
     const problems = await runFreshnessCheck(env, now);
     expect(problems).toEqual(["airdata: check failed (R2 503)"]);
     expect(urls(ping)).toEqual([`${HC}/start`, `${HC}/fail`]);
+    // Tried once, then once per retry delay, before giving up.
+    const tries = vi.mocked(env.DATA.get).mock.calls.filter(([key]) => key === keys.catalog("airdata")).length;
+    expect(tries).toBe(1 + R2_RETRY_DELAYS_MS.length);
+  });
+
+  it("rides out a momentary R2 internal error: a read that fails once and then works is not a problem", async () => {
+    const ping = vi.fn(async () => new Response("OK"));
+    vi.stubGlobal("fetch", ping);
+    const env = envWith({});
+    const get = env.DATA.get.bind(env.DATA);
+    let failed = 0;
+    vi.spyOn(env.DATA, "get").mockImplementation(((key: string) => {
+      if (key === keys.catalog("airdata") && failed++ === 0) {
+        return Promise.reject(new Error("get: We encountered an internal error. Please try again. (10001)"));
+      }
+      return get(key);
+    }) as R2Bucket["get"]);
+    const problems = await runFreshnessCheck(env, now);
+    expect(problems).toEqual([]);
+    expect(urls(ping)).toEqual([`${HC}/start`, HC]);
   });
 
   it("retries a final ping that fails, then stops", async () => {
