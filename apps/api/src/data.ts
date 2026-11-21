@@ -2,10 +2,15 @@ import type { Context } from "hono";
 import { blobCacheKey, cacheable, matchBlob, putBlob } from "./cache";
 import { cacheControl, defer, json, problem, shortCache } from "./http";
 import { siteLink, type AppEnv } from "./middleware";
-import { readJson, TTL } from "./store";
+import { readJson, TTL, type EdgeTier } from "./store";
 import { keys, type Catalog, type FileEntry, type Manifest, type VersionDoc } from "./types";
 
 type C = Context<AppEnv>;
+
+/** This request's edge-cache tier for metadata reads (see store.ts). */
+function edge(c: C): EdgeTier {
+  return { origin: new URL(c.req.url).origin, defer: (work) => defer(c, work) };
+}
 
 const DATASET_ID = /^[a-z0-9][a-z0-9-]{0,62}$/;
 const VERSION_ID = /^\d{4}-\d{2}-\d{2}\.[0-9a-f]{10}$/;
@@ -38,13 +43,14 @@ async function resolve(c: C, ref: string): Promise<Resolved | Response> {
     });
   if (version !== null && !VERSION_ID.test(version)) return unknownVersion();
 
-  const manifest = await readJson<Manifest>(c.env.DATA, keys.manifest(site.id, dataset), TTL.manifest);
+  const manifest = await readJson<Manifest>(c.env.DATA, keys.manifest(site.id, dataset), TTL.manifest, edge(c));
   if (!manifest) return unknownDataset(c, dataset);
 
   const doc = await readJson<VersionDoc>(
     c.env.DATA,
     keys.version(site.id, dataset, version ?? manifest.current),
     TTL.immutable,
+    edge(c),
   );
   if (!doc) {
     if (version !== null) return unknownVersion();
@@ -62,7 +68,7 @@ async function fileEntry(c: C, doc: VersionDoc, path: string): Promise<FileEntry
   if (direct || !doc.file_shards) return direct;
   const shard = doc.file_shards[path.split("/", 1)[0]!];
   if (!shard) return undefined;
-  const map = await readJson<Record<string, FileEntry>>(c.env.DATA, keys.blob(shard), TTL.immutable);
+  const map = await readJson<Record<string, FileEntry>>(c.env.DATA, keys.blob(shard), TTL.immutable, edge(c));
   return map?.[path];
 }
 
@@ -70,7 +76,7 @@ async function fileEntry(c: C, doc: VersionDoc, path: string): Promise<FileEntry
 async function allFiles(c: C, doc: VersionDoc): Promise<Record<string, FileEntry>> {
   if (!doc.file_shards) return doc.files;
   const shards = await Promise.all(
-    Object.values(doc.file_shards).map((hash) => readJson<Record<string, FileEntry>>(c.env.DATA, keys.blob(hash), TTL.immutable)),
+    Object.values(doc.file_shards).map((hash) => readJson<Record<string, FileEntry>>(c.env.DATA, keys.blob(hash), TTL.immutable, edge(c))),
   );
   return Object.assign({}, doc.files, ...shards.map((s) => s ?? {}));
 }
@@ -78,7 +84,7 @@ async function allFiles(c: C, doc: VersionDoc): Promise<Record<string, FileEntry
 async function locationNames(c: C, doc: VersionDoc): Promise<Record<string, string>> {
   if (doc.locations) return doc.locations;
   if (!doc.locations_blob) return {};
-  return (await readJson<Record<string, string>>(c.env.DATA, keys.blob(doc.locations_blob), TTL.immutable)) ?? {};
+  return (await readJson<Record<string, string>>(c.env.DATA, keys.blob(doc.locations_blob), TTL.immutable, edge(c))) ?? {};
 }
 
 function versionHeaders(c: C, r: Resolved): Record<string, string> {
@@ -192,7 +198,7 @@ export function listedFiles(files: Record<string, FileEntry>): [string, FileEntr
 
 export async function catalog(c: C): Promise<Response> {
   const site = c.get("site");
-  const doc = await readJson<Catalog>(c.env.DATA, keys.catalog(site.id), TTL.catalog);
+  const doc = await readJson<Catalog>(c.env.DATA, keys.catalog(site.id), TTL.catalog, edge(c));
   return json(doc ?? { site: site.id, datasets: [] }, shortCache(300));
 }
 
