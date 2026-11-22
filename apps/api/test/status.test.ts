@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { durationMs } from "../src/duration";
-import { datasetStatus, PING_ATTEMPTS, runFreshnessCheck } from "../src/status";
+import { datasetStatus, PING_ATTEMPTS, RECHECK_DELAYS_MS, runFreshnessCheck } from "../src/status";
 import { clearMemo, R2_RETRY_DELAYS_MS } from "../src/store";
 import { keys, type CatalogEntry, type PipelineState } from "../src/types";
 import { seededBucket } from "./fixtures";
@@ -116,12 +116,39 @@ describe("runFreshnessCheck (the 15-minute cron)", () => {
     const get = env.DATA.get.bind(env.DATA);
     vi.spyOn(env.DATA, "get").mockImplementation(((key: string) =>
       key === keys.catalog("airdata") ? Promise.reject(new Error("R2 503")) : get(key)) as R2Bucket["get"]);
-    const problems = await runFreshnessCheck(env, now);
+    const problems = await runFreshnessCheck(env, now, [0, 0]);
     expect(problems).toEqual(["airdata: check failed (R2 503)"]);
     expect(urls(ping)).toEqual([`${HC}/start`, `${HC}/fail`]);
-    // Tried once, then once per retry delay, before giving up.
+    // Each check tries once, then once per retry delay; the site is checked once, then once per re-check delay.
     const tries = vi.mocked(env.DATA.get).mock.calls.filter(([key]) => key === keys.catalog("airdata")).length;
-    expect(tries).toBe(1 + R2_RETRY_DELAYS_MS.length);
+    expect(tries).toBe(3 * (1 + R2_RETRY_DELAYS_MS.length));
+  });
+
+  it("re-checks a site whose reads all failed, and doesn't page if it has recovered", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const ping = vi.fn(async () => new Response("OK"));
+    vi.stubGlobal("fetch", ping);
+    const env = envWith({});
+    const get = env.DATA.get.bind(env.DATA);
+    // R2 fails every try of the first check (as on 2026-11-22 00:15 UTC), then answers again.
+    let failures = 1 + R2_RETRY_DELAYS_MS.length;
+    vi.spyOn(env.DATA, "get").mockImplementation(((key: string) => {
+      if (key === keys.catalog("airdata") && failures > 0) {
+        failures -= 1;
+        return Promise.reject(new Error("get: We encountered an internal error. Please try again. (10001)"));
+      }
+      return get(key);
+    }) as R2Bucket["get"]);
+    expect(await runFreshnessCheck(env, now, [0, 0])).toEqual([]);
+    expect(urls(ping)).toEqual([`${HC}/start`, HC]);
+  });
+
+  it("waits the re-check delays only when a read failed", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("OK")));
+    const started = Date.now();
+    expect(await runFreshnessCheck(envWith({}), now, [60_000])).toEqual([]);
+    expect(Date.now() - started).toBeLessThan(5_000);
+    expect(RECHECK_DELAYS_MS.reduce((a, b) => a + b, 0)).toBeLessThan(5 * 60_000); // far inside the 15 min cron limit
   });
 
   it("rides out a momentary R2 internal error: a read that fails once and then works is not a problem", async () => {
