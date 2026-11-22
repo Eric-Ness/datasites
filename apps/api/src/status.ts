@@ -110,17 +110,50 @@ export async function ping(base: string, suffix: "" | "/start" | "/fail", body?:
 }
 
 /**
+ * Waits before re-checking the sites whose reads threw. R2 answers "internal error (10001)" for seconds at a time:
+ * on 2026-11-20 13:00 and 2026-11-22 00:15 UTC it failed eight sites' reads through readJson's own retries
+ * (250 ms, 1 s), the check paged, and the next run 15 minutes later was fine. Cloudflare's advice for 10001 is to
+ * retry and to treat it as an outage only if it persists, so a site is a problem only if it still fails about a
+ * minute later. A real outage still pages in the same run. Request paths keep the short retry.
+ */
+export const RECHECK_DELAYS_MS = [15_000, 45_000];
+
+/** Every site's status, re-checking those whose reads threw after each delay; a recovered site counts as checked. */
+async function checkSites(
+  bucket: R2Bucket,
+  now: number,
+  recheckDelaysMs: readonly number[],
+): Promise<PromiseSettledResult<SiteStatus>[]> {
+  const results = await Promise.allSettled(sites.map((site) => siteStatus(bucket, site.id, now)));
+  for (const delay of recheckDelaysMs) {
+    const failed = results.flatMap((r, i) => (r.status === "rejected" ? [i] : []));
+    if (!failed.length) break;
+    console.warn(`freshness: ${failed.map((i) => sites[i]!.id).join(", ")} failed to read; re-checking in ${delay} ms`);
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    const again = await Promise.allSettled(failed.map((i) => siteStatus(bucket, sites[i]!.id, now)));
+    failed.forEach((siteIndex, j) => {
+      results[siteIndex] = again[j]!;
+    });
+  }
+  return results;
+}
+
+/**
  * Cron: check every site and ping the tickharbor dead-man switch (a healthchecks.io-style ping URL) with the result.
  * Pings /start first so tickharbor records the run time, reads the sites in parallel, and always sends a final
  * ping: a site whose check throws (an R2 error, a bad duration in its catalog) is reported as a problem, not lost.
  */
-export async function runFreshnessCheck(env: Env, now = Date.now()): Promise<string[]> {
+export async function runFreshnessCheck(
+  env: Env,
+  now = Date.now(),
+  recheckDelaysMs: readonly number[] = RECHECK_DELAYS_MS,
+): Promise<string[]> {
   const hc = env.HEALTHCHECK_URL;
   // Sent alongside the reads, not before them; awaited before the final ping so tickharbor sees them in order.
   const started = hc ? ping(hc, "/start") : Promise.resolve(false);
   const problems: string[] = [];
   try {
-    const results = await Promise.allSettled(sites.map((site) => siteStatus(env.DATA, site.id, now)));
+    const results = await checkSites(env.DATA, now, recheckDelaysMs);
     results.forEach((result, i) => {
       const siteId = sites[i]!.id;
       if (result.status === "rejected") {
