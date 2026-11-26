@@ -1474,6 +1474,183 @@
   },
   {
     "site": "electiondata",
+    "id": "county-results-2026-wa",
+    "kind": "table",
+    "title": "Washington 2026 general election results by county",
+    "description": "Official results of the November 3, 2026 general election in Washington, by county, for federal and statewide offices, from the state's own results files. Each row says whether the results are certified or still unofficial.",
+    "cadence": "P1Y",
+    "check_every": "P1D",
+    "sla": "P2Y",
+    "discontinued": false,
+    "needs_credentials": false,
+    "source": {
+      "name": "Washington Secretary of State, official election results by county",
+      "publisher": "Washington Office of the Secretary of State, Elections Division",
+      "url": "https://results.votewa.gov/results/public/washington",
+      "license": "LicenseRef-Public-Domain",
+      "commercial_ok": true,
+      "attribution": "Office of the Secretary of State, State of Washington (results.votewa.gov)."
+    },
+    "series": {},
+    "locations": {},
+    "schema": [
+      {
+        "name": "year",
+        "type": "year",
+        "unit": null,
+        "nullable": false,
+        "description": "Year of the election"
+      },
+      {
+        "name": "state",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "State name in upper case"
+      },
+      {
+        "name": "state_po",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "USPS state code"
+      },
+      {
+        "name": "county_name",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "County or county-equivalent name in upper case, without the word COUNTY"
+      },
+      {
+        "name": "county_fips",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Five-digit county FIPS code; null where the source's unit is not a county"
+      },
+      {
+        "name": "county_id",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Location id in the shared registry (us-county-<fips>)"
+      },
+      {
+        "name": "office",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Office, e.g. US PRESIDENT, US SENATE, US HOUSE, GOVERNOR"
+      },
+      {
+        "name": "district",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "STATEWIDE, or the district number zero-padded to three digits"
+      },
+      {
+        "name": "stage",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "GEN for a general election, RUNOFF for a runoff"
+      },
+      {
+        "name": "special",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True for a special election to fill a vacancy"
+      },
+      {
+        "name": "candidate",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Candidate or ticket as the source prints it, upper case; write-in totals use the source's own label"
+      },
+      {
+        "name": "party_detailed",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "Party line exactly as the source prints it, upper case; empty where the source prints none"
+      },
+      {
+        "name": "party",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "DEMOCRAT, REPUBLICAN, LIBERTARIAN, GREEN, OTHER or NONPARTISAN"
+      },
+      {
+        "name": "writein",
+        "type": "bool",
+        "unit": null,
+        "nullable": false,
+        "description": "True for write-in votes"
+      },
+      {
+        "name": "mode",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "TOTAL, or a vote mode that is part of the TOTAL (EARLY VOTING, ELECTION DAY, MAIL-IN, PROVISIONAL)"
+      },
+      {
+        "name": "candidatevotes",
+        "type": "int",
+        "unit": "votes",
+        "nullable": true,
+        "description": "Votes for this ballot line"
+      },
+      {
+        "name": "totalvotes",
+        "type": "int",
+        "unit": "votes",
+        "nullable": true,
+        "description": "Votes for all ballot lines in the contest, in this county and mode"
+      },
+      {
+        "name": "status",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "certified once the state certified these results; unofficial before that"
+      },
+      {
+        "name": "source_url",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "The official results file this row was read from"
+      },
+      {
+        "name": "certified_at",
+        "type": "date",
+        "unit": null,
+        "nullable": true,
+        "description": "Date the state certified the results; null while unofficial"
+      }
+    ],
+    "key": [
+      "year",
+      "state_po",
+      "stage",
+      "office",
+      "district",
+      "special",
+      "county_name",
+      "candidate",
+      "party_detailed",
+      "mode"
+    ],
+    "partition": null
+  },
+  {
+    "site": "electiondata",
     "id": "house-results",
     "kind": "table",
     "title": "US House election results, 1976-2024",

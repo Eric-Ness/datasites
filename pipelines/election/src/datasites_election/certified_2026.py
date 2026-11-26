@@ -122,7 +122,7 @@ def release_key(contract_id: str) -> str:
 
 def collect(ctx) -> dict[str, bytes]:
     release = RELEASES[release_key(ctx.contract.id)]
-    urls = ADAPTERS[release.state_po].resources(date.fromisoformat(release.election_date))
+    urls = ADAPTERS[release.state_po].locate(date.fromisoformat(release.election_date), ctx.get)
     raw = {f"{release.state_po}/{name}": ctx.get(url) for name, url in urls.items()}
     raw["release"] = json.dumps({**asdict(release), "resources": urls}, sort_keys=True).encode()
     return raw

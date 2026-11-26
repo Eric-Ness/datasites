@@ -1,7 +1,7 @@
 """The certified-results importer: release records, the generated contract, collect/transform and a full run.
 
-There is no 2026 contract yet (no data until states certify), so these tests run the importer exactly as
-a 2026 contract will, against the 2024 files: the release record points at the 2024 election.
+Most tests run the importer exactly as a 2026 contract does, against the certified 2024 files: the
+release record points at the 2024 election.
 """
 
 from __future__ import annotations
@@ -34,13 +34,18 @@ def all_rows(store, doc):
     return json.loads(store.get(blob_key(doc["files"]["table/all.json"]["blob"]))[0])["rows"]
 
 
-def test_releases_cover_every_adapter_and_nothing_is_certified_yet():
+def test_releases_cover_every_adapter_and_contracts_match_the_generator():
     assert set(certified_2026.RELEASES) == set(ADAPTERS) == {"WA", "MD"}
     for release in certified_2026.RELEASES.values():
         assert release.election_date == "2026-11-03"
-        assert release.status == "unofficial" and release.certified_at is None
-    # No 2026 contract exists until there is data: a dataset with nothing to publish would fail every run.
-    assert not [c for c in site_contracts("electiondata") if c.id.startswith(certified_2026.DATASET_PREFIX)]
+        if release.certified_at is None:
+            assert release.status == "unofficial"
+    # A contract exists only for a release whose state has published 2026 files (a dataset with nothing to
+    # publish would fail every run); each one is exactly what the generator writes for its release.
+    written = {c.id: c for c in site_contracts("electiondata") if c.id.startswith(certified_2026.DATASET_PREFIX)}
+    assert set(written) == {"county-results-2026-wa"}
+    for contract_id, contract in written.items():
+        assert contract == generated(certified_2026.release_key(contract_id))
 
 
 def test_release_records_are_checked():

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import re
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
 from typing import ClassVar
@@ -59,6 +60,10 @@ class StateAdapter(ABC):
     @abstractmethod
     def resources(self, election_date: date) -> dict[str, str]:
         """name -> URL of the state's official results files for that election. Each row's source_url is one of these."""
+
+    def locate(self, election_date: date, get: Callable[[str], bytes]) -> dict[str, str]:
+        """resources(), for a state whose file URLs must be looked up first (get fetches a URL). The default needs no lookup."""
+        return self.resources(election_date)
 
     @abstractmethod
     def parse(self, raw: dict[str, bytes]) -> pl.DataFrame:
