@@ -6,6 +6,9 @@ name: ingest-housing
 # workbooks are downloaded and hashed (FHFA sends no ETag or Last-Modified). housing-costs asks the Census Data
 # API for each ACS 5-year release (48 small requests; a new release comes out each December). CENSUS_API_KEY is
 # optional: without it housing-costs reports needs-credentials and the other datasets still run.
+# mortgage-lending counts the CFPB's yearly HMDA snapshot (0.6-0.9 GB zipped per year, from 2018). A year whose
+# snapshot ETag is unchanged reuses the published rows, so most weeks make one 1-byte request per year; the
+# first run, or a new year each spring, downloads and counts the files (about 2 minutes a year).
 # The schedule stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md); manual runs
 # (Actions → Run workflow) always work, for example to fill the staging bucket.
 
@@ -37,7 +40,7 @@ jobs:
   ingest:
     if: vars.INGEST_ENABLED == 'true' || github.event_name == 'workflow_dispatch' # the switch only gates the schedule
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60 # the first mortgage-lending run downloads eight HMDA snapshots (~6 GB)
     environment: ${{ inputs.target || 'production' }}
     defaults:
       run:
