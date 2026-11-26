@@ -2411,6 +2411,95 @@
     "partition": null
   },
   {
+    "site": "housingdata",
+    "id": "housing-costs",
+    "kind": "series",
+    "title": "Rent, home values and housing cost burden by county (ACS 5-year)",
+    "description": "What housing costs in every US county and state and the nation, from the Census Bureau's American Community Survey 5-year estimates, one row per release from 2005-2009 onward (the date is the release's final year): median gross rent, median home value, the share of renter households paying 30 percent or more of their income in rent, and the share of homes that are owner-occupied, each with its 90 percent margin of error. Dollar values are in each release's own final-year dollars, so releases are not directly comparable, and overlapping 5-year periods should not be compared year to year. The two shares are derived from Census counts here; their margins of error use the Census Bureau's formula for a derived proportion. Geography follows each release.",
+    "cadence": "P1Y",
+    "check_every": "P7D",
+    "sla": "P450D",
+    "discontinued": false,
+    "needs_credentials": true,
+    "source": {
+      "name": "U.S. Census Bureau, American Community Survey 5-Year Estimates, tables B25064, B25077, B25070 and B25003 (Census Data API)",
+      "publisher": "U.S. Census Bureau",
+      "url": "https://www.census.gov/data/developers/data-sets/acs-5year.html",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Source: U.S. Census Bureau, American Community Survey 5-Year Estimates, Tables B25064 (Median Gross Rent), B25077 (Median Value, Owner-Occupied Housing Units), B25070 (Gross Rent as a Percentage of Household Income) and B25003 (Tenure). Shares and their margins of error derived by housingdata.dev. This product uses the Census Bureau Data API but is not endorsed or certified by the Census Bureau."
+    },
+    "series": {
+      "median-gross-rent": "Median gross rent, contract rent plus utilities (B25064_001)",
+      "median-home-value": "Median value of owner-occupied homes (B25077_001)",
+      "rent-burdened-share": "Renter households paying 30 percent or more of income in gross rent (B25070, lines 7-10 over 1 minus 11)",
+      "owner-occupied-share": "Owner-occupied homes as a share of occupied homes (B25003, line 2 over line 1)"
+    },
+    "locations": {
+      "explicit": {
+        "usa": "United States",
+        "us-county-02201": "Prince of Wales-Outer Ketchikan Census Area, AK (legacy)",
+        "us-county-02232": "Skagway-Hoonah-Angoon Census Area, AK (legacy)",
+        "us-county-02261": "Valdez-Cordova Census Area, AK (through the 2015-2019 release)",
+        "us-county-02270": "Wade Hampton Census Area, AK (renamed Kusilvak, 02158)",
+        "us-county-02280": "Wrangell-Petersburg Census Area, AK (legacy)",
+        "us-county-09001": "Fairfield County, CT (through the 2017-2021 release)",
+        "us-county-09003": "Hartford County, CT (through the 2017-2021 release)",
+        "us-county-09005": "Litchfield County, CT (through the 2017-2021 release)",
+        "us-county-09007": "Middlesex County, CT (through the 2017-2021 release)",
+        "us-county-09009": "New Haven County, CT (through the 2017-2021 release)",
+        "us-county-09011": "New London County, CT (through the 2017-2021 release)",
+        "us-county-09013": "Tolland County, CT (through the 2017-2021 release)",
+        "us-county-09015": "Windham County, CT (through the 2017-2021 release)",
+        "us-county-46113": "Shannon County, SD (renamed Oglala Lakota, 46102)",
+        "us-county-51515": "Bedford city, VA (merged into Bedford County in 2013)"
+      },
+      "registry": [
+        "us-state",
+        "us-county"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "year",
+        "unit": null,
+        "nullable": false,
+        "description": "Final year of the 5-year period"
+      },
+      {
+        "name": "value",
+        "type": "float",
+        "unit": "USD or percent",
+        "nullable": true,
+        "description": "The estimate; medians in the release's final-year dollars, shares in percent with one decimal"
+      },
+      {
+        "name": "margin_of_error",
+        "type": "float",
+        "unit": "USD or percent",
+        "nullable": true,
+        "description": "90 percent margin of error. For the shares it is derived with the Census Bureau's formula; for very small places it can exceed the value itself."
+      },
+      {
+        "name": "estimate_annotation",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Census annotation for a median: - N (X) or an open-ended bracket such as 2,000+ (the value is then the bracket's edge)"
+      },
+      {
+        "name": "moe_annotation",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Census annotation for a median's margin of error: ** *** ***** N (X)"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
     "site": "justicedata",
     "id": "crime-monthly",
     "kind": "series",
