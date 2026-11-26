@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { BILLING_CRON, reportUsage, webhook } from "./billing";
 import { catalog, datasetMeta, download, index, locations, seriesFile, topFile, versions } from "./data";
-import { problem, shortCache, json } from "./http";
+import { problem, SECURITY_HEADERS, shortCache, json } from "./http";
 import { authenticate, cors, meter, rateLimit, resolveSite, type AppEnv } from "./middleware";
 import { openapi } from "./openapi";
 import { runFreshnessCheck, siteStatus } from "./status";
@@ -13,6 +13,23 @@ export const app = new Hono<AppEnv>();
 
 // Stripe calls this directly: signature-verified, so it skips authentication, rate limits and metering.
 app.post("/billing/webhook", (c) => webhook(c));
+
+// Where to report a security problem (RFC 9116), for api.<domain>. Ahead of the middleware: it isn't API usage.
+app.get("/.well-known/security.txt", (c) => {
+  const host = new URL(c.req.url).host;
+  const now = new Date();
+  const expires = new Date(Date.UTC(now.getUTCFullYear() + 1, now.getUTCMonth(), now.getUTCDate())); // under a year, per the RFC
+  const body = [
+    "Contact: mailto:eric.ness@nulllabs.com",
+    `Expires: ${expires.toISOString().replace(".000", "")}`,
+    "Preferred-Languages: en",
+    `Canonical: https://${host}/.well-known/security.txt`,
+    "",
+  ].join("\n");
+  return new Response(body, {
+    headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=86400", ...SECURITY_HEADERS },
+  });
+});
 
 // meter wraps authenticate and rateLimit so 401s and 429s reach the analytics too (they are never billed).
 app.use("*", cors, resolveSite, meter, authenticate, rateLimit);

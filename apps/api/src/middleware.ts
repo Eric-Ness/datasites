@@ -1,6 +1,6 @@
 import type { Context, MiddlewareHandler } from "hono";
 import { siteByHost, siteById, type Site } from "@datasites/registry";
-import { CORS_HEADERS, defer, problem } from "./http";
+import { CORS_HEADERS, defer, problem, SECURITY_HEADERS } from "./http";
 import { hashKey, isCached, KEY_PATTERN, lookupKey, presentedKey, type Plan } from "./keys";
 import { countRequest, utcDay, writeDataPoint } from "./usage";
 
@@ -11,11 +11,11 @@ export type AppEnv = {
   Variables: { site: Site; plan: Plan; account: string | null };
 };
 
-/** CORS on every response; preflight answered directly. X-Plan on every response too. */
+/** CORS and security headers on every response; preflight answered directly. X-Plan on every response too. */
 export const cors: MiddlewareHandler<AppEnv> = async (c, next) => {
-  if (c.req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS_HEADERS });
+  if (c.req.method === "OPTIONS") return new Response(null, { status: 204, headers: { ...CORS_HEADERS, ...SECURITY_HEADERS } });
   await next();
-  for (const [name, value] of Object.entries(CORS_HEADERS)) c.res.headers.set(name, value);
+  for (const [name, value] of Object.entries({ ...CORS_HEADERS, ...SECURITY_HEADERS })) c.res.headers.set(name, value);
   c.res.headers.set("x-plan", c.get("plan") ?? "anonymous");
 };
 

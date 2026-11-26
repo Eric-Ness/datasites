@@ -81,6 +81,31 @@ describe("data files", () => {
     expect(res.headers.get("last-modified")).toBe(new Date("2026-10-09T19:30:00Z").toUTCString());
   });
 
+  it("sends the security headers on data, errors and preflights", async () => {
+    for (const res of [
+      await request("/v1/co2-monthly/average/noaa-mlo.json"),
+      await request("/v1/no-such-dataset"),
+      await request("/v1", { method: "OPTIONS" }),
+    ]) {
+      expect(res.headers.get("strict-transport-security")).toBe("max-age=31536000; includeSubDomains");
+      expect(res.headers.get("content-security-policy")).toBe("default-src 'none'; frame-ancestors 'none'");
+      expect(res.headers.get("x-content-type-options")).toBe("nosniff");
+      expect(res.headers.get("cross-origin-resource-policy")).toBe("cross-origin");
+    }
+  });
+
+  it("serves security.txt with a contact and an expiry under a year away", async () => {
+    const res = await request("https://api.climatedata.dev/.well-known/security.txt");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toBe("text/plain; charset=utf-8");
+    const text = await res.text();
+    expect(text).toContain("Contact: mailto:eric.ness@nulllabs.com\n");
+    expect(text).toContain("Canonical: https://api.climatedata.dev/.well-known/security.txt\n");
+    const expires = Date.parse(/^Expires: (.+)$/m.exec(text)?.[1] ?? "");
+    expect(expires - Date.now()).toBeGreaterThan(300 * 86_400_000);
+    expect(expires - Date.now()).toBeLessThanOrEqual(366 * 86_400_000);
+  });
+
   it("serves CSV by extension", async () => {
     const res = await request("/v1/co2-monthly/average/noaa-mlo.csv");
     expect(res.headers.get("content-type")).toBe("text/csv; charset=utf-8");

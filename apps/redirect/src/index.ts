@@ -21,7 +21,13 @@ export default {
     if (!target) return new Response("Not found", { status: 404 });
     return new Response(null, {
       status: target.status,
-      headers: { location: target.location, "cache-control": "public, max-age=3600" },
+      headers: {
+        location: target.location,
+        "cache-control": "public, max-age=3600",
+        // Browsers go straight to https for this host from the second visit on.
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "x-content-type-options": "nosniff",
+      },
     });
   },
 };
