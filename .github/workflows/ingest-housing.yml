@@ -3,13 +3,18 @@ name: ingest-housing
 # Weekly look at every housingdata.dev dataset. FHFA reissues its annual county and state indexes about
 # once a year (March) and the Building Permits Survey's annual county file comes out each May, so most weeks
 # end with every source unchanged: the permit files answer conditional GETs with 304, and FHFA's 5 MB of
-# workbooks are downloaded and hashed (FHFA sends no ETag or Last-Modified).
+# workbooks are downloaded and hashed (FHFA sends no ETag or Last-Modified). housing-costs asks the Census Data
+# API for each ACS 5-year release (48 small requests; a new release comes out each December). CENSUS_API_KEY is
+# optional: without it housing-costs reports needs-credentials and the other datasets still run.
+# mortgage-lending counts the CFPB's yearly HMDA snapshot (0.6-0.9 GB zipped per year, from 2018). A year whose
+# snapshot ETag is unchanged reuses the published rows, so most weeks make one 1-byte request per year; the
+# first run, or a new year each spring, downloads and counts the files (about 2 minutes a year).
 # The schedule stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md); manual runs
 # (Actions → Run workflow) always work, for example to fill the staging bucket.
 
 on:
   schedule:
-    - cron: "29 10 * * 3" # Wednesdays 10:29 UTC: both datasets have check_every P7D; odd minute
+    - cron: "29 10 * * 3" # Wednesdays 10:29 UTC: every dataset has check_every P7D; odd minute
   workflow_dispatch:
     inputs:
       dataset:
@@ -35,7 +40,7 @@ jobs:
   ingest:
     if: vars.INGEST_ENABLED == 'true' || github.event_name == 'workflow_dispatch' # the switch only gates the schedule
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60 # the first mortgage-lending run downloads eight HMDA snapshots (~6 GB)
     environment: ${{ inputs.target || 'production' }}
     defaults:
       run:
@@ -56,6 +61,7 @@ jobs:
           R2_BUCKET: ${{ vars.R2_BUCKET }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
         run: >
           uv run --frozen datasites run "${{ inputs.dataset || 'housingdata' }}"
           --target "${{ inputs.target || 'production' }}"

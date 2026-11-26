@@ -2588,6 +2588,202 @@
     "partition": null
   },
   {
+    "site": "housingdata",
+    "id": "housing-costs",
+    "kind": "series",
+    "title": "Rent, home values and housing cost burden by county (ACS 5-year)",
+    "description": "What housing costs in every US county and state and the nation, from the Census Bureau's American Community Survey 5-year estimates, one row per release from 2005-2009 onward (the date is the release's final year): median gross rent, median home value, the share of renter households paying 30 percent or more of their income in rent, and the share of homes that are owner-occupied, each with its 90 percent margin of error. Dollar values are in each release's own final-year dollars, so releases are not directly comparable, and overlapping 5-year periods should not be compared year to year. The two shares are derived from Census counts here; their margins of error use the Census Bureau's formula for a derived proportion. Geography follows each release.",
+    "cadence": "P1Y",
+    "check_every": "P7D",
+    "sla": "P450D",
+    "discontinued": false,
+    "needs_credentials": true,
+    "source": {
+      "name": "U.S. Census Bureau, American Community Survey 5-Year Estimates, tables B25064, B25077, B25070 and B25003 (Census Data API)",
+      "publisher": "U.S. Census Bureau",
+      "url": "https://www.census.gov/data/developers/data-sets/acs-5year.html",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Source: U.S. Census Bureau, American Community Survey 5-Year Estimates, Tables B25064 (Median Gross Rent), B25077 (Median Value, Owner-Occupied Housing Units), B25070 (Gross Rent as a Percentage of Household Income) and B25003 (Tenure). Shares and their margins of error derived by housingdata.dev. This product uses the Census Bureau Data API but is not endorsed or certified by the Census Bureau."
+    },
+    "series": {
+      "median-gross-rent": "Median gross rent, contract rent plus utilities (B25064_001)",
+      "median-home-value": "Median value of owner-occupied homes (B25077_001)",
+      "rent-burdened-share": "Renter households paying 30 percent or more of income in gross rent (B25070, lines 7-10 over 1 minus 11)",
+      "owner-occupied-share": "Owner-occupied homes as a share of occupied homes (B25003, line 2 over line 1)"
+    },
+    "locations": {
+      "explicit": {
+        "usa": "United States",
+        "us-county-02201": "Prince of Wales-Outer Ketchikan Census Area, AK (legacy)",
+        "us-county-02232": "Skagway-Hoonah-Angoon Census Area, AK (legacy)",
+        "us-county-02261": "Valdez-Cordova Census Area, AK (through the 2015-2019 release)",
+        "us-county-02270": "Wade Hampton Census Area, AK (renamed Kusilvak, 02158)",
+        "us-county-02280": "Wrangell-Petersburg Census Area, AK (legacy)",
+        "us-county-09001": "Fairfield County, CT (through the 2017-2021 release)",
+        "us-county-09003": "Hartford County, CT (through the 2017-2021 release)",
+        "us-county-09005": "Litchfield County, CT (through the 2017-2021 release)",
+        "us-county-09007": "Middlesex County, CT (through the 2017-2021 release)",
+        "us-county-09009": "New Haven County, CT (through the 2017-2021 release)",
+        "us-county-09011": "New London County, CT (through the 2017-2021 release)",
+        "us-county-09013": "Tolland County, CT (through the 2017-2021 release)",
+        "us-county-09015": "Windham County, CT (through the 2017-2021 release)",
+        "us-county-46113": "Shannon County, SD (renamed Oglala Lakota, 46102)",
+        "us-county-51515": "Bedford city, VA (merged into Bedford County in 2013)"
+      },
+      "registry": [
+        "us-state",
+        "us-county"
+      ]
+    },
+    "schema": [
+      {
+        "name": "date",
+        "type": "year",
+        "unit": null,
+        "nullable": false,
+        "description": "Final year of the 5-year period"
+      },
+      {
+        "name": "value",
+        "type": "float",
+        "unit": "USD or percent",
+        "nullable": true,
+        "description": "The estimate; medians in the release's final-year dollars, shares in percent with one decimal"
+      },
+      {
+        "name": "margin_of_error",
+        "type": "float",
+        "unit": "USD or percent",
+        "nullable": true,
+        "description": "90 percent margin of error. For the shares it is derived with the Census Bureau's formula; for very small places it can exceed the value itself."
+      },
+      {
+        "name": "estimate_annotation",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Census annotation for a median: - N (X) or an open-ended bracket such as 2,000+ (the value is then the bracket's edge)"
+      },
+      {
+        "name": "moe_annotation",
+        "type": "str",
+        "unit": null,
+        "nullable": true,
+        "description": "Census annotation for a median's margin of error: ** *** ***** N (X)"
+      }
+    ],
+    "key": [],
+    "partition": null
+  },
+  {
+    "site": "housingdata",
+    "id": "mortgage-lending",
+    "kind": "table",
+    "title": "Mortgage applications and loans by county (HMDA)",
+    "description": "Home lending in every US county and state and the nation, from 2018, from the loan-level records every mortgage lender reports under the Home Mortgage Disclosure Act: applications, loans made, denials and the denial rate, and the total and median amount lent, by year and loan purpose (home purchase, refinance, cash-out refinance, home improvement, other). Counted from the CFPB's yearly snapshot of the public data.",
+    "cadence": "P1Y",
+    "check_every": "P7D",
+    "sla": "P20M",
+    "discontinued": false,
+    "needs_credentials": false,
+    "source": {
+      "name": "CFPB / FFIEC, HMDA Snapshot National Loan-Level Dataset (public LAR)",
+      "publisher": "Consumer Financial Protection Bureau, for the Federal Financial Institutions Examination Council",
+      "url": "https://ffiec.cfpb.gov/data-publication/snapshot-national-loan-level-dataset",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Consumer Financial Protection Bureau and Federal Financial Institutions Examination Council, HMDA Snapshot National Loan-Level Dataset (https://ffiec.cfpb.gov/data-publication/snapshot-national-loan-level-dataset). Aggregated by housingdata.dev."
+    },
+    "series": {},
+    "locations": {},
+    "schema": [
+      {
+        "name": "year",
+        "type": "year",
+        "unit": null,
+        "nullable": false,
+        "description": "HMDA reporting year (activity_year)"
+      },
+      {
+        "name": "location",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "us-county-<5-digit FIPS>, us-<state>, or usa"
+      },
+      {
+        "name": "loan_purpose",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "home-purchase, home-improvement, refinance, cash-out-refinance or other (HMDA codes 1, 2, 31, 32, 4)"
+      },
+      {
+        "name": "applications",
+        "type": "int",
+        "unit": "applications",
+        "nullable": false,
+        "description": "Applications that were originated"
+      },
+      {
+        "name": "originations",
+        "type": "int",
+        "unit": "loans",
+        "nullable": false,
+        "description": "Loans made (action 1)"
+      },
+      {
+        "name": "denials",
+        "type": "int",
+        "unit": "applications",
+        "nullable": false,
+        "description": "Applications denied (action 3)"
+      },
+      {
+        "name": "denial_rate",
+        "type": "float",
+        "unit": "percent",
+        "nullable": true,
+        "description": "Denials as a percent of applications that reached a decision (actions 1-3)"
+      },
+      {
+        "name": "originated_amount",
+        "type": "int",
+        "unit": "USD",
+        "nullable": false,
+        "description": "Sum of the loan amounts of the loans made"
+      },
+      {
+        "name": "median_originated_amount",
+        "type": "int",
+        "unit": "USD",
+        "nullable": true,
+        "description": "Median loan amount of the loans made"
+      },
+      {
+        "name": "source_url",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "The snapshot file the row was counted from"
+      },
+      {
+        "name": "source_etag",
+        "type": "str",
+        "unit": null,
+        "nullable": false,
+        "description": "The snapshot file's ETag when it was counted (an unchanged ETag means the row is reused)"
+      }
+    ],
+    "key": [
+      "year",
+      "location",
+      "loan_purpose"
+    ],
+    "partition": "year"
+  },
+  {
     "site": "justicedata",
     "id": "crime-monthly",
     "kind": "series",

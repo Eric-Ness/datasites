@@ -20,6 +20,8 @@ const EXPECTED = {
   la2025: [1.7, 2386.19, 410.35, 403.74],
   // Alaska 2013: the county file adds up to 26 units less than BPS's state file (1,053 vs 1,079).
   stateExceptions: { "2013|02": 26 },
+  // ACS 5-year table B25064 for the United States (data.census.gov), median gross rent in dollars.
+  usRent: { 2024: 1413 },
 };
 if (NEGATIVE) EXPECTED.la2025[1] += 1;
 
@@ -180,5 +182,126 @@ async function verifyHousePrices() {
   return `house-prices ${ds.doc.version}: ${checked} place-years in ${places} counties and states re-derived from FHFA's workbooks; Los Angeles 2025 HPI ${EXPECTED.la2025[1]}`;
 }
 
-const results = [await verifyHousePrices(), await verifyPermits()];
+// --- housing-costs ---------------------------------------------------------------------------------------
+
+const B25070_BURDENED = ["B25070_007", "B25070_008", "B25070_009", "B25070_010"];
+
+/** One ACS 5-year release, straight from the Census Data API (its own request; no pipeline code). */
+async function acs(year, forClause, inClause) {
+  const key = process.env.CENSUS_API_KEY;
+  check(key, "housing-costs: set CENSUS_API_KEY to re-read the Census Data API");
+  const counts = ["B25003_001", "B25003_002", "B25070_001", "B25070_011", ...B25070_BURDENED];
+  const vars = ["B25064_001E", "B25077_001E", ...counts.flatMap((v) => [`${v}E`, `${v}M`])];
+  const q = new URLSearchParams({ get: vars.join(","), for: forClause, key });
+  if (inClause) q.set("in", inClause);
+  let body;
+  try {
+    body = await download(`https://api.census.gov/data/${year}/acs/acs5?${q}`);
+  } catch {
+    check(false, `Census ACS ${year} request failed`); // never print the URL: it carries the key
+  }
+  const [header, ...rows] = JSON.parse(body.toString("utf8"));
+  return rows.map((r) => Object.fromEntries(header.map((h, i) => [h, r[i]])));
+}
+
+/** Census's derived-proportion formula, written out again here: share and margin in percent, one decimal. */
+function derivedShare(num, numMoe, den, denMoe) {
+  if (!(den > 0)) return [null, null];
+  const p = num / den;
+  const minus = numMoe ** 2 - p ** 2 * denMoe ** 2;
+  const moe = Math.sqrt(minus >= 0 ? minus : numMoe ** 2 + p ** 2 * denMoe ** 2) / den;
+  const round1 = (x) => Math.round(x * 1000) / 10;
+  return [round1(p), round1(moe)];
+}
+
+const USPS = {
+  "01": "al", "02": "ak", "04": "az", "05": "ar", "06": "ca", "08": "co", "09": "ct", 10: "de", 11: "dc", 12: "fl", 13: "ga",
+  15: "hi", 16: "id", 17: "il", 18: "in", 19: "ia", 20: "ks", 21: "ky", 22: "la", 23: "me", 24: "md", 25: "ma", 26: "mi",
+  27: "mn", 28: "ms", 29: "mo", 30: "mt", 31: "ne", 32: "nv", 33: "nh", 34: "nj", 35: "nm", 36: "ny", 37: "nc", 38: "nd",
+  39: "oh", 40: "ok", 41: "or", 42: "pa", 44: "ri", 45: "sc", 46: "sd", 47: "tn", 48: "tx", 49: "ut", 50: "vt", 51: "va",
+  53: "wa", 54: "wv", 55: "wi", 56: "wy", 72: "pr",
+};
+
+async function verifyHousingCosts() {
+  const ds = localDataset("housingdata", "housing-costs");
+  const year = ds.doc.coverage.end;
+  const published = (series, loc) => ds.json(`${series}/${loc}.json`).data.find((d) => d.date === year);
+  const n = Number;
+  const median = (s) => (n(s) < 0 ? null : n(s)); // Census's "no value" sentinels are large negative numbers
+  const same = (a, b) => (a === null || b === null ? a === b : Math.abs(a - b) < 0.051);
+  const states = await acs(year, "state:*");
+  const counties = (await acs(year, "county:*", "state:06,36,48")).filter((_, i) => i % 7 === 0); // a sample
+  let checked = 0;
+  for (const r of [...states, ...counties]) {
+    const usps = USPS[r.state] ?? USPS[n(r.state)];
+    check(usps, `unknown state FIPS ${r.state}`);
+    const loc = r.county ? `us-county-${r.state}${r.county}` : `us-${usps}`;
+    const rent = published("median-gross-rent", loc);
+    check(rent.value === median(r.B25064_001E), `${loc} ${year}: median rent ${rent.value}, Census ${r.B25064_001E}`);
+    const home = published("median-home-value", loc);
+    check(home.value === median(r.B25077_001E), `${loc} ${year}: median home value ${home.value}, Census ${r.B25077_001E}`);
+    const [bShare, bMoe] = derivedShare(
+      B25070_BURDENED.reduce((s, v) => s + n(r[`${v}E`]), 0),
+      Math.sqrt(B25070_BURDENED.reduce((s, v) => s + n(r[`${v}M`]) ** 2, 0)),
+      n(r.B25070_001E) - n(r.B25070_011E),
+      Math.sqrt(n(r.B25070_001M) ** 2 + n(r.B25070_011M) ** 2),
+    );
+    const b = published("rent-burdened-share", loc);
+    check(same(b.value, bShare) && same(b.margin_of_error, bMoe), `${loc} ${year}: rent-burdened ${b.value}±${b.margin_of_error}, re-derived ${bShare}±${bMoe}`);
+    const [oShare, oMoe] = derivedShare(n(r.B25003_002E), n(r.B25003_002M), n(r.B25003_001E), n(r.B25003_001M));
+    const o = published("owner-occupied-share", loc);
+    check(same(o.value, oShare) && same(o.margin_of_error, oMoe), `${loc} ${year}: owner-occupied ${o.value}±${o.margin_of_error}, re-derived ${oShare}±${oMoe}`);
+    checked++;
+  }
+  const us = published("median-gross-rent", "usa").value;
+  const expectedRent = EXPECTED.usRent[year] + (NEGATIVE ? 1 : 0);
+  check(us === expectedRent, `US median gross rent ${year}: published ${us}, expected ${expectedRent}`);
+  check(ds.doc.coverage.start === "2009", `published coverage ${JSON.stringify(ds.doc.coverage)}`);
+  return `housing-costs ${ds.doc.version}: ${checked} states and counties re-derived from the Census Data API for ${year}; US median gross rent ${us}`;
+}
+
+// --- mortgage-lending ------------------------------------------------------------------------------------
+
+// The CFPB's own aggregation API (Data Browser) counts the same loan-level records. It serves HMDA's latest
+// revision of a year, while the dataset counts the first snapshot, so the two can differ a little: up to 2%.
+const HMDA_API = "https://ffiec.cfpb.gov/v2/data-browser-api/view/aggregations";
+const HMDA_PURPOSES = { 1: "home-purchase", 31: "refinance" };
+
+async function verifyMortgageLending() {
+  const ds = localDataset("housingdata", "mortgage-lending");
+  const years = Object.keys(ds.doc.files).filter((p) => /^table\/\d{4}\.json$/.test(p)).map((p) => p.slice(6, 10)).sort();
+  check(years[0] === "2018" && years.length >= 7, `mortgage-lending years ${years}`);
+  const year = years.at(-1);
+  const rows = ds.json(`table/${year}.json`).rows;
+  const at = (loc, purpose) => rows.find((r) => r.location === loc && r.loan_purpose === purpose);
+  let compared = 0;
+  for (const [usps, loc] of [["MD", "us-md"], ["CA", "us-ca"], ["TX", "us-tx"], ["WY", "us-wy"], ["DC", "us-dc"]]) {
+    const q = new URLSearchParams({ years: year, states: usps, actions_taken: "1", loan_purposes: Object.keys(HMDA_PURPOSES).join(",") });
+    const api = JSON.parse((await download(`${HMDA_API}?${q}`)).toString("utf8")).aggregations;
+    for (const [code, purpose] of Object.entries(HMDA_PURPOSES)) {
+      const theirs = api.find((a) => a.loan_purposes === code);
+      const ours = at(loc, purpose);
+      check(theirs && ours, `${loc} ${year} ${purpose}: missing (API ${!!theirs}, published ${!!ours})`);
+      const off = Math.abs(ours.originations - theirs.count) / theirs.count;
+      check(off <= 0.02, `${loc} ${year} ${purpose}: ${ours.originations} loans published, CFPB API ${theirs.count} (${(off * 100).toFixed(2)}% apart)`);
+      const offAmount = Math.abs(ours.originated_amount - theirs.sum) / theirs.sum;
+      check(offAmount <= 0.02, `${loc} ${year} ${purpose}: $${ours.originated_amount} published, CFPB API $${theirs.sum}`);
+      compared++;
+    }
+  }
+  // Counties never add up to more than their state (records without a county count only for the state).
+  const byState = new Map();
+  for (const r of rows.filter((r) => r.location.startsWith("us-county-") && r.loan_purpose === "home-purchase")) {
+    const st = r.location.slice(10, 12);
+    byState.set(st, (byState.get(st) ?? 0) + r.originations);
+  }
+  const md = byState.get("24");
+  check(md <= at("us-md", "home-purchase").originations, `Maryland counties ${md} > state ${at("us-md", "home-purchase").originations}`);
+  const usa = at("usa", "home-purchase").originations + (NEGATIVE ? 1 : 0);
+  const states = rows.filter((r) => /^us-[a-z]{2}$/.test(r.location) && r.loan_purpose === "home-purchase").reduce((s, r) => s + r.originations, 0);
+  check(states <= usa && usa - states < usa * 0.01, `${year}: states add up to ${states} home-purchase loans, the nation ${usa}`);
+  return `mortgage-lending ${ds.doc.version}: ${years.length} years; ${compared} state figures for ${year} within 2% of the CFPB's API; US ${year} home-purchase loans ${usa}`;
+}
+
+const results = [await verifyHousePrices(), await verifyPermits(), await verifyHousingCosts(), await verifyMortgageLending()];
 console.log(`HOUSING VERIFIED (${results.join("; ")})`);
