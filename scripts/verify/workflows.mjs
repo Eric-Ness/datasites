@@ -71,19 +71,18 @@ const MINUTES_PER_RUN = {
   "ingest-carbon.yml": 5, // 268 s
   "ingest-climate.yml": 7, // 342 s, including the weekly world-capitals pass
   "ingest-economic.yml": 2, // 26 s with QCEW unreachable; the LAUS county file is 337 MB on days it changes
-  "ingest-election.yml": 1, // 6 s with three MEDSL datasets (re-measured 2026-10-26)
+  "ingest-election.yml": 4, // 6 s for the results datasets (2026-10-26), plus roll-calls: ~3 min a day once its history is in (new votes, ~35,000 vote files read back)
   "ingest-health.yml": 3, // 142 s forced with nothing changed (2026-11-06): two CDC tables and 17 SAHIE files answer 304
   "ingest-housing.yml": 3,
   "ingest-justice.yml": 4, // estimate: about 2 min weekly (102 CDE requests), 10 min once a month (another ~550) // 61 s when nothing changed (2026-11-06); a yearly release republishes about 12,000 files
   "ingest-satellite.yml": 2, // 8 s keyless; Space-Track elements add a few requests
   "ingest-visualize.yml": 1, // 6 s
-  "ingest-voting.yml": 3, // estimate for a daily run once the history is in: new votes plus reading back ~35,000 vote files
   "ingest-water.yml": 11, // ~10 min with an API key (65 min measured keyless and throttled)
   "ingest-wildfire.yml": 2, // 52 s: just over a billed minute
 };
 // Ingest stays under 1,800 minutes a month. The repo is public (free minutes) since 2026-11-09; the cap now just catches a
 // schedule set far too often, or a run that keeps hitting its timeout.
-const INGEST_BUDGET = 1800; // raised from 1,500 on 2026-11-26 for votingdata.net's daily run
+const INGEST_BUDGET = 1800; // raised from 1,500 on 2026-11-26 for electiondata's daily roll-calls run
 let monthlyRuns = 0;
 let monthlyMinutes = 0;
 const perWorkflow = [];

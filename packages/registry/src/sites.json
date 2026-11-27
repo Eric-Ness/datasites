@@ -90,15 +90,6 @@
     "phase": 5
   },
   {
-    "id": "votingdata",
-    "domain": "votingdata.net",
-    "name": "Voting Data",
-    "tagline": "How every member of Congress voted, on every recorded vote.",
-    "description": "Every recorded vote of the US House since 1990 and the Senate since 1989, member by member, from the House Clerk's and the Senate's own public-domain roll-call records: the question, the result, and how each representative and senator voted, with Bioguide IDs to join to other congressional data.",
-    "status": "coming-soon",
-    "phase": 7
-  },
-  {
     "id": "waterdata",
     "domain": "waterdata.dev",
     "name": "Water Data",

@@ -3,7 +3,8 @@ name: ingest-election
 # Daily look at every electiondata.dev dataset. The MEDSL history datasets have check_every P7D, so
 # on most days they are skipped as not due and the job ends within a minute. Running daily lets the
 # certified 2026 results datasets (check_every P1D during the November-December canvass) be added
-# without changing this schedule.
+# without changing this schedule. roll-calls (congressional roll-call votes; check_every PT20H) runs every day: a few
+# dozen requests for the newest votes, plus up to 25 minutes of older ones until its history since 1989 is in.
 # The schedule stays off until the repository variable INGEST_ENABLED is "true" (see docs/SETUP.md); manual runs
 # (Actions → Run workflow) always work, for example to fill the staging bucket.
 
@@ -35,7 +36,7 @@ jobs:
   ingest:
     if: vars.INGEST_ENABLED == 'true' || github.event_name == 'workflow_dispatch' # the switch only gates the schedule
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45 # roll-calls fetches for up to 25 min while its history fills in, then builds and publishes
     environment: ${{ inputs.target || 'production' }}
     defaults:
       run:

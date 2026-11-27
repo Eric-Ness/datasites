@@ -1,4 +1,4 @@
-"""votingdata/roll-calls: House Clerk and Senate roll-call XML, member by member.
+"""electiondata/roll-calls: House Clerk and Senate roll-call XML, member by member.
 
 Fixtures (fixtures/), captured 2026-11-26:
 - house_1990_roll001.xml, house_2025_roll362.xml: https://clerk.house.gov/evs/<year>/roll<NNN>.xml, verbatim;
@@ -202,7 +202,7 @@ def test_a_throttled_chamber_is_left_alone_and_the_rest_is_kept(monkeypatch):
 
 def test_output_passes_the_contract(monkeypatch):
     monkeypatch.setattr(rc, "PER_RUN", {"house": 100, "senate": 100})
-    contract = load_contract("votingdata/roll-calls")
+    contract = load_contract("electiondata/roll-calls")
     ctx = FakeChambers()
     files, stats = rc.build(rc.collect(ctx), ctx)
     report = validate_files(contract, set(files), stats)
