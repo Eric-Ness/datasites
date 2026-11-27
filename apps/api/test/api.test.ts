@@ -213,6 +213,33 @@ describe("big and non-series datasets", () => {
     expect(body.series.find((s) => s.id === "tavg")?.locations).toEqual(["us-county-06037"]);
     expect(body.locations).toEqual([{ id: "us-county-06037", name: "Los Angeles County" }]);
   });
+
+  it("lists a sharded files dataset's top-level files without reading its folder shards", async () => {
+    const json = (v: unknown) => JSON.stringify(v);
+    const blob = (n: number) => String(n).repeat(64).slice(0, 64);
+    // Like electiondata/roll-calls: index.json gets a one-entry shard; house/ is a big shard of its own.
+    r2.putText(keys.blob(blob(1)), json({ "index.json": { blob: blob(3), bytes: 7, type: "application/json" } }));
+    r2.putText(keys.blob(blob(2)), json({ "house/119/2/0001.json": { blob: blob(3), bytes: 7, type: "application/json" } }));
+    const version = "2026-11-27.eeeeeeeeee";
+    r2.putJson(keys.manifest("climatedata", "roll-calls"), {
+      site: "climatedata", dataset: "roll-calls", current: version, published_at: "2026-11-27T12:00:00Z",
+      previous: [], snapshots: {}, quarantined: [], rev: 1,
+    });
+    r2.putJson(keys.version("climatedata", "roll-calls", version), {
+      version, site: "climatedata", dataset: "roll-calls", kind: "files", title: "Roll calls", description: "",
+      cadence: "P1D", contract_version: 1, transform_version: "t", coverage: { start: null, end: null },
+      source: { id: "s", name: "s", url: "", license: "x", commercial_ok: true, attribution: "" },
+      series: {}, validation: { status: "pass", errors: [], warnings: [] }, run: null, tree: "t",
+      files: {}, file_shards: { "index.json": blob(1), house: blob(2) },
+    });
+    const reads: string[] = [];
+    const bucket = r2.asBucket();
+    const spy = { ...bucket, get: (key: string, ...rest: unknown[]) => (reads.push(key), (bucket.get as (...a: unknown[]) => unknown)(key, ...rest)) };
+    const res = await app.request("http://localhost/v1/roll-calls?site=climatedata", {}, { DATA: spy, ENV: "production" } as unknown as Env);
+    const body = (await res.json()) as { files: { path: string; bytes: number }[] };
+    expect(body.files).toEqual([{ path: "index.json", bytes: 7, url: expect.stringContaining("/v1/roll-calls/index.json") }]);
+    expect(reads).not.toContain(keys.blob(blob(2))); // the house/ shard isn't read just to list files
+  });
 });
 
 describe("metadata endpoints", () => {

@@ -81,6 +81,21 @@ async function allFiles(c: C, doc: VersionDoc): Promise<Record<string, FileEntry
   return Object.assign({}, doc.files, ...shards.map((s) => s ?? {}));
 }
 
+/**
+ * The files a big "files" dataset can list without reading its big shards. The publisher shards by first path
+ * segment, so a top-level file such as roll-calls' index.json has a one-entry shard named after itself, while
+ * folders (house/, senate/) get one shard each that can hold tens of thousands of entries. Only the shards named
+ * like a file are read; files one folder deep in a sharded dataset aren't listed (their folder's index is).
+ */
+async function listableFiles(c: C, doc: VersionDoc): Promise<Record<string, FileEntry>> {
+  if (!doc.file_shards) return doc.files;
+  const tops = Object.entries(doc.file_shards).filter(([name]) => name.includes("."));
+  const shards = await Promise.all(
+    tops.map(([, hash]) => readJson<Record<string, FileEntry>>(c.env.DATA, keys.blob(hash), TTL.immutable, edge(c))),
+  );
+  return Object.assign({}, doc.files, ...shards.map((s) => s ?? {}));
+}
+
 async function locationNames(c: C, doc: VersionDoc): Promise<Record<string, string>> {
   if (doc.locations) return doc.locations;
   if (!doc.locations_blob) return {};
@@ -227,7 +242,7 @@ export async function datasetMeta(c: C, ref: string): Promise<Response> {
       ...(doc.kind === "table" ? { key: doc.key ?? [], partition: doc.partition ?? null } : {}),
       downloads,
       ...(doc.kind === "files"
-        ? { files: listedFiles(doc.files).map(([path, entry]) => ({ path, bytes: entry.bytes, url: siteLink(c, `/v1/${dataset}/${path}`) })) }
+        ? { files: listedFiles(await listableFiles(c, doc)).map(([path, entry]) => ({ path, bytes: entry.bytes, url: siteLink(c, `/v1/${dataset}/${path}`) })) }
         : {}),
       links: {
         locations: siteLink(c, `/v1/${dataset}/locations`),
