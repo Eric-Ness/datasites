@@ -1,1 +1,1 @@
-"""Pipelines for votingdata.net: congressional roll-call votes."""
+"""electiondata.dev's congressional roll-call votes (votingdata.net redirects to electiondata.dev)."""

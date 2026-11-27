@@ -20,9 +20,10 @@ Published files (kind: files):
     <chamber>/<congress>/member-votes.csv        one row per member per vote, for bulk use
 
 Every vote file is written once and kept. collect() lists the published version's files (ctx.previous_files)
-and fetches only votes it doesn't have yet: the newest first, then older Congresses, at most
-run per chamber (PER_RUN), so the history since 1989 fills in over a few weeks of daily runs and each run
-stays short; a chamber that answers 403 or 429 is left alone for the rest of the run. The newest
+and fetches only votes it doesn't have yet: the newest first, then older Congresses, the two chambers side by
+side, each up to PER_RUN votes and all within FETCH_BUDGET_S, so the history since 1989 fills in over a few
+weeks of daily runs and each run stays short; a chamber that answers 403 or 429 is left alone for the rest of
+the run. The newest
 REFRESH_RECENT votes of each chamber are fetched again every run, in case a record is corrected soon after.
 """
 
@@ -54,6 +55,9 @@ FIRST_SENATE_CONGRESS = 101  # 1989-1990
 # ~10,000 votes since 1989 take about 25 daily runs. The House Clerk had no objection to a faster pace.
 PER_RUN = {"house": 2600, "senate": 400}
 PAUSE_S = {"house": 0.05, "senate": 1.5}
+# Fetching stops after this long whatever PER_RUN says, so a slow day publishes fewer votes instead of running
+# into the job's 45-minute limit and publishing none (the first production run, 2026-11-27, did that).
+FETCH_BUDGET_S = 25 * 60
 REFRESH_RECENT = 10
 LISTING = "previous.json"
 ABOUT = (
@@ -151,6 +155,68 @@ def previous_listing(ctx: Any) -> dict[str, str]:
     return {path: entry["blob"] for path, entry in ctx.previous_files().items() if re.fullmatch(r"(house|senate)/\d+/\d/\d{4}\.json", path)}
 
 
+Vote = tuple[str, int, int, int, str]  # (chamber, congress, session, roll, url)
+
+
+def _house_votes(ctx: Any, have: dict[tuple[str, int, int], set[int]]) -> list[Vote]:
+    """Every House vote that exists, newest first."""
+    wanted: list[Vote] = []
+    this_year = ctx.now.year
+    for year in range(this_year, FIRST_HOUSE_YEAR - 1, -1):
+        congress, session = congress_of(year)
+        known = have.get(("house", congress, session), set())
+        past_complete = year < this_year - 1 and known and len(known) == max(known)
+        count = max(known) if past_complete else house_rolls(ctx, year, max(known, default=0))
+        wanted += [("house", congress, session, n, HOUSE.format(year=year, roll=n)) for n in range(count, 0, -1)]
+    return wanted
+
+
+def _senate_votes(ctx: Any, have: dict[tuple[str, int, int], set[int]]) -> list[Vote]:
+    """Every Senate vote that exists, newest first."""
+    wanted: list[Vote] = []
+    current_congress = congress_of(ctx.now.year)[0]
+    for congress in range(current_congress, FIRST_SENATE_CONGRESS - 1, -1):
+        for session in (2, 1):
+            known = have.get(("senate", congress, session), set())
+            if congress < current_congress - 1 and known and len(known) == max(known):
+                numbers = sorted(known)  # a past Congress fetched in full: its votes don't change
+            else:
+                numbers = senate_rolls(ctx, congress, session)
+                time.sleep(PAUSE_S["senate"])
+            wanted += [("senate", congress, session, n, SENATE.format(c=congress, s=session, n=n)) for n in reversed(numbers)]
+    return wanted
+
+
+def _chamber(ctx: Any, chamber: str, have: dict[tuple[str, int, int], set[int]], deadline: float) -> tuple[dict[str, bytes], int]:
+    """One chamber's new votes (and its REFRESH_RECENT newest, again), newest first, until PER_RUN votes, the
+    deadline, or a 403/429. Returns (raw files, votes still to fetch)."""
+    started = time.monotonic()
+    try:
+        wanted = (_house_votes if chamber == "house" else _senate_votes)(ctx, have)
+    except httpx.HTTPStatusError as err:
+        _throttled(err, chamber, set())
+        return {}, 0
+    todo = [w for i, w in enumerate(wanted) if i < REFRESH_RECENT or w[3] not in have.get(w[:3], set())]
+    print(f"{chamber}: {len(wanted)} votes listed, {len(todo)} to fetch (found in {time.monotonic() - started:.0f}s)", flush=True)
+    raw: dict[str, bytes] = {}
+    for _, congress, session, roll, url in todo:
+        if len(raw) >= PER_RUN[chamber] or time.monotonic() >= deadline:
+            break
+        try:
+            body = _get(ctx, url)
+        except httpx.HTTPStatusError as err:
+            _throttled(err, chamber, set(), len(raw))
+            break
+        if body is None:
+            raise RuntimeError(f"{chamber} vote {congress}-{session} #{roll} is listed but missing: {url}")
+        raw[f"vote/{chamber}/{congress}/{session}/{roll}"] = body
+        if len(raw) % 250 == 0:
+            print(f"{chamber}: {len(raw)} fetched, {time.monotonic() - started:.0f}s", flush=True)
+        time.sleep(PAUSE_S[chamber])
+    print(f"{chamber}: {len(raw)} fetched in {time.monotonic() - started:.0f}s; {len(todo) - len(raw)} still to fetch", flush=True)
+    return raw, len(todo) - len(raw)
+
+
 def collect(ctx: Any) -> dict[str, bytes]:
     listing = previous_listing(ctx)
     have: dict[tuple[str, int, int], set[int]] = {}
@@ -158,61 +224,17 @@ def collect(ctx: Any) -> dict[str, bytes]:
         chamber, congress, session, roll = path.removesuffix(".json").split("/")
         have.setdefault((chamber, int(congress), int(session)), set()).add(int(roll))
 
-    # Every vote that exists, newest first, as (chamber, congress, session, roll, url).
-    wanted: list[tuple[str, int, int, int, str]] = []
-    stopped: set[str] = set()  # chambers whose server throttled us (403/429) this run
-    this_year = ctx.now.year
-    try:
-        for year in range(this_year, FIRST_HOUSE_YEAR - 1, -1):
-            congress, session = congress_of(year)
-            known = have.get(("house", congress, session), set())
-            past_complete = year < this_year - 1 and known and len(known) == max(known)
-            count = max(known) if past_complete else house_rolls(ctx, year, max(known, default=0))
-            wanted += [("house", congress, session, n, HOUSE.format(year=year, roll=n)) for n in range(count, 0, -1)]
-    except httpx.HTTPStatusError as err:
-        _throttled(err, "house", stopped)
-    current_congress = congress_of(this_year)[0]
-    try:
-        for congress in range(current_congress, FIRST_SENATE_CONGRESS - 1, -1):
-            for session in (2, 1):
-                known = have.get(("senate", congress, session), set())
-                if congress < current_congress - 1 and known and len(known) == max(known):
-                    numbers = sorted(known)  # a past Congress fetched in full: its votes don't change
-                else:
-                    numbers = senate_rolls(ctx, congress, session)
-                    time.sleep(PAUSE_S["senate"])
-                wanted += [("senate", congress, session, n, SENATE.format(c=congress, s=session, n=n)) for n in reversed(numbers)]
-    except httpx.HTTPStatusError as err:
-        _throttled(err, "senate", stopped)
-
-    # Each chamber's votes are newest first in `wanted`; rank them within the chamber so the two chambers take
-    # turns, and neither waits for the other's backlog.
-    rank: dict[tuple[str, int, int, int], int] = {}
-    for chamber in ("house", "senate"):
-        for i, w in enumerate(w for w in wanted if w[0] == chamber):
-            rank[w[:4]] = i
-    refresh = {key for key, i in rank.items() if i < REFRESH_RECENT}
-    todo = [w for w in wanted if w[3] not in have.get(w[:3], set()) or w[:4] in refresh]
-    todo.sort(key=lambda w: (w[:4] not in refresh, rank[w[:4]], w[0]))
-
+    # The chambers are different servers, so they're fetched side by side, each at its own pace. Both stop at
+    # the same deadline, which leaves the job time to build and publish what was fetched.
+    deadline = time.monotonic() + FETCH_BUDGET_S
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(lambda chamber: _chamber(ctx, chamber, have, deadline), ("house", "senate")))
     raw: dict[str, bytes] = {}
-    fetched = {"house": 0, "senate": 0}
-    for chamber, congress, session, roll, url in todo:
-        if chamber in stopped or fetched[chamber] >= PER_RUN[chamber]:
-            continue
-        try:
-            body = _get(ctx, url)
-        except httpx.HTTPStatusError as err:
-            _throttled(err, chamber, stopped, fetched[chamber])
-            continue
-        if body is None:
-            raise RuntimeError(f"{chamber} vote {congress}-{session} #{roll} is listed but missing: {url}")
-        raw[f"vote/{chamber}/{congress}/{session}/{roll}"] = body
-        fetched[chamber] += 1
-        time.sleep(PAUSE_S[chamber])
+    for files, _ in results:
+        raw.update(files)
     raw["legislators/current"] = ctx.get(LEGISLATORS["current"])
     raw["legislators/historical"] = ctx.get(LEGISLATORS["historical"])
-    raw[LISTING] = json.dumps({"files": listing, "missing": len(todo) - sum(fetched.values())}, sort_keys=True).encode()
+    raw[LISTING] = json.dumps({"files": listing, "missing": sum(missing for _, missing in results)}, sort_keys=True).encode()
     return raw
 
 

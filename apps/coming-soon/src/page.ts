@@ -12,7 +12,6 @@ const ACCENT: Record<string, string> = {
   justicedata: "#4a5a8c",
   satellitedata: "#2b6f8f",
   visualizedata: "#b5761f",
-  votingdata: "#7a3e8f",
   waterdata: "#1f8a9a",
   wildfiredata: "#c2362b",
 };
