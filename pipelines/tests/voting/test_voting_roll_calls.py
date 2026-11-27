@@ -207,3 +207,12 @@ def test_output_passes_the_contract(monkeypatch):
     files, stats = rc.build(rc.collect(ctx), ctx)
     report = validate_files(contract, set(files), stats)
     assert report.status == "pass", report.as_dict()
+
+
+def test_fetching_stops_at_the_time_budget_and_keeps_what_it_has(monkeypatch):
+    monkeypatch.setattr(rc, "PER_RUN", {"house": 100, "senate": 100})
+    monkeypatch.setattr(rc, "FETCH_BUDGET_S", 0)  # the deadline has passed before the first vote
+    raw = rc.collect(FakeChambers())
+    assert not any(k.startswith("vote/") for k in raw)
+    assert json.loads(raw[rc.LISTING])["missing"] == 11  # counted, for the next run
+    assert "legislators/current" in raw
