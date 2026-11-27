@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><vote_summary>
+  <congress>101</congress>
+
+  <session>1</session>
+  <congress_year>1989</congress_year>
+  <votes>
+    <vote>
+      <vote_number>00003</vote_number>
+      <vote_date>25-Jan</vote_date>
+      <issue>PN139</issue>
+      <question>On the Nomination</question>
+      <result>Confirmed</result>
+      <vote_tally>
+        <yeas>99</yeas>
+        <nays>0</nays>
+      </vote_tally>
+      <title>Nomination - Darman</title>
+    </vote>
+    <vote>
+      <vote_number>00002</vote_number>
+      <vote_date>25-Jan</vote_date>
+      <issue>PN133</issue>
+      <question>On the Nomination</question>
+      <result>Confirmed</result>
+      <vote_tally>
+        <yeas>99</yeas>
+        <nays>0</nays>
+      </vote_tally>
+      <title>Nomination - Dole</title>
+    </vote>
+    <vote>
+      <vote_number>00001</vote_number>
+      <vote_date>25-Jan</vote_date>
+      <issue>PN128</issue>
+      <question>On the Nomination</question>
+      <result>Confirmed</result>
+      <vote_tally>
+        <yeas>99</yeas>
+        <nays>0</nays>
+      </vote_tally>
+      <title>Nomination - Baker</title>
+    </vote>
+  </votes>
+</vote_summary>

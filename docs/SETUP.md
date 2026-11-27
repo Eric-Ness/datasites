@@ -113,6 +113,7 @@ Each ingest workflow pings `$HC_URL/start` and then `$HC_URL/0` or `$HC_URL/1`. 
 | `datasites-ingest-health` | `13 12 * * 1,4` | 6 hours | `gh secret set HC_INGEST_HEALTH --env production` |
 | `datasites-ingest-housing` | `29 10 * * 3` | 6 hours | `gh secret set HC_INGEST_HOUSING --env production` |
 | `datasites-ingest-justice` | `17 3 * * 2` | 6 hours | `gh secret set HC_INGEST_JUSTICE --env production` |
+| `datasites-ingest-voting` | `43 7 * * *` | 3 hours | `gh secret set HC_INGEST_VOTING --env production` |
 | `datasites-ingest-satellite` | `19 3 * * *` | 3 hours | `gh secret set HC_INGEST_SATELLITE --env production` |
 | `datasites-ingest-visualize` | `53 5 * * 4` | 6 hours | `gh secret set HC_INGEST_VISUALIZE --env production` |
 | `datasites-ingest-water` | `41 11 * * *` | 3 hours | `gh secret set HC_INGEST_WATER --env production` |

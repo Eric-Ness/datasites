@@ -15,6 +15,7 @@ members = [
     "datasites-pipelines",
     "datasites-satellite",
     "datasites-visualize",
+    "datasites-voting",
     "datasites-water",
     "datasites-wildfire",
 ]
@@ -241,6 +242,7 @@ dependencies = [
     { name = "datasites-justice" },
     { name = "datasites-satellite" },
     { name = "datasites-visualize" },
+    { name = "datasites-voting" },
     { name = "datasites-water" },
     { name = "datasites-wildfire" },
 ]
@@ -264,6 +266,7 @@ requires-dist = [
     { name = "datasites-justice", editable = "justice" },
     { name = "datasites-satellite", editable = "satellite" },
     { name = "datasites-visualize", editable = "visualize" },
+    { name = "datasites-voting", editable = "voting" },
     { name = "datasites-water", editable = "water" },
     { name = "datasites-wildfire", editable = "wildfire" },
 ]
@@ -304,6 +307,21 @@ requires-dist = [
     { name = "datasites-core", editable = "core" },
     { name = "polars", specifier = ">=1.0" },
     { name = "pyshp", specifier = ">=2.3" },
+]
+
+[[package]]
+name = "datasites-voting"
+version = "0.1.0"
+source = { editable = "voting" }
+dependencies = [
+    { name = "datasites-core" },
+    { name = "polars" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "datasites-core", editable = "core" },
+    { name = "polars", specifier = ">=1.0" },
 ]
 
 [[package]]
