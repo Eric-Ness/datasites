@@ -77,12 +77,13 @@ const MINUTES_PER_RUN = {
   "ingest-justice.yml": 4, // estimate: about 2 min weekly (102 CDE requests), 10 min once a month (another ~550) // 61 s when nothing changed (2026-11-06); a yearly release republishes about 12,000 files
   "ingest-satellite.yml": 2, // 8 s keyless; Space-Track elements add a few requests
   "ingest-visualize.yml": 1, // 6 s
+  "ingest-voting.yml": 3, // estimate for a daily run once the history is in: new votes plus reading back ~35,000 vote files
   "ingest-water.yml": 11, // ~10 min with an API key (65 min measured keyless and throttled)
   "ingest-wildfire.yml": 2, // 52 s: just over a billed minute
 };
-// Ingest stays under 1,500 minutes a month. The repo is public (free minutes) since 2026-11-09; the cap now just catches a
+// Ingest stays under 1,800 minutes a month. The repo is public (free minutes) since 2026-11-09; the cap now just catches a
 // schedule set far too often, or a run that keeps hitting its timeout.
-const INGEST_BUDGET = 1500;
+const INGEST_BUDGET = 1800; // raised from 1,500 on 2026-11-26 for votingdata.net's daily run
 let monthlyRuns = 0;
 let monthlyMinutes = 0;
 const perWorkflow = [];

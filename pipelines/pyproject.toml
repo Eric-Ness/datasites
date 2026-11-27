@@ -18,6 +18,7 @@ dependencies = [
   "datasites-housing",
   "datasites-health",
   "datasites-justice",
+  "datasites-voting",
 ]
 
 [dependency-groups]
@@ -27,7 +28,7 @@ dev = ["pytest>=8", "ruff==0.14.11"]
 package = false
 
 [tool.uv.workspace]
-members = ["core", "climate", "water", "election", "carbon", "economic", "wildfire", "air", "satellite", "visualize", "housing", "health", "justice"]
+members = ["core", "climate", "water", "election", "carbon", "economic", "wildfire", "air", "satellite", "visualize", "housing", "health", "justice", "voting"]
 
 [tool.uv.sources]
 datasites-core = { workspace = true }
@@ -43,6 +44,7 @@ datasites-visualize = { workspace = true }
 datasites-housing = { workspace = true }
 datasites-health = { workspace = true }
 datasites-justice = { workspace = true }
+datasites-voting = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

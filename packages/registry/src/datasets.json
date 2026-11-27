@@ -3615,6 +3615,31 @@
     "partition": null
   },
   {
+    "site": "votingdata",
+    "id": "roll-calls",
+    "kind": "files",
+    "title": "Congressional roll-call votes, member by member",
+    "description": "Every recorded vote of the US House (1990 on) and Senate (1989 on): for each vote the question, the measure, the result and totals, and how every member voted, with Bioguide IDs. One file per vote, an index per chamber and Congress, and a CSV of every member's vote per chamber and Congress for bulk use. The history fills in over the first weeks of daily runs; index.json says how many votes are still to fetch.",
+    "cadence": "P1D",
+    "check_every": "PT20H",
+    "sla": "P45D",
+    "discontinued": false,
+    "needs_credentials": false,
+    "source": {
+      "name": "Office of the Clerk, US House of Representatives, roll-call vote XML; US Senate, roll-call vote XML (LIS); unitedstates/congress-legislators (member IDs)",
+      "publisher": "Office of the Clerk of the US House of Representatives; Secretary of the US Senate",
+      "url": "https://clerk.house.gov/Votes",
+      "license": "LicenseRef-US-Government-Work",
+      "commercial_ok": true,
+      "attribution": "Roll-call votes from the Office of the Clerk, US House of Representatives (clerk.house.gov) and the US Senate (senate.gov). Member IDs from the unitedstates/congress-legislators project (CC0)."
+    },
+    "series": {},
+    "locations": {},
+    "schema": [],
+    "key": [],
+    "partition": null
+  },
+  {
     "site": "waterdata",
     "id": "drought-county",
     "kind": "series",

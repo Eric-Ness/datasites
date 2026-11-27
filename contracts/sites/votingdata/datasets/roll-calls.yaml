@@ -1,0 +1,31 @@
+id: roll-calls
+version: 1                       # bump on any schema change; forces a rebuild
+kind: files
+title: Congressional roll-call votes, member by member
+description: >-
+  Every recorded vote of the US House (1990 on) and Senate (1989 on): for each vote the question, the
+  measure, the result and totals, and how every member voted, with Bioguide IDs. One file per vote, an index
+  per chamber and Congress, and a CSV of every member's vote per chamber and Congress for bulk use. The
+  history fills in over the first weeks of daily runs; index.json says how many votes are still to fetch.
+pipeline: datasites_voting.roll_calls
+check_every: PT20H               # daily; both chambers post a vote's record within minutes of it
+cadence: P1D
+sla: P45D                        # Congress can go weeks without a recorded vote (August, election recess)
+raw_archive_max_mb: 100
+source:
+  id: house-clerk-senate-lis-votes
+  name: >-
+    Office of the Clerk, US House of Representatives, roll-call vote XML; US Senate, roll-call vote XML (LIS);
+    unitedstates/congress-legislators (member IDs)
+  publisher: Office of the Clerk of the US House of Representatives; Secretary of the US Senate
+  url: https://clerk.house.gov/Votes
+  # Records of the House and Senate are works of the US government (17 USC 105). congress-legislators,
+  # used only to map member IDs, is CC0 (https://github.com/unitedstates/congress-legislators).
+  license: LicenseRef-US-Government-Work
+  commercial_ok: true
+  attribution: >-
+    Roll-call votes from the Office of the Clerk, US House of Representatives (clerk.house.gov) and the US Senate
+    (senate.gov). Member IDs from the unitedstates/congress-legislators project (CC0).
+checks:
+  min_rows: 1000                 # member votes; grows to ~13 million as the history fills in
+  required_files: [index.json]
