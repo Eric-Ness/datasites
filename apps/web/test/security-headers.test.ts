@@ -23,8 +23,8 @@ describe("inlineScriptHashes", () => {
 describe("contentSecurityPolicy", () => {
   it("allows only this site, its API and the hashed inline scripts", () => {
     const csp = contentSecurityPolicy(["'sha256-x'"], "https://api.airdata.dev");
-    expect(csp).toContain("script-src 'self' 'sha256-x';");
-    expect(csp).toContain("connect-src 'self' https://api.airdata.dev;");
+    expect(csp).toContain("script-src 'self' 'sha256-x' https://static.cloudflareinsights.com;");
+    expect(csp).toContain("connect-src 'self' https://api.airdata.dev https://cloudflareinsights.com;");
     expect(csp).toContain("frame-ancestors 'none'");
     expect(csp.split("; ").find((d) => d.startsWith("script-src"))).not.toContain("unsafe");
     expect(csp).toMatch(/upgrade-insecure-requests$/);
@@ -32,7 +32,7 @@ describe("contentSecurityPolicy", () => {
 
   it("leaves out upgrade-insecure-requests for a local http API", () => {
     const csp = contentSecurityPolicy([], "http://localhost:8787");
-    expect(csp).toContain("connect-src 'self' http://localhost:8787;");
+    expect(csp).toContain("connect-src 'self' http://localhost:8787 https://cloudflareinsights.com;");
     expect(csp).not.toContain("upgrade-insecure-requests");
   });
 });
