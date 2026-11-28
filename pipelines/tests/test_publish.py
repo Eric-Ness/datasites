@@ -155,3 +155,39 @@ def test_state_and_manifest_are_plain_json(contract, store, upstream):
     run_dataset(contract, store, fetcher=upstream, now=at(9))
     for key in (manifest_key("climatedata", "co2-monthly"), state_key("climatedata", "co2-monthly")):
         json.loads(store.get(key)[0])
+
+
+def test_a_collect_pipelines_raw_files_are_archived_in_parallel_and_in_order(store):
+    """roll-calls returns ~3,000 raw files a run; archiving them one at a time took 17 minutes (2026-11-28)."""
+    import threading
+    import time
+    import types
+
+    from datasites_core.contracts import load_contract
+    from datasites_core.publish import _collect
+
+    class SlowStore:
+        def __init__(self, inner):
+            self.inner, self.active, self.peak, self.lock = inner, 0, 0, threading.Lock()
+
+        def __getattr__(self, name):
+            return getattr(self.inner, name)
+
+        def put(self, key, body, content_type, **kw):
+            with self.lock:
+                self.active += 1
+                self.peak = max(self.peak, self.active)
+            time.sleep(0.02)  # a network round trip
+            with self.lock:
+                self.active -= 1
+            return self.inner.put(key, body, content_type, **kw)
+
+    files = {f"vote/house/119/2/{n}": f"<rollcall-vote>{n}</rollcall-vote>".encode() for n in range(1, 101)}
+    files |= {f"empty/{n}": b"" for n in range(5)}  # same bytes, same key: archived once, by one writer
+    module = types.SimpleNamespace(collect=lambda ctx: files)
+    slow = SlowStore(store)
+    bodies, upstream, _ = _collect(module, load_contract("electiondata/roll-calls"), slow, {"upstream": {}}, None, at(9))
+    assert list(bodies) == list(files) and list(upstream) == list(files)  # same order as collect() returned
+    assert all(store.exists(u["raw_key"]) for u in upstream.values())
+    assert slow.peak > 1  # uploads overlapped
+    assert len({u["raw_key"] for k, u in upstream.items() if k.startswith("empty/")}) == 1

@@ -225,11 +225,20 @@ def _collect(
 
     if hasattr(module, "collect"):
         ctx = CollectContext(contract, now, store)
-        for name, body in module.collect(ctx).items():
+        collected = module.collect(ctx)
+        # Archived in parallel: a collect() can return thousands of files (roll-calls' vote XML), and one
+        # existence check plus one upload each, in turn, took 17 minutes for 3,000 of them (2026-11-28).
+        # Each distinct body once: files with the same bytes share a key, and two writers replacing one file at
+        # the same moment fail on Windows (water's empty responses did).
+        first = {sha256(body): name for name, body in reversed(collected.items())}
+        with ThreadPoolExecutor(max_workers=UPLOAD_WORKERS) as pool:
+            done = dict(zip(first, pool.map(lambda name: _archive(store, contract, name, f"{name}.bin", collected[name], marked), first.values())))
+        for name, body in collected.items():
+            archive = done[sha256(body)]
             bodies[name] = body
             upstream[name] = {
                 "url": None,
-                **_archive(store, contract, name, f"{name}.bin", body, marked),
+                **archive,
                 "norm_sha256": sha256(normalize(name, body)),
                 "retrieved_at": iso(now),
             }
