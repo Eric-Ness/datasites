@@ -11,6 +11,18 @@ export const CORS_HEADERS: Record<string, string> = {
   "access-control-max-age": "86400",
 };
 
+/**
+ * Security headers on every response. The API answers with data, never pages, so its policy refuses everything,
+ * framing included. Cross-Origin-Resource-Policy is cross-origin on purpose: any site may use this public data.
+ */
+export const SECURITY_HEADERS: Record<string, string> = {
+  "strict-transport-security": "max-age=31536000; includeSubDomains",
+  "content-security-policy": "default-src 'none'; frame-ancestors 'none'",
+  "x-content-type-options": "nosniff",
+  "referrer-policy": "strict-origin-when-cross-origin",
+  "cross-origin-resource-policy": "cross-origin",
+};
+
 const HOUR = 3_600_000;
 const STALE = "stale-while-revalidate=86400, stale-if-error=604800";
 

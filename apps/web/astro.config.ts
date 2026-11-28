@@ -2,13 +2,14 @@
 //   SITE=waterdata astro build                         -> dist/waterdata/
 //   PUBLIC_API_BASE=http://localhost:8787 SITE=...      -> pages fetch from the local API (?site=<id> is added)
 //   WEB_REGISTRY=test/fixtures/registry/index.ts       -> build from a fixture registry instead (tests only)
-import { readFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "astro/config";
 import type { AstroIntegration } from "astro";
 import { datasets as registryDatasets, sites as registrySites, type Dataset, type Site } from "@datasites/registry";
 import { EXTRA_PAGES, INDICATOR_ROUTES, indicatorPages } from "./src/lib/routes";
+import { headersFile, inlineScriptHashes, MAX_INLINE_SCRIPTS, securityTxt } from "./src/lib/security-headers";
 import { apiBaseFor } from "./src/lib/urls";
 
 const here = (path: string) => fileURLToPath(new URL(path, import.meta.url));
@@ -48,6 +49,32 @@ function siteRoutes(id: string): AstroIntegration {
   };
 }
 
+/**
+ * Writes dist/<id>/_headers (security headers, with a CSP that allows exactly the build's inline scripts) and
+ * dist/<id>/.well-known/security.txt.
+ */
+function securityHeaders(api: string, domain: string): AstroIntegration {
+  return {
+    name: "datasites-security-headers",
+    hooks: {
+      "astro:build:done": ({ dir }) => {
+        const root = fileURLToPath(dir);
+        const pages = readdirSync(root, { recursive: true, encoding: "utf8" })
+          .filter((p) => p.endsWith(".html"))
+          .map((p) => readFileSync(join(root, p), "utf8"));
+        const hashes = inlineScriptHashes(pages);
+        if (hashes.length > MAX_INLINE_SCRIPTS) {
+          throw new Error(`${hashes.length} different inline scripts (limit ${MAX_INLINE_SCRIPTS}): a per-page value is in a script; move it to a data attribute`);
+        }
+        writeFileSync(join(root, "_headers"), headersFile(hashes, api));
+        mkdirSync(join(root, ".well-known"), { recursive: true });
+        writeFileSync(join(root, ".well-known", "security.txt"), securityTxt(domain, new Date()));
+        console.log(`[web] _headers: ${hashes.length} inline script hashes from ${pages.length} pages`);
+      },
+    },
+  };
+}
+
 console.log(`[web] site ${site.id} (${site.domain}), API base ${apiBase}`);
 
 export default defineConfig({
@@ -59,7 +86,7 @@ export default defineConfig({
   compressHTML: true,
   prefetch: false,
   devToolbar: { enabled: false },
-  integrations: [siteRoutes(site.id)],
+  integrations: [siteRoutes(site.id), securityHeaders(apiBase, site.domain)],
   vite: {
     define: {
       __SITE_ID__: JSON.stringify(site.id),
