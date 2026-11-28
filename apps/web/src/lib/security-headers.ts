@@ -25,17 +25,22 @@ export function inlineScriptHashes(pages: Iterable<string>): string[] {
   return [...hashes].sort();
 }
 
+// Cloudflare Web Analytics: Cloudflare adds its beacon script to every page it serves, and the beacon reports to
+// cloudflareinsights.com. It sets no cookies.
+const ANALYTICS_SCRIPT = "https://static.cloudflareinsights.com";
+const ANALYTICS_REPORT = "https://cloudflareinsights.com";
+
 /** The Content-Security-Policy for a site whose pages fetch data from apiBase. */
 export function contentSecurityPolicy(scriptHashes: readonly string[], apiBase: string): string {
   const api = new URL(apiBase).origin;
   return [
     "default-src 'self'",
-    ["script-src 'self'", ...scriptHashes].join(" "),
+    ["script-src 'self'", ...scriptHashes, ANALYTICS_SCRIPT].join(" "),
     // The charts size and place things with style attributes, which only 'unsafe-inline' allows.
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data:",
     "font-src 'self'",
-    `connect-src 'self' ${api}`,
+    `connect-src 'self' ${api} ${ANALYTICS_REPORT}`,
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
